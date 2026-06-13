@@ -52,9 +52,11 @@ private struct HeaderView: View {
         HStack(spacing: 8) {
             if let img = NSImage(named: "AppIcon") {
                 Image(nsImage: img)
+                    .renderingMode(.template)
                     .resizable()
                     .scaledToFit()
                     .frame(width: 18, height: 18)
+                    .foregroundColor(.accentColor)
                     .accessibilityHidden(true)
             } else {
                 Image(systemName: "signature")
@@ -304,9 +306,11 @@ private struct EmptyStateView: View {
                         } else {
                             if let img = NSImage(named: "AppIcon") {
                                 Image(nsImage: img)
+                                    .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 80, height: 80)
+                                    .foregroundColor(.accentColor)
                             } else {
                                 Image(systemName: "signature")
                                     .font(.system(size: 48, weight: .light))
@@ -461,9 +465,11 @@ private struct AboutView: View {
             HStack(spacing: 10) {
                 if let img = NSImage(named: "AppIcon") {
                     Image(nsImage: img)
+                        .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
                         .frame(width: 36, height: 36)
+                        .foregroundColor(.primary)
                 } else {
                     Image(systemName: "signature")
                         .font(.system(size: 28, weight: .light))
