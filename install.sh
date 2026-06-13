@@ -137,6 +137,11 @@ bundle() {
     cp "$BINARY_PATH" "${macos_dir}/${APP_NAME}"
     chmod +x "${macos_dir}/${APP_NAME}"
 
+    # Copy AppIcon.icns
+    if [[ -f "PersonalSignature/Resources/AppIcon.icns" ]]; then
+        cp "PersonalSignature/Resources/AppIcon.icns" "${contents}/Resources/"
+    fi
+
     # Write Info.plist
     cat > "${contents}/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -159,6 +164,8 @@ bundle() {
     <string>${APP_NAME}</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key>
     <string>${MIN_MACOS}</string>
     <key>NSPrincipalClass</key>

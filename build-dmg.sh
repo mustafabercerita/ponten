@@ -133,6 +133,10 @@ bundle() {
     cp "$BINARY_PATH" "${contents}/MacOS/${APP_NAME}"
     chmod +x "${contents}/MacOS/${APP_NAME}"
 
+    if [[ -f "PersonalSignature/Resources/AppIcon.icns" ]]; then
+        cp "PersonalSignature/Resources/AppIcon.icns" "${contents}/Resources/"
+    fi
+
     cat > "${contents}/Info.plist" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -147,6 +151,7 @@ bundle() {
     <key>CFBundleVersion</key>        <string>1</string>
     <key>CFBundleExecutable</key>     <string>${APP_NAME}</string>
     <key>CFBundlePackageType</key>    <string>APPL</string>
+    <key>CFBundleIconFile</key>       <string>AppIcon</string>
     <key>LSMinimumSystemVersion</key> <string>${MIN_MACOS}</string>
     <key>NSPrincipalClass</key>       <string>NSApplication</string>
     <key>NSDesktopFolderUsageDescription</key>

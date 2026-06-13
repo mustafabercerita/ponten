@@ -76,6 +76,8 @@ bundle: build
 	@mkdir -p "$(BUNDLE)/Contents/MacOS" "$(BUNDLE)/Contents/Resources"
 	@cp "$(BINARY)" "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
 	@chmod +x "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
+	@[ -f "PersonalSignature/Resources/AppIcon.icns" ] && \
+		cp "PersonalSignature/Resources/AppIcon.icns" "$(BUNDLE)/Contents/Resources/" || true
 	@# Generate Info.plist inline
 	@/usr/libexec/PlistBuddy -c "Add :LSUIElement bool true" \
 		"$(BUNDLE)/Contents/Info.plist" 2>/dev/null || true
@@ -92,6 +94,7 @@ bundle: build
     <key>CFBundleVersion</key><string>1</string>
     <key>CFBundleExecutable</key><string>$(APP_NAME)</string>
     <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
     <key>LSMinimumSystemVersion</key><string>$(MIN_MACOS)</string>
     <key>NSPrincipalClass</key><string>NSApplication</string>
 </dict>
