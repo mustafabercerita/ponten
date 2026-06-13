@@ -167,7 +167,7 @@ private struct SignatureActiveView: View {
 
             // Secondary row: Change + Delete
             HStack(spacing: 16) {
-                Button(action: { showFileImporter = true }) {
+                Button(action: { manager.openFilePicker() }) {
                     Label("Change", systemImage: "arrow.triangle.2.circlepath")
                         .font(.callout)
                 }
@@ -186,13 +186,6 @@ private struct SignatureActiveView: View {
             }
             .padding(.horizontal, 18)
             .padding(.bottom, 14)
-        }
-        .fileImporter(
-            isPresented: $showFileImporter,
-            allowedContentTypes: [.png, .jpeg, .tiff, .image],
-            allowsMultipleSelection: false
-        ) { result in
-            handleFileImport(result)
         }
         .confirmationDialog(
             "Remove Signature?",
@@ -351,7 +344,7 @@ private struct EmptyStateView: View {
                 .transition(.opacity)
             }
 
-            Button(action: { showFileImporter = true }) {
+            Button(action: { manager.openFilePicker() }) {
                 Label("Add Signature", systemImage: "plus")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 9)
@@ -362,27 +355,7 @@ private struct EmptyStateView: View {
 
             Spacer(minLength: 12)
         }
-        .fileImporter(
-            isPresented: $showFileImporter,
-            allowedContentTypes: [.png, .jpeg, .tiff, .image],
-            allowsMultipleSelection: false
-        ) { result in
-            handleFileImport(result)
-        }
         .animation(.easeInOut(duration: 0.2), value: errorMessage)
-    }
-
-    private func handleFileImport(_ result: Result<[URL], Error>) {
-        withAnimation { errorMessage = nil }
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else { return }
-            let accessed = url.startAccessingSecurityScopedResource()
-            defer { if accessed { url.stopAccessingSecurityScopedResource() } }
-            importURL(url)
-        case .failure(let error):
-            withAnimation { errorMessage = error.localizedDescription }
-        }
     }
 
     private func handleDrop(providers: [NSItemProvider]) -> Bool {

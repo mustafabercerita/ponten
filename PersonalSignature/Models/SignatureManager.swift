@@ -1,6 +1,7 @@
 import AppKit
 import Foundation
 import ServiceManagement
+import UniformTypeIdentifiers
 
 /// Persists and vends the active signature image.
 /// Storage: the PNG is copied into ~/Library/Application Support/PersonalSignature/signature.png
@@ -71,6 +72,34 @@ final class SignatureManager: ObservableObject {
 
         DispatchQueue.main.async { [weak self] in
             self?.signatureImage = img
+        }
+    }
+
+    // MARK: - File Picker
+
+    @MainActor
+    func openFilePicker() {
+        let panel = NSOpenPanel()
+        // Allowed types are typically UTType but we can specify them as NSOpenPanel properties or allowedContentTypes if imported UTType
+        panel.allowedContentTypes = [.png, .jpeg, .tiff, .image]
+        panel.allowsMultipleSelection = false
+        panel.canChooseDirectories = false
+        panel.canChooseFiles = true
+        panel.message = "Choose your signature image"
+
+        // Crucial for menu bar apps: bring to front so the panel isn't hidden behind other apps
+        NSApp.activate(ignoringOtherApps: true)
+
+        if panel.runModal() == .OK, let url = panel.url {
+            // Need to handle security scoped resource if it's from outside sandbox (though macOS non-sandboxed doesn't strictly need it, good practice)
+            let accessed = url.startAccessingSecurityScopedResource()
+            defer { if accessed { url.stopAccessingSecurityScopedResource() } }
+            
+            do {
+                try saveSignature(from: url)
+            } catch {
+                showToast(error.localizedDescription)
+            }
         }
     }
 
