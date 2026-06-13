@@ -50,10 +50,20 @@ struct MenuBarView: View {
 private struct HeaderView: View {
     var body: some View {
         HStack(spacing: 8) {
-            Image(systemName: "signature")
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundColor(.accentColor)
-                .accessibilityHidden(true)
+            if let img = NSImage(named: "MenuBarIconTemplate") {
+                Image(nsImage: img)
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 16, height: 16)
+                    .foregroundColor(.accentColor)
+                    .accessibilityHidden(true)
+            } else {
+                Image(systemName: "signature")
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(.accentColor)
+                    .accessibilityHidden(true)
+            }
 
             Text("Personal Signature")
                 .font(.system(size: 13, weight: .semibold))
@@ -287,10 +297,28 @@ private struct EmptyStateView: View {
                     .animation(.easeOut(duration: 0.15), value: isDropTargeted)
 
                 VStack(spacing: 8) {
-                    Image(systemName: isDropTargeted ? "tray.and.arrow.down.fill" : "signature")
-                        .font(.system(size: 30, weight: .light))
-                        .foregroundColor(.accentColor.opacity(0.6))
-                        .animation(.easeOut(duration: 0.15), value: isDropTargeted)
+                    Group {
+                        if isDropTargeted {
+                            Image(systemName: "tray.and.arrow.down.fill")
+                                .font(.system(size: 48, weight: .light))
+                                .foregroundColor(.accentColor)
+                        } else {
+                            if let img = NSImage(named: "MenuBarIconTemplate") {
+                                Image(nsImage: img)
+                                    .renderingMode(.template)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 56, height: 56)
+                                    .foregroundColor(.accentColor)
+                            } else {
+                                Image(systemName: "signature")
+                                    .font(.system(size: 48, weight: .light))
+                                    .foregroundColor(.accentColor)
+                            }
+                        }
+                    }
+                    .opacity(0.6)
+                    .animation(.easeOut(duration: 0.15), value: isDropTargeted)
 
                     Text(isDropTargeted ? "Drop to add signature" : "No signature saved yet.")
                         .font(.system(size: 12, weight: .medium))
