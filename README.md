@@ -66,36 +66,54 @@ Install app → 🖊 icon appears in menu bar → click icon
 
 ## Getting Started
 
-### 1. Clone
+### Option A — One-command install (no Xcode GUI needed) ⚡
 
 ```bash
 git clone https://github.com/mustafabercerita/personal-signature.git
 cd personal-signature
+./install.sh
 ```
 
-### 2. Open in Xcode
+That's it. The script will:
+1. Check prerequisites (Swift compiler, macOS 13+)
+2. Compile all Swift sources
+3. Package into a `.app` bundle
+4. Sign with an ad-hoc signature
+5. Install to `~/Applications/`
+6. Launch the app automatically
+
+> Look for the **🖊 icon** in your menu bar after it launches.
+
+#### Other install commands
 
 ```bash
-open "PersonalSignature.xcodeproj"
+./install.sh --build      # Compile only, don't install
+./install.sh --uninstall  # Remove the app
+./install.sh --help       # Show all options
 ```
 
-Or double-click `PersonalSignature.xcodeproj` in Finder.
+#### Or with Make
 
-### 3. Set signing team
+```bash
+make          # build + install
+make run      # build + install + launch
+make clean    # remove build artifacts
+make uninstall
+```
 
-1. Select the **PersonalSignature** target → **Signing & Capabilities**
-2. Choose your Apple ID team
-3. Xcode auto-manages provisioning
+---
 
-### 4. Run
+### Option B — Build with Xcode
 
-Press **⌘R**. Look for the **🖊 icon** in your menu bar (top-right).
+1. Clone the repo and open `PersonalSignature.xcodeproj` in Xcode 15+
+2. Select the **PersonalSignature** target → **Signing & Capabilities** → set your Team
+3. Press **⌘R**. Look for the **🖊 icon** in your menu bar.
 
-> **Note:** `LSUIElement = YES` — the app intentionally does **not** appear in the Dock or ⌘Tab switcher.
+> `LSUIElement = YES` — the app intentionally does **not** appear in the Dock or ⌘Tab.
 
-### 5. First use
+### First use
 
-1. Click the menu bar icon
+1. Click the 🖊 menu bar icon
 2. Click **Add Signature** (or drag a PNG file onto the popover)
 3. Preview appears immediately
 4. Click **Sign** (or press **⌥⌘S** from anywhere) to copy to clipboard
