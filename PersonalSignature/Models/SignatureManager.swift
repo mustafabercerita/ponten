@@ -53,6 +53,7 @@ final class SignatureManager: ObservableObject {
     }
 
     @Published var toastMessage: String?
+    @Published var errorMessage: String?
     @Published var autoPaste: Bool = UserDefaults.standard.bool(forKey: "AutoPasteEnabled") {
         didSet {
             UserDefaults.standard.set(autoPaste, forKey: "AutoPasteEnabled")
@@ -74,7 +75,7 @@ final class SignatureManager: ObservableObject {
         let appSupport = FileManager.default.urls(
             for: .applicationSupportDirectory,
             in: .userDomainMask
-        ).first!
+        ).first ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support")
         let dir = appSupport.appendingPathComponent("PersonalSignature", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
@@ -151,9 +152,15 @@ final class SignatureManager: ObservableObject {
             img = processed
         }
 
-        guard let tiff = img.tiffRepresentation,
-              let bitmap = NSBitmapImageRep(data: tiff),
-              let pngData = bitmap.representation(using: .png, properties: [:]) else {
+        var extractedPngData: Data?
+        if let tiff = img.tiffRepresentation, let bitmap = NSBitmapImageRep(data: tiff) {
+            extractedPngData = bitmap.representation(using: .png, properties: [:])
+        } else if let cgImage = img.cgImage(forProposedRect: nil, context: nil, hints: nil) {
+            let bitmap = NSBitmapImageRep(cgImage: cgImage)
+            extractedPngData = bitmap.representation(using: .png, properties: [:])
+        }
+        
+        guard let pngData = extractedPngData else {
             throw SignatureError.encodingFailed
         }
 
@@ -201,6 +208,43 @@ final class SignatureManager: ObservableObject {
             } catch {
                 showToast(error.localizedDescription)
             }
+        }
+    }
+
+    // MARK: - Drag & Drop
+
+    func handleDrop(providers: [NSItemProvider]) -> Bool {
+        // Prefer file URL
+        if let provider = providers.first(where: { $0.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) }) {
+            _ = provider.loadObject(ofClass: URL.self) { [weak self] url, _ in
+                guard let self = self, let url = url else { return }
+                DispatchQueue.main.async { self.importURL(url) }
+            }
+            return true
+        }
+        // Fallback to raw image data
+        if let provider = providers.first(where: { $0.canLoadObject(ofClass: NSImage.self) }) {
+            _ = provider.loadObject(ofClass: NSImage.self) { [weak self] image, _ in
+                guard let self = self, let nsImage = image as? NSImage else { return }
+                DispatchQueue.main.async {
+                    do {
+                        try self.saveSignature(image: nsImage, removeBackground: false)
+                    } catch {
+                        self.errorMessage = error.localizedDescription
+                    }
+                }
+            }
+            return true
+        }
+        return false
+    }
+
+    func importURL(_ url: URL) {
+        do {
+            errorMessage = nil
+            try saveSignature(from: url, removeBackground: false)
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 
@@ -253,6 +297,12 @@ final class SignatureManager: ObservableObject {
     func deleteSignature() {
         guard let id = activeSignatureID else { return }
         
+        // Remove file from disk
+        if let itemToRemove = signatures.first(where: { $0.item.id == id })?.item {
+            let path = storageDirectory.appendingPathComponent(itemToRemove.filename)
+            try? FileManager.default.removeItem(at: path)
+        }
+        
         signatures.removeAll { $0.item.id == id }
         if let first = signatures.first {
             activeSignatureID = first.item.id
@@ -260,9 +310,6 @@ final class SignatureManager: ObservableObject {
             activeSignatureID = nil
         }
         saveIndex()
-        
-        // Let's not delete the actual file just yet to keep it safe, 
-        // or we could delete it if we kept track of the URL.
         // The index handles it. 
     }
     
@@ -290,14 +337,13 @@ final class SignatureManager: ObservableObject {
         toastTimer?.invalidate()
         DispatchQueue.main.async { [weak self] in
             self?.toastMessage = message
-            self?.toastTimer = Timer.scheduledTimer(
-                withTimeInterval: 2.5,
-                repeats: false
-            ) { [weak self] _ in
+            let timer = Timer(timeInterval: 2.5, repeats: false) { [weak self] _ in
                 DispatchQueue.main.async {
                     self?.toastMessage = nil
                 }
             }
+            RunLoop.main.add(timer, forMode: .common)
+            self?.toastTimer = timer
         }
     }
 }
@@ -330,25 +376,21 @@ extension NSImage {
             return nil
         }
         
-        // 1. Invert colors (White paper -> Black/Transparent, Black ink -> White/Opaque)
+        // 1. Invert colors (White paper -> Black, Ink -> White-ish)
+        // This will serve as our alpha mask (luminance-based mask).
         let invertFilter = CIFilter.colorInvert()
         invertFilter.inputImage = ciImage
-        guard let inverted = invertFilter.outputImage else { return nil }
+        guard let maskImage = invertFilter.outputImage else { return nil }
         
-        // 2. Convert to Alpha Mask
-        let maskToAlpha = CIFilter.maskToAlpha()
-        maskToAlpha.inputImage = inverted
-        guard let alphaMasked = maskToAlpha.outputImage else { return nil }
+        // 2. Blend original image over a transparent background using the mask
+        let blendFilter = CIFilter.blendWithMask()
+        blendFilter.inputImage = ciImage // Foreground: Original image (keeps original colors)
+        blendFilter.backgroundImage = CIImage.empty() // Background: Transparent
+        blendFilter.maskImage = maskImage // Mask: inverted image (white = opaque ink, black = transparent paper)
         
-        // 3. Colorize the white ink back to black
-        let falseColor = CIFilter.falseColor()
-        falseColor.inputImage = alphaMasked
-        falseColor.color0 = CIColor(red: 0, green: 0, blue: 0, alpha: 0) // transparent background
-        falseColor.color1 = CIColor(red: 0, green: 0, blue: 0, alpha: 1) // black ink
+        guard let finalCIImage = blendFilter.outputImage else { return nil }
         
-        guard let output = falseColor.outputImage else { return nil }
-        
-        let rep = NSCIImageRep(ciImage: output)
+        let rep = NSCIImageRep(ciImage: finalCIImage)
         let finalImage = NSImage(size: rep.size)
         finalImage.addRepresentation(rep)
         return finalImage

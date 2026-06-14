@@ -170,6 +170,12 @@ Personal Signature/
 │   │
 │   ├── Views/
 │   │   ├── MenuBarView.swift            Root SwiftUI popover view
+│   │   ├── HeaderView.swift             Title and signature selector
+│   │   ├── SignatureActiveView.swift    Main preview and actions
+│   │   ├── EmptyStateView.swift         Drop zone and add button
+│   │   ├── FooterView.swift             Bottom toolbar (About, Drawing)
+│   │   ├── DrawingView.swift            Built-in canvas for drawing signature
+│   │   ├── AboutView.swift              App info and version
 │   │   └── Components.swift             PrimaryButtonStyle, SecondaryButtonStyle, ToastView
 │   │
 │   ├── Utilities/

@@ -8,9 +8,29 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] — 2026-06-14
+
+### Added
+- **Built-in Drawing Canvas** — draw your signature natively using your trackpad, mouse, or Apple Pencil
+- **Multiple signature profiles** — save and quickly switch between different signatures
+- **Auto-Paste** — uses macOS Accessibility APIs to paste your signature directly into the active document
+- **Global Shortcut Customization** — record your own custom hotkey
+- **Drag & Drop Out** — drag the signature from the popover directly into target apps
+- **Native Auto-Updater** — lightweight, native SwiftUI GitHub release checker
+
+### Fixed
+- **Background removal** — correctly drops white backgrounds while preserving original ink color
+- **Memory leaks** — fixed memory leaks in the popover and signature processing
+- **Drag and Drop** — fixed issues where drag & drop was not working reliably
+
+### Technical
+- **Modular UI Refactoring** — split `MenuBarView` into `HeaderView`, `SignatureActiveView`, `FooterView`, `EmptyStateView`, `DrawingView`, and `AboutView` for better maintainability
+
+---
+
+## [Unreleased]
+
 ### Planned
-- Multiple signature profiles with quick-switch
-- Built-in drawing canvas (trackpad / stylus)
 - Touch Bar support
 - App Store release
 

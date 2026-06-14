@@ -10,6 +10,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var eventMonitor: EventMonitor?
     private var globalHotkeyMonitor: Any?
 
+    private var observers: [NSObjectProtocol] = []
+
     // MARK: - App Lifecycle
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -21,13 +23,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         setupEventMonitor()
         setupGlobalHotkey()
         
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("ClosePopover"), object: nil, queue: .main) { [weak self] _ in
+        let closeObs = NotificationCenter.default.addObserver(forName: NSNotification.Name("ClosePopover"), object: nil, queue: .main) { [weak self] _ in
             self?.closePopover()
         }
         
-        NotificationCenter.default.addObserver(forName: NSNotification.Name("CheckForUpdates"), object: nil, queue: .main) { [weak self] _ in
+        let updateObs = NotificationCenter.default.addObserver(forName: NSNotification.Name("CheckForUpdates"), object: nil, queue: .main) { [weak self] _ in
             self?.checkForUpdates()
         }
+        
+        observers.append(closeObs)
+        observers.append(updateObs)
     }
 
     func checkForUpdates() {
@@ -48,7 +53,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     let cleanTag = tagName.replacingOccurrences(of: "v", with: "")
                     let cleanCurrent = currentVersion.replacingOccurrences(of: "v", with: "")
                     
-                    if cleanTag > cleanCurrent {
+                    if cleanTag.compare(cleanCurrent, options: .numeric) == .orderedDescending {
                         self?.signatureManager.showToast("Update Available (v\(cleanTag))! Opening browser...")
                         if let htmlUrl = json["html_url"] as? String, let updateUrl = URL(string: htmlUrl) {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -68,7 +73,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         teardownGlobalHotkey()
-        NotificationCenter.default.removeObserver(self)
+        for observer in observers {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        observers.removeAll()
     }
 
     // MARK: - Status Item
