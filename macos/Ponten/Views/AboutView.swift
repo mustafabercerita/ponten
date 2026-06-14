@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct AboutView: View {
+    private var appVersion: String {
+        return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
@@ -19,7 +23,7 @@ struct AboutView: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Ponten")
                         .font(.headline)
-                    Text("Version 1.0.0")
+                    Text("Version \(appVersion)")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -27,7 +31,7 @@ struct AboutView: View {
 
             Divider()
 
-            Text("Put your digital signature one click away from your menu bar.")
+            Text("Lightweight cross-platform app — one-click digital signature to clipboard. Built with Swift & SwiftUI.")
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

@@ -45,7 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func checkForUpdates(silent: Bool = false) {
         // Native GitHub Releases API check
-        guard let url = URL(string: "https://api.github.com/repos/mustafabercerita/personal-signature/releases/latest") else { return }
+        guard let url = URL(string: "https://api.github.com/repos/mustafabercerita/ponten/releases/latest") else { return }
         
         var request = URLRequest(url: url)
         request.setValue("Ponten-MacApp", forHTTPHeaderField: "User-Agent")
