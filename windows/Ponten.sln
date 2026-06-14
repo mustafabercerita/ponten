@@ -1,9 +1,9 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalSignatureWPF", "PersonalSignatureWPF\PersonalSignatureWPF.csproj", "{F9D6887D-6670-4A04-AC77-8023FA306CE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PontenWPF", "PontenWPF\PontenWPF.csproj", "{F9D6887D-6670-4A04-AC77-8023FA306CE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

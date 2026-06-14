@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to **Personal Signature** will be documented in this file.
+All notable changes to **Ponten** will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/).
 
@@ -54,7 +54,7 @@ versioning follows [Semantic Versioning](https://semver.org/).
 - **Launch at Login** toggle via `SMAppService` (macOS 13+)
 - **Global hotkey** ⌥⌘S — copy signature without opening popover
 - **About panel** — version, GitHub link, shortcut hint
-- **Persistent storage** in `~/Library/Application Support/PersonalSignature/signature.png`
+- **Persistent storage** in `~/Library/Application Support/Ponten/signature.png`
 - **App Sandbox** with `user-selected.read-only` entitlement
 - Unit tests for `SignatureManager` (7 test cases)
 - GitHub Actions CI workflow (build + test + archive on main)
@@ -69,5 +69,5 @@ versioning follows [Semantic Versioning](https://semver.org/).
 - `EventMonitor` for outside-click dismissal
 - macOS 13.0 Ventura minimum deployment target
 
-[Unreleased]: https://github.com/mustafabercerita/personal-signature/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/mustafabercerita/personal-signature/releases/tag/v1.0.0
+[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/mustafabercerita/ponten/releases/tag/v1.0.0

@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "Personal Signature",
+    name: "Ponten",
     platforms: [
         .macOS(.v13)
     ],
     targets: [
         .executableTarget(
-            name: "Personal Signature",
-            path: "PersonalSignature",
+            name: "Ponten",
+            path: "Ponten",
             resources: [
                 .process("Resources/Assets.xcassets"),
                 .process("Resources/AppIcon.icns"),

@@ -76,7 +76,7 @@ final class SignatureManager: ObservableObject {
             for: .applicationSupportDirectory,
             in: .userDomainMask
         ).first ?? URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support")
-        let dir = appSupport.appendingPathComponent("PersonalSignature", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("Ponten", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }()

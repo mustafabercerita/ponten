@@ -17,7 +17,7 @@ struct AboutView: View {
                         .foregroundColor(.accentColor)
                 }
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Personal Signature")
+                    Text("Ponten")
                         .font(.headline)
                     Text("Version 1.0.0")
                         .font(.caption)
@@ -41,7 +41,7 @@ struct AboutView: View {
                     .foregroundColor(.secondary)
             }
 
-            if let url = URL(string: "https://github.com/mustafabercerita/personal-signature") {
+            if let url = URL(string: "https://github.com/mustafabercerita/Ponten") {
                 Link("View on GitHub →", destination: url)
                     .font(.caption)
             }

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Personal Signature — install.sh
+# Ponten — install.sh
 # Compiles the app from source and installs it to ~/Applications
 #
 # Usage:
@@ -23,8 +23,8 @@ error()   { echo -e "${RED}❌${NC} $*" >&2; exit 1; }
 step()    { echo -e "\n${BOLD}${BLUE}── $* ──${NC}"; }
 
 # ── Config ────────────────────────────────────────────────────────────────────
-APP_NAME="Personal Signature"
-BUNDLE_ID="com.personalsignature.app"
+APP_NAME="Ponten"
+BUNDLE_ID="com.ponten.app"
 VERSION="1.2.0"
 MIN_MACOS="13.0"
 ARCH="$(uname -m)"
@@ -38,25 +38,25 @@ INSTALL_DIR="${HOME}/Applications"
 INSTALLED_PATH="${INSTALL_DIR}/${APP_NAME}.app"
 
 SOURCE_FILES=(
-    "PersonalSignature/App/PersonalSignatureApp.swift"
-    "PersonalSignature/App/AppDelegate.swift"
-    "PersonalSignature/Models/SignatureManager.swift"
-    "PersonalSignature/Views/MenuBarView.swift"
-    "PersonalSignature/Views/HeaderView.swift"
-    "PersonalSignature/Views/SignatureActiveView.swift"
-    "PersonalSignature/Views/EmptyStateView.swift"
-    "PersonalSignature/Views/FooterView.swift"
-    "PersonalSignature/Views/AboutView.swift"
-    "PersonalSignature/Views/Components.swift"
-    "PersonalSignature/Utilities/EventMonitor.swift"
-    "PersonalSignature/Utilities/GlobalShortcutManager.swift"
-    "PersonalSignature/Views/DrawingView.swift"
+    "Ponten/App/PontenApp.swift"
+    "Ponten/App/AppDelegate.swift"
+    "Ponten/Models/SignatureManager.swift"
+    "Ponten/Views/MenuBarView.swift"
+    "Ponten/Views/HeaderView.swift"
+    "Ponten/Views/SignatureActiveView.swift"
+    "Ponten/Views/EmptyStateView.swift"
+    "Ponten/Views/FooterView.swift"
+    "Ponten/Views/AboutView.swift"
+    "Ponten/Views/Components.swift"
+    "Ponten/Utilities/EventMonitor.swift"
+    "Ponten/Utilities/GlobalShortcutManager.swift"
+    "Ponten/Views/DrawingView.swift"
 )
 
 # ── Help ──────────────────────────────────────────────────────────────────────
 usage() {
     echo ""
-    echo -e "${BOLD}Personal Signature — CLI Installer${NC}"
+    echo -e "${BOLD}Ponten — CLI Installer${NC}"
     echo ""
     echo "  ./install.sh             Build & install the app"
     echo "  ./install.sh --build     Compile only (no install)"
@@ -70,7 +70,7 @@ usage() {
 # ── Uninstall ─────────────────────────────────────────────────────────────────
 uninstall() {
     step "Uninstalling ${APP_NAME}"
-    pkill -x "Personal Signature" 2>/dev/null && sleep 0.5 || true
+    pkill -x "Ponten" 2>/dev/null && sleep 0.5 || true
     if [[ -d "$INSTALLED_PATH" ]]; then
         rm -rf "$INSTALLED_PATH"
         success "Removed: ${INSTALLED_PATH}"
@@ -144,14 +144,14 @@ bundle() {
     chmod +x "${macos_dir}/${APP_NAME}"
 
     # Copy AppIcon.icns and MenuBarIcon
-    if [[ -f "PersonalSignature/Resources/AppIcon.icns" ]]; then
-        cp "PersonalSignature/Resources/AppIcon.icns" "${contents}/Resources/"
+    if [[ -f "Ponten/Resources/AppIcon.icns" ]]; then
+        cp "Ponten/Resources/AppIcon.icns" "${contents}/Resources/"
     fi
-    if [[ -f "PersonalSignature/Resources/MenuBarIconTemplate.png" ]]; then
-        cp "PersonalSignature/Resources/MenuBarIconTemplate.png" "${contents}/Resources/"
+    if [[ -f "Ponten/Resources/MenuBarIconTemplate.png" ]]; then
+        cp "Ponten/Resources/MenuBarIconTemplate.png" "${contents}/Resources/"
     fi
-    if [[ -f "PersonalSignature/Resources/OriginalLogo.png" ]]; then
-        cp "PersonalSignature/Resources/OriginalLogo.png" "${contents}/Resources/"
+    if [[ -f "Ponten/Resources/OriginalLogo.png" ]]; then
+        cp "Ponten/Resources/OriginalLogo.png" "${contents}/Resources/"
     fi
 
     # Write Info.plist
@@ -191,13 +191,13 @@ bundle() {
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
     <key>NSDesktopFolderUsageDescription</key>
-    <string>Personal Signature needs access to read your signature file.</string>
+    <string>Ponten needs access to read your signature file.</string>
     <key>NSDocumentsFolderUsageDescription</key>
-    <string>Personal Signature needs access to read your signature file.</string>
+    <string>Ponten needs access to read your signature file.</string>
     <key>NSDownloadsFolderUsageDescription</key>
-    <string>Personal Signature needs access to read your signature file.</string>
+    <string>Ponten needs access to read your signature file.</string>
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright © 2024 Personal Signature Contributors. MIT License.</string>
+    <string>Copyright © 2024 Ponten Contributors. MIT License.</string>
 </dict>
 </plist>
 PLIST
@@ -218,7 +218,7 @@ install_app() {
     step "Installing to ~/Applications"
 
     # Quit existing instance gracefully
-    pkill -x "Personal Signature" 2>/dev/null && sleep 0.5 || true
+    pkill -x "Ponten" 2>/dev/null && sleep 0.5 || true
 
     mkdir -p "$INSTALL_DIR"
     rm -rf "$INSTALLED_PATH"
@@ -249,7 +249,7 @@ launch_app() {
 main() {
     echo ""
     echo -e "${BOLD}╔══════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}║     Personal Signature Installer     ║${NC}"
+    echo -e "${BOLD}║     Ponten Installer     ║${NC}"
     echo -e "${BOLD}╚══════════════════════════════════════╝${NC}"
     echo ""
 

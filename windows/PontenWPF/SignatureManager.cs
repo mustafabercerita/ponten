@@ -2,7 +2,7 @@ using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace PersonalSignatureWPF
+namespace PontenWPF
 {
     public class SignatureManager
     {

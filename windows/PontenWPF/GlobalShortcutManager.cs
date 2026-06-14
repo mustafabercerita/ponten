@@ -2,7 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Interop;
 
-namespace PersonalSignatureWPF
+namespace PontenWPF
 {
     public class GlobalShortcutManager : IDisposable
     {

@@ -10,7 +10,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Ink;
 
-namespace PersonalSignatureWPF;
+namespace PontenWPF;
 
 public partial class MainWindow : Window
 {

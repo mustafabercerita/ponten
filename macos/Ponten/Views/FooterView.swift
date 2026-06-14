@@ -18,7 +18,7 @@ struct FooterView: View {
                         .foregroundColor(.secondary)
                 }
                 .toggleStyle(.checkbox)
-                .accessibilityLabel("Launch Personal Signature at login")
+                .accessibilityLabel("Launch Ponten at login")
                 
                 Toggle(isOn: $manager.autoPaste) {
                     Text("Auto-paste after copying")
@@ -76,7 +76,7 @@ struct FooterView: View {
                         .foregroundColor(.secondary)
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("About Personal Signature")
+                .accessibilityLabel("About Ponten")
                 .popover(isPresented: $showAbout, arrowEdge: .bottom) {
                     AboutView()
                 }
@@ -88,7 +88,7 @@ struct FooterView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .keyboardShortcut("q", modifiers: .command)
-                .accessibilityLabel("Quit Personal Signature")
+                .accessibilityLabel("Quit Ponten")
             }
         }
         .padding(.horizontal, 14)

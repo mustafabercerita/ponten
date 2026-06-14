@@ -22,7 +22,7 @@ struct HeaderView: View {
                     .accessibilityHidden(true)
             }
 
-            Text("Personal Signature")
+            Text("Ponten")
                 .font(.system(size: 13, weight: .semibold))
 
             Spacer()
@@ -40,6 +40,6 @@ struct HeaderView: View {
         .padding(.horizontal, 14)
         .padding(.vertical, 11)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Personal Signature version \(appVersion)")
+        .accessibilityLabel("Ponten version \(appVersion)")
     }
 }

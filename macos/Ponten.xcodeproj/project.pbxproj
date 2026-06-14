@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A001 /* PersonalSignatureApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001; };
+		A001 /* PontenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001; };
 		A002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002; };
 		A003 /* SignatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003; };
 		A004 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004; };
@@ -17,12 +17,12 @@
 		/* Test target sources */
 		B001 /* SignatureManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010; };
 		/* Test target links main app */
-		B002 /* PersonalSignature.app in Frameworks */ = {isa = PBXBuildFile; fileRef = F000; };
+		B002 /* Ponten.app in Frameworks */ = {isa = PBXBuildFile; fileRef = F000; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F000 /* PersonalSignature.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Personal Signature.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F001 /* PersonalSignatureApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonalSignatureApp.swift; sourceTree = "<group>"; };
+		F000 /* Ponten.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ponten.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F001 /* PontenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PontenApp.swift; sourceTree = "<group>"; };
 		F002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F003 /* SignatureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureManager.swift; sourceTree = "<group>"; };
 		F004 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
@@ -30,10 +30,10 @@
 		F006 /* EventMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventMonitor.swift; sourceTree = "<group>"; };
 		F007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		F009 /* PersonalSignature.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PersonalSignature.entitlements; sourceTree = "<group>"; };
+		F009 /* Ponten.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ponten.entitlements; sourceTree = "<group>"; };
 		/* Test references */
 		F010 /* SignatureManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureManagerTests.swift; sourceTree = "<group>"; };
-		F011 /* PersonalSignatureTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PersonalSignatureTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F011 /* PontenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,13 +55,13 @@
 		G000 /* root */ = {
 			isa = PBXGroup;
 			children = (
-				G001 /* PersonalSignature */,
-				G007 /* PersonalSignatureTests */,
+				G001 /* Ponten */,
+				G007 /* PontenTests */,
 				G009 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		G001 /* PersonalSignature */ = {
+		G001 /* Ponten */ = {
 			isa = PBXGroup;
 			children = (
 				G002 /* App */,
@@ -69,15 +69,15 @@
 				G004 /* Views */,
 				G005 /* Utilities */,
 				G006 /* Resources */,
-				F009 /* PersonalSignature.entitlements */,
+				F009 /* Ponten.entitlements */,
 			);
-			path = PersonalSignature;
+			path = Ponten;
 			sourceTree = "<group>";
 		};
 		G002 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				F001 /* PersonalSignatureApp.swift */,
+				F001 /* PontenApp.swift */,
 				F002 /* AppDelegate.swift */,
 			);
 			path = App;
@@ -107,10 +107,10 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		G007 /* PersonalSignatureTests */ = {
+		G007 /* PontenTests */ = {
 			isa = PBXGroup;
 			children = (F010);
-			path = PersonalSignatureTests;
+			path = PontenTests;
 			sourceTree = "<group>";
 		};
 		G009 /* Products */ = {
@@ -122,25 +122,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		T000 /* PersonalSignature */ = {
+		T000 /* Ponten */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = XCB000;
 			buildPhases = (P001, E001, P003);
 			buildRules = ();
 			dependencies = ();
-			name = PersonalSignature;
-			productName = PersonalSignature;
+			name = Ponten;
+			productName = Ponten;
 			productReference = F000;
 			productType = "com.apple.product-type.application";
 		};
-		T001 /* PersonalSignatureTests */ = {
+		T001 /* PontenTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = XCB002;
 			buildPhases = (P004, E002);
 			buildRules = ();
 			dependencies = (TD001);
-			name = PersonalSignatureTests;
-			productName = PersonalSignatureTests;
+			name = PontenTests;
+			productName = PontenTests;
 			productReference = F011;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
@@ -294,17 +294,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PersonalSignature/PersonalSignature.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Ponten/Ponten.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = PersonalSignature/Resources/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Personal Signature Contributors. MIT License.";
+				INFOPLIST_FILE = Ponten/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Ponten Contributors. MIT License.";
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app;
-				PRODUCT_NAME = "Personal Signature";
+				PRODUCT_NAME = "Ponten";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
 			};
@@ -315,17 +315,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PersonalSignature/PersonalSignature.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Ponten/Ponten.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = PersonalSignature/Resources/Info.plist;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Personal Signature Contributors. MIT License.";
+				INFOPLIST_FILE = Ponten/Resources/Info.plist;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Ponten Contributors. MIT License.";
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app;
-				PRODUCT_NAME = "Personal Signature";
+				PRODUCT_NAME = "Ponten";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
 			};
@@ -341,10 +341,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app.tests;
-				PRODUCT_NAME = PersonalSignatureTests;
+				PRODUCT_NAME = PontenTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Personal Signature.app/Contents/MacOS/Personal Signature";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ponten.app/Contents/MacOS/Ponten";
 			};
 			name = Debug;
 		};
@@ -358,29 +358,29 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app.tests;
-				PRODUCT_NAME = PersonalSignatureTests;
+				PRODUCT_NAME = PontenTests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Personal Signature.app/Contents/MacOS/Personal Signature";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ponten.app/Contents/MacOS/Ponten";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		XCB000 /* Build configuration list for PBXNativeTarget "PersonalSignature" */ = {
+		XCB000 /* Build configuration list for PBXNativeTarget "Ponten" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (XCC003, XCC004);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		XCB001 /* Build configuration list for PBXProject "PersonalSignature" */ = {
+		XCB001 /* Build configuration list for PBXProject "Ponten" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (XCC001, XCC002);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		XCB002 /* Build configuration list for PBXNativeTarget "PersonalSignatureTests" */ = {
+		XCB002 /* Build configuration list for PBXNativeTarget "PontenTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (XCC005, XCC006);
 			defaultConfigurationIsVisible = 0;

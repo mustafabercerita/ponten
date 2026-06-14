@@ -1,5 +1,5 @@
 import XCTest
-@testable import PersonalSignature
+@testable import Ponten
 
 final class SignatureManagerTests: XCTestCase {
 
@@ -12,7 +12,7 @@ final class SignatureManagerTests: XCTestCase {
         try super.setUpWithError()
         // Use a fresh temp directory per test so tests are isolated
         testDirectory = FileManager.default.temporaryDirectory
-            .appendingPathComponent("PersonalSignatureTests_\(UUID().uuidString)")
+            .appendingPathComponent("PontenTests_\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: testDirectory, withIntermediateDirectories: true)
 
         // We test via the shared singleton because SignatureManager is a singleton.

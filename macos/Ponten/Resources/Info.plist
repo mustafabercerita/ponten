@@ -8,17 +8,17 @@
 
     <!-- App metadata -->
     <key>CFBundleIdentifier</key>
-    <string>com.personalsignature.app</string>
+    <string>com.ponten.app</string>
     <key>CFBundleName</key>
-    <string>Personal Signature</string>
+    <string>Ponten</string>
     <key>CFBundleDisplayName</key>
-    <string>Personal Signature</string>
+    <string>Ponten</string>
     <key>CFBundleShortVersionString</key>
     <string>1.2.0</string>
     <key>CFBundleVersion</key>
     <string>1</string>
     <key>CFBundleExecutable</key>
-    <string>PersonalSignature</string>
+    <string>Ponten</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
 
@@ -32,10 +32,10 @@
 
     <!-- Privacy descriptions (required for file access) -->
     <key>NSDesktopFolderUsageDescription</key>
-    <string>Personal Signature needs access to read your signature file.</string>
+    <string>Ponten needs access to read your signature file.</string>
     <key>NSDocumentsFolderUsageDescription</key>
-    <string>Personal Signature needs access to read your signature file.</string>
+    <string>Ponten needs access to read your signature file.</string>
     <key>NSDownloadsFolderUsageDescription</key>
-    <string>Personal Signature needs access to read your signature file.</string>
+    <string>Ponten needs access to read your signature file.</string>
 </dict>
 </plist>

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct PersonalSignatureApp: App {
+struct PontenApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {

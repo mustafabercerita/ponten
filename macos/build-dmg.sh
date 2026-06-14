@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Personal Signature — build-dmg.sh
+# Ponten — build-dmg.sh
 #
 # Builds a distributable .dmg disk image with drag-to-Applications installer.
 #
 # Usage:
-#   ./build-dmg.sh           → build DMG → dist/PersonalSignature-1.0.0.dmg
+#   ./build-dmg.sh           → build DMG → dist/Ponten-1.0.0.dmg
 #   ./build-dmg.sh --skip-compile  → reuse existing .build/ (faster iteration)
 #   ./build-dmg.sh --help    → show help
 #
@@ -26,9 +26,9 @@ error()   { echo -e "${RED}❌${NC} $*" >&2; exit 1; }
 step()    { echo -e "\n${BOLD}${BLUE}── $* ──${NC}"; }
 
 # ── Config ────────────────────────────────────────────────────────────────────
-APP_NAME="Personal Signature"
+APP_NAME="Ponten"
 VERSION="1.2.0"
-BUNDLE_ID="com.personalsignature.app"
+BUNDLE_ID="com.ponten.app"
 MIN_MACOS="13.0"
 ARCH="$(uname -m)"
 TARGET="${ARCH}-apple-macosx${MIN_MACOS}"
@@ -39,7 +39,7 @@ BUNDLE_PATH="${BUILD_DIR}/${APP_NAME}.app"
 BINARY_PATH="${BUILD_DIR}/${APP_NAME}"
 STAGING_DIR="${BUILD_DIR}/dmg-staging"
 DIST_DIR="${SCRIPT_DIR}/dist"
-DMG_NAME="PersonalSignature-${VERSION}.dmg"
+DMG_NAME="Ponten-${VERSION}.dmg"
 DMG_PATH="${DIST_DIR}/${DMG_NAME}"
 VOLUME_NAME="${APP_NAME} ${VERSION}"
 
@@ -53,31 +53,31 @@ APPS_LINK_X=400
 APPS_LINK_Y=160
 
 SOURCE_FILES=(
-    "PersonalSignature/App/PersonalSignatureApp.swift"
-    "PersonalSignature/App/AppDelegate.swift"
-    "PersonalSignature/Models/SignatureManager.swift"
-    "PersonalSignature/Views/MenuBarView.swift"
-    "PersonalSignature/Views/HeaderView.swift"
-    "PersonalSignature/Views/SignatureActiveView.swift"
-    "PersonalSignature/Views/EmptyStateView.swift"
-    "PersonalSignature/Views/FooterView.swift"
-    "PersonalSignature/Views/AboutView.swift"
-    "PersonalSignature/Views/Components.swift"
-    "PersonalSignature/Utilities/EventMonitor.swift"
-    "PersonalSignature/Utilities/GlobalShortcutManager.swift"
-    "PersonalSignature/Views/DrawingView.swift"
+    "Ponten/App/PontenApp.swift"
+    "Ponten/App/AppDelegate.swift"
+    "Ponten/Models/SignatureManager.swift"
+    "Ponten/Views/MenuBarView.swift"
+    "Ponten/Views/HeaderView.swift"
+    "Ponten/Views/SignatureActiveView.swift"
+    "Ponten/Views/EmptyStateView.swift"
+    "Ponten/Views/FooterView.swift"
+    "Ponten/Views/AboutView.swift"
+    "Ponten/Views/Components.swift"
+    "Ponten/Utilities/EventMonitor.swift"
+    "Ponten/Utilities/GlobalShortcutManager.swift"
+    "Ponten/Views/DrawingView.swift"
 )
 
 # ── Help ──────────────────────────────────────────────────────────────────────
 usage() {
     echo ""
-    echo -e "${BOLD}Personal Signature — DMG Builder${NC}"
+    echo -e "${BOLD}Ponten — DMG Builder${NC}"
     echo ""
     echo "  ./build-dmg.sh                 Build .dmg from source"
     echo "  ./build-dmg.sh --skip-compile  Reuse existing .build/ (faster)"
     echo "  ./build-dmg.sh --help          Show this help"
     echo ""
-    echo "Output: dist/PersonalSignature-${VERSION}.dmg"
+    echo "Output: dist/Ponten-${VERSION}.dmg"
 }
 
 # ── Prerequisites ─────────────────────────────────────────────────────────────
@@ -140,14 +140,14 @@ bundle() {
     cp "$BINARY_PATH" "${contents}/MacOS/${APP_NAME}"
     chmod +x "${contents}/MacOS/${APP_NAME}"
 
-    if [[ -f "PersonalSignature/Resources/AppIcon.icns" ]]; then
-        cp "PersonalSignature/Resources/AppIcon.icns" "${contents}/Resources/"
+    if [[ -f "Ponten/Resources/AppIcon.icns" ]]; then
+        cp "Ponten/Resources/AppIcon.icns" "${contents}/Resources/"
     fi
-    if [[ -f "PersonalSignature/Resources/MenuBarIconTemplate.png" ]]; then
-        cp "PersonalSignature/Resources/MenuBarIconTemplate.png" "${contents}/Resources/"
+    if [[ -f "Ponten/Resources/MenuBarIconTemplate.png" ]]; then
+        cp "Ponten/Resources/MenuBarIconTemplate.png" "${contents}/Resources/"
     fi
-    if [[ -f "PersonalSignature/Resources/OriginalLogo.png" ]]; then
-        cp "PersonalSignature/Resources/OriginalLogo.png" "${contents}/Resources/"
+    if [[ -f "Ponten/Resources/OriginalLogo.png" ]]; then
+        cp "Ponten/Resources/OriginalLogo.png" "${contents}/Resources/"
     fi
 
     cat > "${contents}/Info.plist" <<PLIST
@@ -176,13 +176,13 @@ bundle() {
     <key>LSMinimumSystemVersion</key> <string>${MIN_MACOS}</string>
     <key>NSPrincipalClass</key>       <string>NSApplication</string>
     <key>NSDesktopFolderUsageDescription</key>
-        <string>Personal Signature needs access to read your signature file.</string>
+        <string>Ponten needs access to read your signature file.</string>
     <key>NSDocumentsFolderUsageDescription</key>
-        <string>Personal Signature needs access to read your signature file.</string>
+        <string>Ponten needs access to read your signature file.</string>
     <key>NSDownloadsFolderUsageDescription</key>
-        <string>Personal Signature needs access to read your signature file.</string>
+        <string>Ponten needs access to read your signature file.</string>
     <key>NSHumanReadableCopyright</key>
-        <string>Copyright © 2024 Personal Signature Contributors. MIT License.</string>
+        <string>Copyright © 2024 Ponten Contributors. MIT License.</string>
 </dict>
 </plist>
 PLIST
@@ -405,7 +405,7 @@ main() {
 
     echo ""
     echo -e "${BOLD}╔══════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}║    Personal Signature — DMG Builder  ║${NC}"
+    echo -e "${BOLD}║    Ponten — DMG Builder  ║${NC}"
     echo -e "${BOLD}╚══════════════════════════════════════╝${NC}"
     echo ""
 

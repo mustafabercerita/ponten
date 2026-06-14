@@ -3,7 +3,7 @@ using System.Data;
 using System.Windows;
 using H.NotifyIcon;
 
-namespace PersonalSignatureWPF;
+namespace PontenWPF;
 
 public partial class App : Application
 {

@@ -48,7 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let url = URL(string: "https://api.github.com/repos/mustafabercerita/personal-signature/releases/latest") else { return }
         
         var request = URLRequest(url: url)
-        request.setValue("PersonalSignature-MacApp", forHTTPHeaderField: "User-Agent")
+        request.setValue("Ponten-MacApp", forHTTPHeaderField: "User-Agent")
         
         let task = URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
             DispatchQueue.main.async {
@@ -94,7 +94,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             
             let fm = FileManager.default
-            let dmgDestination = URL(fileURLWithPath: "/tmp/PersonalSignature_Update.dmg")
+            let dmgDestination = URL(fileURLWithPath: "/tmp/Ponten_Update.dmg")
             let scriptDestination = URL(fileURLWithPath: "/tmp/install_update.sh")
             
             do {
@@ -110,20 +110,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 sleep 2
                 
                 # Mount the DMG
-                hdiutil attach "/tmp/PersonalSignature_Update.dmg" -mountpoint "/Volumes/PersonalSignatureUpdate" -nobrowse
+                hdiutil attach "/tmp/Ponten_Update.dmg" -mountpoint "/Volumes/PontenUpdate" -nobrowse
                 
                 # Copy the app to Applications (replacing the old one)
-                rm -rf "/Applications/Personal Signature.app"
-                cp -R "/Volumes/PersonalSignatureUpdate/Personal Signature.app" "/Applications/"
+                rm -rf "/Applications/Ponten.app"
+                cp -R "/Volumes/PontenUpdate/Ponten.app" "/Applications/"
                 
                 # Unmount the DMG
-                hdiutil detach "/Volumes/PersonalSignatureUpdate" -force
+                hdiutil detach "/Volumes/PontenUpdate" -force
                 
                 # Clean up the DMG
-                rm -f "/tmp/PersonalSignature_Update.dmg"
+                rm -f "/tmp/Ponten_Update.dmg"
                 
                 # Open the new app
-                open -a "/Applications/Personal Signature.app"
+                open -a "/Applications/Ponten.app"
                 """
                 
                 try scriptContent.write(to: scriptDestination, atomically: true, encoding: .utf8)
@@ -183,7 +183,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             button.action = #selector(togglePopover(_:))
             button.target = self
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            button.toolTip = "Personal Signature"
+            button.toolTip = "Ponten"
         }
     }
 

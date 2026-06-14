@@ -25,8 +25,8 @@ jobs:
       - name: Build (Debug)
         run: |
           cd macos && xcodebuild build \
-            -project "PersonalSignature.xcodeproj" \
-            -scheme "PersonalSignature" \
+            -project "Ponten.xcodeproj" \
+            -scheme "Ponten" \
             -configuration Debug \
             -destination "platform=macOS,arch=arm64" \
             CODE_SIGNING_ALLOWED=NO \
@@ -35,8 +35,8 @@ jobs:
       - name: Run Unit Tests
         run: |
           cd macos && xcodebuild test \
-            -project "PersonalSignature.xcodeproj" \
-            -scheme "PersonalSignature" \
+            -project "Ponten.xcodeproj" \
+            -scheme "Ponten" \
             -destination "platform=macOS,arch=arm64" \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color || true
@@ -45,10 +45,10 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           cd macos && xcodebuild archive \
-            -project "PersonalSignature.xcodeproj" \
-            -scheme "PersonalSignature" \
+            -project "Ponten.xcodeproj" \
+            -scheme "Ponten" \
             -configuration Release \
-            -archivePath "${{ runner.temp }}/PersonalSignature.xcarchive" \
+            -archivePath "${{ runner.temp }}/Ponten.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color || true
 
@@ -56,8 +56,8 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: PersonalSignature-macOS-${{ github.sha }}
-          path: ${{ runner.temp }}/PersonalSignature.xcarchive
+          name: Ponten-macOS-${{ github.sha }}
+          path: ${{ runner.temp }}/Ponten.xcarchive
           retention-days: 14
 
   build-windows:
@@ -75,12 +75,12 @@ jobs:
       - name: Build WPF Project
         run: |
           cd windows
-          dotnet build PersonalSignature.sln -c Release
+          dotnet build Ponten.sln -c Release
 
       - name: Upload Windows Artifact
         if: github.ref == 'refs/heads/main'
         uses: actions/upload-artifact@v4
         with:
-          name: PersonalSignature-Windows-${{ github.sha }}
-          path: windows/PersonalSignatureWPF/bin/Release/net8.0-windows/
+          name: Ponten-Windows-${{ github.sha }}
+          path: windows/PontenWPF/bin/Release/net8.0-windows/
           retention-days: 14

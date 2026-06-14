@@ -1,4 +1,4 @@
-# Personal Signature — Makefile
+# Ponten — Makefile
 # ─────────────────────────────────────────────────────────────────────────────
 # Usage:
 #   make              → install (compile + bundle + sign + install)
@@ -10,7 +10,7 @@
 #   make help         → show this help
 # ─────────────────────────────────────────────────────────────────────────────
 
-APP_NAME     := Personal Signature
+APP_NAME     := Ponten
 VERSION      := 1.2.0
 BUNDLE_ID    := com.personalsignature.app
 MIN_MACOS    := 13.0
@@ -30,7 +30,7 @@ INSTALLED    := $(INSTALL_DIR)/$(APP_NAME).app
 
 help:
 	@echo ""
-	@echo "Personal Signature — Build & Install"
+	@echo "Ponten — Build & Install"
 	@echo "─────────────────────────────────────"
 	@echo "  make           Install the app (build + bundle + sign + install)"
 	@echo "  make build     Compile Swift sources only"
@@ -55,7 +55,7 @@ bundle: build
 	$(eval BIN_PATH := $(shell swift build -c release --arch arm64 --arch x86_64 --show-bin-path))
 	@rm -rf "$(BUNDLE)"
 	@mkdir -p "$(BUNDLE)/Contents/MacOS" "$(BUNDLE)/Contents/Resources"
-	@cp "$(BIN_PATH)/PersonalSignatureApp" "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
+	@cp "$(BIN_PATH)/PontenApp" "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
 	@chmod +x "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
 	
 	@# Copy Sparkle.framework if it exists in the build output
@@ -63,10 +63,10 @@ bundle: build
 		mkdir -p "$(BUNDLE)/Contents/Frameworks" && \
 		cp -R "$(BIN_PATH)/Sparkle.framework" "$(BUNDLE)/Contents/Frameworks/" || true
 
-	@[ -f "PersonalSignature/Resources/AppIcon.icns" ] && \
-		cp "PersonalSignature/Resources/AppIcon.icns" "$(BUNDLE)/Contents/Resources/" || true
-	@[ -f "PersonalSignature/Resources/MenuBarIconTemplate.png" ] && \
-		cp "PersonalSignature/Resources/MenuBarIconTemplate.png" "$(BUNDLE)/Contents/Resources/" || true
+	@[ -f "Ponten/Resources/AppIcon.icns" ] && \
+		cp "Ponten/Resources/AppIcon.icns" "$(BUNDLE)/Contents/Resources/" || true
+	@[ -f "Ponten/Resources/MenuBarIconTemplate.png" ] && \
+		cp "Ponten/Resources/MenuBarIconTemplate.png" "$(BUNDLE)/Contents/Resources/" || true
 	@# Generate Info.plist inline
 	@/usr/libexec/PlistBuddy -c "Add :LSUIElement bool true" \
 		"$(BUNDLE)/Contents/Info.plist" 2>/dev/null || true
@@ -89,7 +89,7 @@ bundle: build
 </dict>
 </plist>
 EOF
-	@cp PersonalSignature/Resources/Info.plist "$(BUNDLE)/Contents/Info.plist"
+	@cp Ponten/Resources/Info.plist "$(BUNDLE)/Contents/Info.plist"
 	@echo "✅ Bundle → $(BUNDLE)"
 
 ## 3. Sign (ad-hoc)
@@ -106,7 +106,7 @@ install: sign
 	@echo "▶ Installing to $(INSTALL_DIR)..."
 	$(eval BUNDLE := $(BUILD_DIR)/$(APP_NAME).app)
 	@mkdir -p "$(INSTALL_DIR)"
-	@-pkill -x "Personal Signature" 2>/dev/null; sleep 0.3; true
+	@-pkill -x "Ponten" 2>/dev/null; sleep 0.3; true
 	@rm -rf "$(INSTALLED)"
 	@cp -R "$(BUNDLE)" "$(INSTALLED)"
 	@xattr -cr "$(INSTALLED)" 2>/dev/null || true
@@ -128,6 +128,6 @@ clean:
 
 ## 7. Uninstall
 uninstall:
-	@-pkill -x "Personal Signature" 2>/dev/null; sleep 0.3; true
+	@-pkill -x "Ponten" 2>/dev/null; sleep 0.3; true
 	@rm -rf "$(INSTALLED)"
 	@echo "✅ Uninstalled $(APP_NAME)"

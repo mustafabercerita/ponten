@@ -1,6 +1,6 @@
 <div align="center">
-<img src="Logo/Personal%20Signature%20Logo.png" width="150" height="150" alt="Logo">
-<h1>Personal Signature</h1>
+<img src="Logo/Ponten%20Logo.png" width="150" height="150" alt="Logo">
+<h1>Ponten</h1>
 </div>
 
 > A lightweight cross-platform (macOS & Windows) system tray app that puts your digital signature one click away.
@@ -11,7 +11,7 @@
 ![.NET 8.0](https://img.shields.io/badge/.NET-8.0-purple?logo=dotnet)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen)
-[![CI](https://github.com/mustafabercerita/personal-signature/actions/workflows/ci.yml/badge.svg)](https://github.com/mustafabercerita/personal-signature/actions/workflows/ci.yml)
+[![CI](https://github.com/mustafabercerita/ponten/actions/workflows/ci.yml/badge.svg)](https://github.com/mustafabercerita/ponten/actions/workflows/ci.yml)
 
 ---
 
@@ -24,7 +24,7 @@ Every time you need to sign a document — Word, Excel, Google Docs, a PDF edito
 3. Copy the image
 4. Paste it into the document
 
-**Personal Signature eliminates steps 1–3.** Your signature lives in the menu bar, one click away. With the new Auto-Paste feature, it even eliminates step 4!
+**Ponten eliminates steps 1–3.** Your signature lives in the menu bar, one click away. With the new Auto-Paste feature, it even eliminates step 4!
 
 ---
 
@@ -80,19 +80,19 @@ Install app → 🖊 icon appears in menu bar → click icon
 This is the easiest way to install.
 
 <div align="center">
-  <a href="https://github.com/mustafabercerita/personal-signature/releases">
+  <a href="https://github.com/mustafabercerita/ponten/releases">
     <img src="https://img.shields.io/badge/Download_for_macOS-.dmg-blue?style=for-the-badge&logo=apple" alt="Download macOS" />
   </a>
   &nbsp;
-  <a href="https://github.com/mustafabercerita/personal-signature/releases">
+  <a href="https://github.com/mustafabercerita/ponten/releases">
     <img src="https://img.shields.io/badge/Download_for_Windows-.exe-blue?style=for-the-badge&logo=windows" alt="Download Windows" />
   </a>
 </div>
 <br>
 
-1. Go to the [Releases](https://github.com/mustafabercerita/personal-signature/releases) page.
-2. Download `PersonalSignature-1.1.0.dmg` (for Mac) or `PersonalSignature-1.1.0.exe` (for Windows).
-3. **Mac**: Open the downloaded file and drag the **Personal Signature** icon into the **Applications** folder.
+1. Go to the [Releases](https://github.com/mustafabercerita/ponten/releases) page.
+2. Download `Ponten-1.1.0.dmg` (for Mac) or `Ponten-1.1.0.exe` (for Windows).
+3. **Mac**: Open the downloaded file and drag the **Ponten** icon into the **Applications** folder.
 4. **Windows**: Run the `.exe` file. The app will quietly launch in your System Tray (bottom right corner).
 
 > **Note for Mac users**: Because this is an open-source app signed ad-hoc, you may need to right-click the app and choose **Open** the first time you run it to bypass macOS Gatekeeper.
@@ -102,8 +102,8 @@ This is the easiest way to install.
 ### Option B — One-command CLI install ⚡
 
 ```bash
-git clone https://github.com/mustafabercerita/personal-signature.git
-cd personal-signature/macos
+git clone https://github.com/mustafabercerita/ponten.git
+cd ponten/macos
 ./install.sh
 ```
 
@@ -138,8 +138,8 @@ make uninstall
 
 ### Option C — Build with Xcode
 
-1. Clone the repo and open `macos/PersonalSignature.xcodeproj` in Xcode 15+
-2. Select the **PersonalSignature** target → **Signing & Capabilities** → set your Team
+1. Clone the repo and open `macos/Ponten.xcodeproj` in Xcode 15+
+2. Select the **Ponten** target → **Signing & Capabilities** → set your Team
 3. Press **⌘R**. Look for the **🖊 icon** in your menu bar.
 
 > `LSUIElement = YES` — the app intentionally does **not** appear in the Dock or ⌘Tab.
@@ -169,20 +169,20 @@ make uninstall
 ## Project Structure
 
 ```
-Personal Signature/
+Ponten/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml                   # GitHub Actions CI
 │
 ├── macos/                           # macOS App (Swift / SwiftUI)
-│   ├── PersonalSignature.xcodeproj/
-│   ├── PersonalSignature/
+│   ├── Ponten.xcodeproj/
+│   ├── Ponten/
 │   │   ├── App/                     # Entry point & AppDelegate
 │   │   ├── Models/                  # Business logic & clipboard
 │   │   ├── Views/                   # SwiftUI UI components
 │   │   ├── Utilities/               # Permissions, updater
 │   │   └── Resources/               # Assets, Plist
-│   ├── PersonalSignatureTests/
+│   ├── PontenTests/
 │   ├── install.sh                   # macOS CLI installer
 │   ├── build-dmg.sh                 # macOS DMG builder
 │   ├── Package.swift                # macOS Package definition
@@ -205,7 +205,7 @@ In Xcode: **⌘U** or **Product → Test**
 Or via CLI (from the `macos/` directory):
 ```bash
 cd macos
-xcodebuild -project PersonalSignature.xcodeproj -scheme PersonalSignature -destination 'platform=macOS' test
+xcodebuild -project Ponten.xcodeproj -scheme Ponten -destination 'platform=macOS' test
 ```
 
 ---
