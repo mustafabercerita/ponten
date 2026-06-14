@@ -228,20 +228,20 @@ Every push to `main` triggers a GitHub Actions workflow that:
 
 ---
 
-## MVP Limitations
+## Roadmap & Completed Features
 
-- **One signature slot** — no multi-profile switching yet
-- **No drawing canvas** — must supply an existing image file
-- **Raster only** — no SVG support
+We've recently crossed off several major milestones from our original roadmap! Here's the current status of the project:
 
----
+### ✅ Completed
+- [x] **Multiple signature profiles:** Save and quickly switch between different signatures directly from the popover grid.
+- [x] **Background removal:** Automatically drops white backgrounds from JPEG/PNG images using native CoreImage filters so your signature is clean and transparent.
+- [x] **Auto-Paste:** Uses macOS Accessibility APIs to automatically paste your signature into the active document right after copying.
+- [x] **Global Shortcut Customization:** Record your own custom global hotkey to trigger the app from anywhere.
+- [x] **Drag & Drop Out:** Drag the signature from the popover directly into your target app.
+- [x] **Native Auto-Updater:** Replaced heavy Sparkle framework with a lightweight, native SwiftUI GitHub release checker.
 
-## Roadmap
-
-- [ ] Multiple signature profiles with quick-switch
+### 🚀 Upcoming Features
 - [ ] Built-in drawing canvas (trackpad / Apple Pencil via Sidecar)
-- [ ] Background removal / transparent PNG enforcement
-- [ ] Drag & drop onto any application icon in Dock
 - [ ] App Store release
 - [ ] Swift Package Manager support for modularization
 
