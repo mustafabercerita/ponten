@@ -54,17 +54,99 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     let cleanCurrent = currentVersion.replacingOccurrences(of: "v", with: "")
                     
                     if cleanTag.compare(cleanCurrent, options: .numeric) == .orderedDescending {
-                        self?.signatureManager.showToast("Update Available (v\(cleanTag))! Opening browser...")
-                        if let htmlUrl = json["html_url"] as? String, let updateUrl = URL(string: htmlUrl) {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                NSWorkspace.shared.open(updateUrl)
-                            }
+                        guard let assets = json["assets"] as? [[String: Any]],
+                              let dmgAsset = assets.first(where: { ($0["name"] as? String)?.hasSuffix(".dmg") == true }),
+                              let downloadUrlString = dmgAsset["browser_download_url"] as? String,
+                              let downloadUrl = URL(string: downloadUrlString) else {
+                            self?.signatureManager.showToast("Update found, but no DMG available.")
+                            return
                         }
+                        
+                        self?.signatureManager.showToast("Downloading Update v\(cleanTag)...")
+                        self?.downloadAndInstallUpdate(from: downloadUrl)
+                        
                     } else {
                         self?.signatureManager.showToast("You're up to date! (v\(currentVersion))")
                     }
                 } else {
                     self?.signatureManager.showToast("Update check failed. Check network.")
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    private func downloadAndInstallUpdate(from url: URL) {
+        let task = URLSession.shared.downloadTask(with: url) { [weak self] localURL, response, error in
+            guard let localURL = localURL, error == nil else {
+                DispatchQueue.main.async {
+                    self?.signatureManager.showToast("Failed to download update.")
+                }
+                return
+            }
+            
+            let fm = FileManager.default
+            let dmgDestination = URL(fileURLWithPath: "/tmp/PersonalSignature_Update.dmg")
+            let scriptDestination = URL(fileURLWithPath: "/tmp/install_update.sh")
+            
+            do {
+                if fm.fileExists(atPath: dmgDestination.path) {
+                    try fm.removeItem(at: dmgDestination)
+                }
+                try fm.moveItem(at: localURL, to: dmgDestination)
+                
+                // Build the bash script
+                let scriptContent = """
+                #!/bin/bash
+                # Wait for the app to terminate
+                sleep 2
+                
+                # Mount the DMG
+                hdiutil attach "/tmp/PersonalSignature_Update.dmg" -mountpoint "/Volumes/PersonalSignatureUpdate" -nobrowse
+                
+                # Copy the app to Applications (replacing the old one)
+                rm -rf "/Applications/Personal Signature.app"
+                cp -R "/Volumes/PersonalSignatureUpdate/Personal Signature.app" "/Applications/"
+                
+                # Unmount the DMG
+                hdiutil detach "/Volumes/PersonalSignatureUpdate" -force
+                
+                # Clean up the DMG
+                rm -f "/tmp/PersonalSignature_Update.dmg"
+                
+                # Open the new app
+                open -a "/Applications/Personal Signature.app"
+                """
+                
+                try scriptContent.write(to: scriptDestination, atomically: true, encoding: .utf8)
+                
+                // Make the script executable
+                var attributes = [FileAttributeKey: Any]()
+                attributes[.posixPermissions] = NSNumber(value: 0o755)
+                try fm.setAttributes(attributes, ofItemAtPath: scriptDestination.path)
+                
+                DispatchQueue.main.async {
+                    self?.signatureManager.showToast("Update downloaded! Restarting...")
+                    
+                    // Give the toast 1.5 seconds to show, then execute and quit
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                        let process = Process()
+                        process.executableURL = URL(fileURLWithPath: "/bin/bash")
+                        process.arguments = [scriptDestination.path]
+                        
+                        do {
+                            try process.run()
+                            NSApp.terminate(nil)
+                        } catch {
+                            print("Failed to run update script: \\(error)")
+                        }
+                    }
+                }
+                
+            } catch {
+                DispatchQueue.main.async {
+                    self?.signatureManager.showToast("Error installing update.")
+                    print("Install error: \\(error)")
                 }
             }
         }
