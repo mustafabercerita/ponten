@@ -1,18 +1,23 @@
 {
   "version": 2,
-  "dgSpecHash": "YRZ6T47hEEM=",
+  "dgSpecHash": "WbDvBNYJgA8=",
   "success": true,
   "projectFilePath": "/Users/mustafa/Downloads/Developer Project/Personal Signature/windows/PersonalSignatureWPF/PersonalSignatureWPF.csproj",
   "expectedPackageFiles": [
     "/Users/mustafa/.nuget/packages/h.generatedicons.system.drawing/2.4.1/h.generatedicons.system.drawing.2.4.1.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/h.notifyicon/2.4.1/h.notifyicon.2.4.1.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/h.notifyicon.wpf/2.4.1/h.notifyicon.wpf.2.4.1.nupkg.sha512",
+    "/Users/mustafa/.nuget/packages/microsoft.net.illink.tasks/8.0.28/microsoft.net.illink.tasks.8.0.28.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/microsoft.win32.systemevents/10.0.9/microsoft.win32.systemevents.10.0.9.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/system.drawing.common/10.0.9/system.drawing.common.10.0.9.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/system.memory/4.6.0/system.memory.4.6.0.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/system.runtime.compilerservices.unsafe/6.1.0/system.runtime.compilerservices.unsafe.6.1.0.nupkg.sha512",
     "/Users/mustafa/.nuget/packages/system.valuetuple/4.5.0/system.valuetuple.4.5.0.nupkg.sha512",
-    "/Users/mustafa/.nuget/packages/microsoft.windowsdesktop.app.ref/8.0.28/microsoft.windowsdesktop.app.ref.8.0.28.nupkg.sha512"
+    "/Users/mustafa/.nuget/packages/microsoft.netcore.app.runtime.win-x64/8.0.28/microsoft.netcore.app.runtime.win-x64.8.0.28.nupkg.sha512",
+    "/Users/mustafa/.nuget/packages/microsoft.windowsdesktop.app.ref/8.0.28/microsoft.windowsdesktop.app.ref.8.0.28.nupkg.sha512",
+    "/Users/mustafa/.nuget/packages/microsoft.windowsdesktop.app.runtime.win-x64/8.0.28/microsoft.windowsdesktop.app.runtime.win-x64.8.0.28.nupkg.sha512",
+    "/Users/mustafa/.nuget/packages/microsoft.aspnetcore.app.runtime.win-x64/8.0.28/microsoft.aspnetcore.app.runtime.win-x64.8.0.28.nupkg.sha512",
+    "/Users/mustafa/.nuget/packages/microsoft.netcore.app.host.win-x64/8.0.28/microsoft.netcore.app.host.win-x64.8.0.28.nupkg.sha512"
   ],
   "logs": [
     {

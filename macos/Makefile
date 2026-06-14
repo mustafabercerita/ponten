@@ -11,7 +11,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 APP_NAME     := Personal Signature
-VERSION      := 1.0.0
+VERSION      := 1.2.0
 BUNDLE_ID    := com.personalsignature.app
 MIN_MACOS    := 13.0
 ARCH         := $(shell uname -m)

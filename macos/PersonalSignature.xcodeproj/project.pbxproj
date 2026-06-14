@@ -302,7 +302,7 @@
 				INFOPLIST_FILE = PersonalSignature/Resources/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Personal Signature Contributors. MIT License.";
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app;
 				PRODUCT_NAME = "Personal Signature";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -323,7 +323,7 @@
 				INFOPLIST_FILE = PersonalSignature/Resources/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Personal Signature Contributors. MIT License.";
 				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app;
 				PRODUCT_NAME = "Personal Signature";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -339,7 +339,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app.tests;
 				PRODUCT_NAME = PersonalSignatureTests;
 				SDKROOT = macosx;
@@ -356,7 +356,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.personalsignature.app.tests;
 				PRODUCT_NAME = PersonalSignatureTests;
 				SDKROOT = macosx;

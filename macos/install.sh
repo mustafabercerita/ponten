@@ -25,7 +25,7 @@ step()    { echo -e "\n${BOLD}${BLUE}── $* ──${NC}"; }
 # ── Config ────────────────────────────────────────────────────────────────────
 APP_NAME="Personal Signature"
 BUNDLE_ID="com.personalsignature.app"
-VERSION="1.0.0"
+VERSION="1.2.0"
 MIN_MACOS="13.0"
 ARCH="$(uname -m)"
 TARGET="${ARCH}-apple-macosx${MIN_MACOS}"
