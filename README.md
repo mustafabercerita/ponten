@@ -3,10 +3,12 @@
 <h1>Personal Signature</h1>
 </div>
 
-> A lightweight macOS menu bar app that puts your digital signature one click away.
+> A lightweight cross-platform (macOS & Windows) system tray app that puts your digital signature one click away.
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue?logo=apple)
+![Windows 10+](https://img.shields.io/badge/Windows-10%2B-blue?logo=windows)
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange?logo=swift)
+![.NET 8.0](https://img.shields.io/badge/.NET-8.0-purple?logo=dotnet)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen)
 [![CI](https://github.com/mustafabercerita/personal-signature/actions/workflows/ci.yml/badge.svg)](https://github.com/mustafabercerita/personal-signature/actions/workflows/ci.yml)
@@ -39,12 +41,13 @@ Install app → 🖊 icon appears in menu bar → click icon
 
 ---
 
-## Features (v1.0)
+## Features (v1.1)
 
 | Feature | Description |
 |---|---|
-| **Menu-bar-only architecture** | Lives quietly in the macOS menu bar — no Dock icon |
-| **Global hotkey ⌥⌘S** | Copy and paste your signature without even opening the popover |
+| **Cross-Platform** | Native apps built for both macOS and Windows |
+| **System-Tray Architecture** | Lives quietly in the macOS menu bar or Windows system tray — no taskbar clutter |
+| **Global hotkey (⌥⌘S / Ctrl+Alt+S)** | Copy and paste your signature without even opening the popover |
 | **Auto-Paste Functionality** | Automatically pastes the signature into your active application |
 | **Accessibility Permissions** | Seamlessly prompts for and handles accessibility access needed for auto-paste |
 | **Native Auto-Updater** | Built-in GitHub Releases auto-updater to keep you on the latest version |
@@ -52,33 +55,47 @@ Install app → 🖊 icon appears in menu bar → click icon
 | **Live preview** | Thumbnail of the active signature in the popover |
 | **One-click Sign** | Copies signature image to clipboard instantly |
 | **Change Signature** | Swap active signature at any time |
-| **Remove Signature** | Delete saved signature with confirmation |
-| **Launch at Login** | Toggle auto-start via `SMAppService` |
 | **Persistent storage** | Signature survives app restarts (stored locally) |
-| **Zero third-party dependencies** | Pure Swift / SwiftUI / AppKit — no Sparkle, no Electron, no backend |
+| **Native Performance** | Built with native Swift/AppKit and C#/WPF — zero Electron bloat |
 
 ---
 
 ## Requirements
 
+**For macOS:**
 - **macOS 13.0 Ventura** or later
 - **Xcode 15.0** or later
 - Apple Developer account (free tier is enough for local builds)
+
+**For Windows:**
+- **Windows 10** or later
+- **.NET 8.0 SDK** (for local builds)
 
 ---
 
 ## Getting Started
 
-### Option A — Download App (.dmg) 📦
+### Option A — Download App 📦
 
 This is the easiest way to install.
 
-1. Go to the [Releases](https://github.com/mustafabercerita/personal-signature/releases) page.
-2. Download `PersonalSignature-1.0.0.dmg`.
-3. Open the downloaded file and drag the **Personal Signature** icon into the **Applications** folder.
-4. Launch from your Applications folder.
+<div align="center">
+  <a href="https://github.com/mustafabercerita/personal-signature/releases">
+    <img src="https://img.shields.io/badge/Download_for_macOS-.dmg-blue?style=for-the-badge&logo=apple" alt="Download macOS" />
+  </a>
+  &nbsp;
+  <a href="https://github.com/mustafabercerita/personal-signature/releases">
+    <img src="https://img.shields.io/badge/Download_for_Windows-.exe-blue?style=for-the-badge&logo=windows" alt="Download Windows" />
+  </a>
+</div>
+<br>
 
-> **Note**: Because this is an open-source app signed ad-hoc, you may need to right-click the app and choose **Open** the first time you run it to bypass macOS Gatekeeper.
+1. Go to the [Releases](https://github.com/mustafabercerita/personal-signature/releases) page.
+2. Download `PersonalSignature-1.1.0.dmg` (for Mac) or `PersonalSignature-1.1.0.exe` (for Windows).
+3. **Mac**: Open the downloaded file and drag the **Personal Signature** icon into the **Applications** folder.
+4. **Windows**: Run the `.exe` file. The app will quietly launch in your System Tray (bottom right corner).
+
+> **Note for Mac users**: Because this is an open-source app signed ad-hoc, you may need to right-click the app and choose **Open** the first time you run it to bypass macOS Gatekeeper.
 
 ---
 
@@ -222,16 +239,17 @@ Every push to `main` triggers a GitHub Actions workflow that:
 We've recently crossed off several major milestones from our original roadmap! Here's the current status of the project:
 
 ### ✅ Completed
+- [x] **Windows Version:** Native Windows port built with C# and WPF.
 - [x] **Built-in Drawing Canvas:** Draw your signature natively using your trackpad, mouse, or Apple Pencil (via Sidecar) right inside the app!
 - [x] **Multiple signature profiles:** Save and quickly switch between different signatures directly from the popover grid.
-- [x] **Background removal:** Automatically drops white backgrounds from JPEG/PNG images using native CoreImage filters so your signature is clean and transparent.
-- [x] **Auto-Paste:** Uses macOS Accessibility APIs to automatically paste your signature into the active document right after copying.
+- [x] **Background removal:** Automatically drops white backgrounds from JPEG/PNG images using native CoreImage/System.Drawing filters so your signature is clean and transparent.
+- [x] **Auto-Paste:** Uses macOS Accessibility APIs and Win32 APIs to automatically paste your signature into the active document right after copying.
 - [x] **Global Shortcut Customization:** Record your own custom global hotkey to trigger the app from anywhere.
 - [x] **Drag & Drop Out:** Drag the signature from the popover directly into your target app.
 - [x] **Native Auto-Updater:** Replaced heavy Sparkle framework with a lightweight, native SwiftUI GitHub release checker.
 
 ### 🚀 Upcoming Features
-- [ ] App Store release
+- [ ] Mac App Store & Microsoft Store release
 - [ ] Swift Package Manager support for modularization
 
 ---
