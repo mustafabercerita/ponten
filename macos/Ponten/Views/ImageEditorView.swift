@@ -77,6 +77,8 @@ struct ImageEditorView: View {
                     Text("Contrast")
                         .frame(width: 80, alignment: .leading)
                     Slider(value: $contrast, in: 0.5...3.0)
+                    Text(String(format: "%.1f", contrast))
+                        .frame(width: 30, alignment: .trailing)
                 }
                 
                 // Brightness Slider
@@ -84,13 +86,17 @@ struct ImageEditorView: View {
                     Text("Brightness")
                         .frame(width: 80, alignment: .leading)
                     Slider(value: $brightness, in: -0.5...0.5)
+                    Text(String(format: "%.1f", brightness))
+                        .frame(width: 30, alignment: .trailing)
                 }
                 
                 // Thicken Slider
                 HStack {
                     Text("Thicken")
                         .frame(width: 80, alignment: .leading)
-                    Slider(value: $thicken, in: 0.0...3.0)
+                    Slider(value: $thicken, in: 0.0...30.0)
+                    Text(String(format: "%.0f", thicken))
+                        .frame(width: 30, alignment: .trailing)
                 }
                 
                 HStack(spacing: 24) {
