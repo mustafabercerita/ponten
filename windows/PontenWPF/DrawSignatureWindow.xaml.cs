@@ -81,18 +81,19 @@ namespace PontenWPF
                 
                 rtb.Render(drawingVisual);
                 
-                var ms = new MemoryStream();
-                var encoder = new PngBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(rtb));
-                encoder.Save(ms);
-                
-                ms.Position = 0;
-                using (var tempBitmap = new Bitmap(ms))
+                using (var ms = new MemoryStream())
                 {
-                    var bitmap = new Bitmap(tempBitmap);
-                    OnSave?.Invoke(bitmap);
+                    var encoder = new PngBitmapEncoder();
+                    encoder.Frames.Add(BitmapFrame.Create(rtb));
+                    encoder.Save(ms);
+                    
+                    ms.Position = 0;
+                    using (var tempBitmap = new Bitmap(ms))
+                    {
+                        var bitmap = new Bitmap(tempBitmap);
+                        OnSave?.Invoke(bitmap);
+                    }
                 }
-                ms.Dispose();
             }
             catch (Exception ex)
             {

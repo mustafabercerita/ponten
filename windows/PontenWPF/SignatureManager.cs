@@ -67,72 +67,77 @@ namespace PontenWPF
             System.Drawing.Imaging.BitmapData origData = original.LockBits(origRect, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             System.Drawing.Imaging.BitmapData resData = result.LockBits(resRect, System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             
-            int origStride = Math.Abs(origData.Stride);
-            int origBytes = origStride * height;
-            byte[] origValues = new byte[origBytes];
-            
-            int resStride = Math.Abs(resData.Stride);
-            int resBytes = resStride * newHeight;
-            byte[] resValues = new byte[resBytes];
-            
-            Marshal.Copy(origData.Scan0, origValues, 0, origBytes);
-            
-            // First, copy everything into the offset position
-            for (int y = 0; y < height; y++)
+            try
             {
-                for (int x = 0; x < width; x++)
+                int origStride = Math.Abs(origData.Stride);
+                int origBytes = origStride * height;
+                byte[] origValues = new byte[origBytes];
+                
+                int resStride = Math.Abs(resData.Stride);
+                int resBytes = resStride * newHeight;
+                byte[] resValues = new byte[resBytes];
+                
+                Marshal.Copy(origData.Scan0, origValues, 0, origBytes);
+                
+                // First, copy everything into the offset position
+                for (int y = 0; y < height; y++)
                 {
-                    int oIndex = y * origStride + x * 4;
-                    int rIndex = (y + pad) * resStride + (x + pad) * 4;
-                    resValues[rIndex] = origValues[oIndex];
-                    resValues[rIndex + 1] = origValues[oIndex + 1];
-                    resValues[rIndex + 2] = origValues[oIndex + 2];
-                    resValues[rIndex + 3] = origValues[oIndex + 3];
-                }
-            }
-            
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    int index = y * origStride + x * 4;
-                    byte b = origValues[index];
-                    byte g = origValues[index + 1];
-                    byte r = origValues[index + 2];
-                    byte a = origValues[index + 3];
-                    
-                    // Consider it a stroke pixel if it's not white and not transparent
-                    if (a > 0 && (r < 200 || g < 200 || b < 200))
+                    for (int x = 0; x < width; x++)
                     {
-                        // Dilate around this pixel in the new coordinate space
-                        for (int dy = -thickness; dy <= thickness; dy++)
+                        int oIndex = y * origStride + x * 4;
+                        int rIndex = (y + pad) * resStride + (x + pad) * 4;
+                        resValues[rIndex] = origValues[oIndex];
+                        resValues[rIndex + 1] = origValues[oIndex + 1];
+                        resValues[rIndex + 2] = origValues[oIndex + 2];
+                        resValues[rIndex + 3] = origValues[oIndex + 3];
+                    }
+                }
+                
+                for (int y = 0; y < height; y++)
+                {
+                    for (int x = 0; x < width; x++)
+                    {
+                        int index = y * origStride + x * 4;
+                        byte b = origValues[index];
+                        byte g = origValues[index + 1];
+                        byte r = origValues[index + 2];
+                        byte a = origValues[index + 3];
+                        
+                        // Consider it a stroke pixel if it's not white and not transparent
+                        if (a > 0 && (r < 200 || g < 200 || b < 200))
                         {
-                            for (int dx = -thickness; dx <= thickness; dx++)
+                            // Dilate around this pixel in the new coordinate space
+                            for (int dy = -thickness; dy <= thickness; dy++)
                             {
-                                if (dx * dx + dy * dy <= thickness * thickness)
+                                for (int dx = -thickness; dx <= thickness; dx++)
                                 {
-                                    int nx = x + pad + dx;
-                                    int ny = y + pad + dy;
-                                    
-                                    if (nx >= 0 && nx < newWidth && ny >= 0 && ny < newHeight)
+                                    if (dx * dx + dy * dy <= thickness * thickness)
                                     {
-                                        int nIndex = ny * resStride + nx * 4;
-                                        resValues[nIndex] = b;
-                                        resValues[nIndex + 1] = g;
-                                        resValues[nIndex + 2] = r;
-                                        resValues[nIndex + 3] = Math.Max(resValues[nIndex + 3], a);
+                                        int nx = x + pad + dx;
+                                        int ny = y + pad + dy;
+                                        
+                                        if (nx >= 0 && nx < newWidth && ny >= 0 && ny < newHeight)
+                                        {
+                                            int nIndex = ny * resStride + nx * 4;
+                                            resValues[nIndex] = b;
+                                            resValues[nIndex + 1] = g;
+                                            resValues[nIndex + 2] = r;
+                                            resValues[nIndex + 3] = Math.Max(resValues[nIndex + 3], a);
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                
+                Marshal.Copy(resValues, 0, resData.Scan0, resBytes);
             }
-            
-            Marshal.Copy(resValues, 0, resData.Scan0, resBytes);
-            
-            original.UnlockBits(origData);
-            result.UnlockBits(resData);
+            finally
+            {
+                original.UnlockBits(origData);
+                result.UnlockBits(resData);
+            }
             
             return result;
         }
@@ -147,39 +152,44 @@ namespace PontenWPF
             System.Drawing.Imaging.BitmapData bmpData = result.LockBits(rect, System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             System.Drawing.Imaging.BitmapData origData = original.LockBits(rect, System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
             
-            int bytes = Math.Abs(bmpData.Stride) * original.Height;
-            byte[] rgbValues = new byte[bytes];
-            byte[] origValues = new byte[bytes];
-            
-            Marshal.Copy(origData.Scan0, origValues, 0, bytes);
-            
-            for (int counter = 0; counter < rgbValues.Length; counter += 4)
+            try
             {
-                byte b = origValues[counter];
-                byte g = origValues[counter + 1];
-                byte r = origValues[counter + 2];
-                byte a = origValues[counter + 3];
+                int bytes = Math.Abs(bmpData.Stride) * original.Height;
+                byte[] rgbValues = new byte[bytes];
+                byte[] origValues = new byte[bytes];
                 
-                if (r > 200 && g > 200 && b > 200)
+                Marshal.Copy(origData.Scan0, origValues, 0, bytes);
+                
+                for (int counter = 0; counter < rgbValues.Length; counter += 4)
                 {
-                    rgbValues[counter] = 0;
-                    rgbValues[counter + 1] = 0;
-                    rgbValues[counter + 2] = 0;
-                    rgbValues[counter + 3] = 0;
+                    byte b = origValues[counter];
+                    byte g = origValues[counter + 1];
+                    byte r = origValues[counter + 2];
+                    byte a = origValues[counter + 3];
+                    
+                    if (r > 200 && g > 200 && b > 200)
+                    {
+                        rgbValues[counter] = 0;
+                        rgbValues[counter + 1] = 0;
+                        rgbValues[counter + 2] = 0;
+                        rgbValues[counter + 3] = 0;
+                    }
+                    else
+                    {
+                        rgbValues[counter] = b;
+                        rgbValues[counter + 1] = g;
+                        rgbValues[counter + 2] = r;
+                        rgbValues[counter + 3] = a;
+                    }
                 }
-                else
-                {
-                    rgbValues[counter] = b;
-                    rgbValues[counter + 1] = g;
-                    rgbValues[counter + 2] = r;
-                    rgbValues[counter + 3] = a;
-                }
+                
+                Marshal.Copy(rgbValues, 0, bmpData.Scan0, bytes);
             }
-            
-            Marshal.Copy(rgbValues, 0, bmpData.Scan0, bytes);
-            
-            original.UnlockBits(origData);
-            result.UnlockBits(bmpData);
+            finally
+            {
+                original.UnlockBits(origData);
+                result.UnlockBits(bmpData);
+            }
             
             return result;
         }

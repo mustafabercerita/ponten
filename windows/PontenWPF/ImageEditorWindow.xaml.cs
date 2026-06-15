@@ -96,7 +96,10 @@ namespace PontenWPF
 
                     await ProcessImageAsync(thickness, removeBg, token);
                 }
-                catch (TaskCanceledException)
+                catch (OperationCanceledException)
+                {
+                }
+                catch (Exception)
                 {
                 }
             }, token);
@@ -104,11 +107,10 @@ namespace PontenWPF
 
         private async Task ProcessImageAsync(int thickness, bool removeBg, CancellationToken token)
         {
-            if (_originalImage == null) return;
-
             Bitmap processingBmp;
-            lock (_originalImage)
+            lock (this)
             {
+                if (_originalImage == null) return;
                 processingBmp = new Bitmap(_originalImage);
             }
 
@@ -117,25 +119,40 @@ namespace PontenWPF
                 var resultBmp = await Task.Run(() =>
                 {
                     Bitmap current = processingBmp;
-
-                    if (removeBg)
+                    try
                     {
-                        var stripped = _signatureManager.StripWhiteBackground(current);
-                        if (current != processingBmp) current.Dispose();
-                        current = stripped;
-                    }
+                        if (removeBg)
+                        {
+                            var stripped = _signatureManager.StripWhiteBackground(current);
+                            if (current != processingBmp) current.Dispose();
+                            current = stripped;
+                        }
 
-                    if (thickness > 0)
-                    {
-                        var dilated = _signatureManager.Dilation(current, thickness);
-                        if (current != processingBmp) current.Dispose();
-                        current = dilated;
+                        if (thickness > 0)
+                        {
+                            var dilated = _signatureManager.Dilation(current, thickness);
+                            if (current != processingBmp) current.Dispose();
+                            current = dilated;
+                        }
+                        
+                        if (current == processingBmp)
+                        {
+                            current = new Bitmap(processingBmp);
+                        }
+                        return current;
                     }
-                    
-                    return current;
+                    catch
+                    {
+                        if (current != processingBmp) current?.Dispose();
+                        throw;
+                    }
                 }, token);
 
-                if (token.IsCancellationRequested) return;
+                if (token.IsCancellationRequested)
+                {
+                    resultBmp?.Dispose();
+                    return;
+                }
 
                 var imageSource = BitmapToImageSource(resultBmp);
 
@@ -145,7 +162,7 @@ namespace PontenWPF
                     {
                         _currentProcessedBitmap.Dispose();
                     }
-                    _currentProcessedBitmap = new Bitmap(resultBmp);
+                    _currentProcessedBitmap = resultBmp;
                     PreviewImage.Source = imageSource;
                 });
             }
@@ -181,9 +198,14 @@ namespace PontenWPF
 
         protected override void OnClosed(EventArgs e)
         {
-            _originalImage?.Dispose();
-            _currentProcessedBitmap?.Dispose();
+            _debounceCts?.Cancel();
             _debounceCts?.Dispose();
+            lock (this)
+            {
+                _originalImage?.Dispose();
+                _originalImage = null;
+            }
+            _currentProcessedBitmap?.Dispose();
             base.OnClosed(e);
         }
     }

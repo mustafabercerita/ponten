@@ -52,8 +52,12 @@ namespace PontenWPF
                     var active = DisplayItems.FirstOrDefault(d => d.Item.Id == _storage.ActiveSignatureID.Value);
                     if (active?.ImageSource != null)
                     {
-                        Clipboard.SetImage(active.ImageSource);
-                        _manager.AutoPaste();
+                        try
+                        {
+                            Clipboard.SetImage(active.ImageSource);
+                            _manager.AutoPaste();
+                        }
+                        catch (Exception) { /* Handle clipboard error gracefully */ }
                     }
                 }
             };
@@ -139,14 +143,18 @@ namespace PontenWPF
                 // Copy to clipboard
                 if (selected.ImageSource != null)
                 {
-                    Clipboard.SetImage(selected.ImageSource);
-                    
-                    // Hide to restore focus to previous window, then paste
-                    this.Hide();
-                    System.Threading.Tasks.Task.Delay(100).ContinueWith(_ => 
+                    try
                     {
-                        _manager.AutoPaste();
-                    });
+                        Clipboard.SetImage(selected.ImageSource);
+                        
+                        // Hide to restore focus to previous window, then paste
+                        this.Hide();
+                        System.Threading.Tasks.Task.Delay(100).ContinueWith(_ => 
+                        {
+                            _manager.AutoPaste();
+                        });
+                    }
+                    catch (Exception) { /* Handle clipboard error gracefully */ }
                 }
             }
         }
