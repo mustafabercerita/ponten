@@ -73,6 +73,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Run Tests
+        run: |
+          cd windows
+          dotnet test Ponten.sln -c Release
+        shell: bash
+
       - name: Build & Publish WPF Project
         run: |
           cd windows

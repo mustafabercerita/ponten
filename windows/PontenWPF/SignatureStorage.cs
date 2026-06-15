@@ -35,9 +35,16 @@ namespace PontenWPF
         public Guid? ActiveSignatureID { get; set; }
         public UserSettings Settings { get; set; } = new();
 
-        public SignatureStorage()
+        public SignatureStorage(string? customStorageDirectory = null)
         {
-            _storageDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ponten");
+            if (!string.IsNullOrEmpty(customStorageDirectory))
+            {
+                _storageDirectory = customStorageDirectory;
+            }
+            else
+            {
+                _storageDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ponten");
+            }
             _indexPath = Path.Combine(_storageDirectory, "index.json");
             Directory.CreateDirectory(_storageDirectory);
             Load();
