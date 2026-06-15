@@ -337,7 +337,7 @@ tell application "Finder"
         close
     end tell
 end tell
-APPLESCRIPT
+APPLESCRIPT || true
 
     # 4. Set volume icon (optional — uses system folder icon as fallback)
     # Give Finder time to flush metadata
