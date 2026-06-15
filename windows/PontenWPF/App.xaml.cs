@@ -21,8 +21,8 @@ public partial class App : Application
         Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         
         Log("App startup initiated");
-        string exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-        Log($"Executable Path: {exePath}");
+        string? exePath = Environment.ProcessPath ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
+        Log($"Executable Path: {exePath ?? "null"}");
         Log($"Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
         
         _mutex = new Mutex(true, MutexName, out _hasMutex);
@@ -48,18 +48,37 @@ public partial class App : Application
         try 
         {
             Log("Extracting Associated Icon...");
-            var sysIcon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
-            if (sysIcon == null)
+            System.Drawing.Icon? sysIcon = null;
+            
+            if (!string.IsNullOrEmpty(exePath))
             {
-                Log("Warning: Extracted icon is null!");
+                try 
+                {
+                    sysIcon = System.Drawing.Icon.ExtractAssociatedIcon(exePath);
+                }
+                catch (Exception iconEx)
+                {
+                    Log($"Warning: Failed to extract icon from {exePath}. {iconEx.Message}");
+                }
             }
 
             notifyIcon = new TaskbarIcon
             {
-                Icon = sysIcon,
                 ToolTipText = "Ponten",
                 Visibility = Visibility.Visible
             };
+
+            if (sysIcon != null)
+            {
+                notifyIcon.Icon = sysIcon;
+                Log("Using extracted sysIcon.");
+            }
+            else
+            {
+                notifyIcon.IconSource = new BitmapImage(new Uri("pack://application:,,,/Assets/Ponten.ico"));
+                Log("Fallback to IconSource with BitmapImage.");
+            }
+
             notifyIcon.TrayLeftMouseUp += NotifyIcon_TrayLeftMouseUp;
             
             Log("Calling ForceCreate(false)...");
