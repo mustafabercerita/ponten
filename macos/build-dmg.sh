@@ -27,7 +27,7 @@ step()    { echo -e "\n${BOLD}${BLUE}── $* ──${NC}"; }
 
 # ── Config ────────────────────────────────────────────────────────────────────
 APP_NAME="Ponten"
-VERSION="1.2.8"
+VERSION="1.2.9"
 BUNDLE_ID="com.ponten.app"
 MIN_MACOS="13.0"
 ARCH="$(uname -m)"

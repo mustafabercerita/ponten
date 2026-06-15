@@ -1,5 +1,5 @@
 #define MyAppName "Ponten"
-#define MyAppVersion "1.2.8"
+#define MyAppVersion "1.2.9"
 #define MyAppPublisher "Ponten Open Source"
 #define MyAppURL "https://github.com/mustafabercerita/ponten"
 #define MyAppExeName "PontenWPF.exe"
