@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:PontenWPF"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="450"
+        Icon="pack://application:,,,/Assets/Ponten.ico"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent" ShowInTaskbar="False" Topmost="True">
     <Grid>
         <Border Background="#1E1E1E" CornerRadius="8" BorderBrush="#333333" BorderThickness="1" Margin="10">

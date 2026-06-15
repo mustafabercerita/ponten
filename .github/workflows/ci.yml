@@ -73,17 +73,37 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Build WPF Project
+      - name: Build & Publish WPF Project
         run: |
           cd windows
-          dotnet build Ponten.sln -c Release
+          dotnet publish Ponten.sln -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          mkdir -p ../dist
+          mv PontenWPF/bin/Release/net8.0-windows/win-x64/publish/PontenWPF.exe ../dist/Ponten-Windows.exe
+        shell: bash
+
+      - name: Verify Icon Resource
+        run: |
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon("dist/Ponten-Windows.exe")
+          if ($null -eq $icon) {
+            Write-Error "Icon resource (RT_ICON) not found in the executable!"
+            exit 1
+          } else {
+            Write-Output "Icon resource successfully verified in executable."
+          }
+        shell: pwsh
+
+      - name: Compile Inno Setup Installer
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" windows\installer.iss
+        shell: pwsh
 
       - name: Upload Windows Artifact
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
           name: Ponten-Windows-${{ github.sha }}
-          path: windows/PontenWPF/bin/Release/net8.0-windows/
+          path: dist/
           retention-days: 14
 
   release:
@@ -106,23 +126,17 @@ jobs:
           chmod +x build-dmg.sh
           ./build-dmg.sh
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
         with:
-          dotnet-version: '8.0.x'
-
-      - name: Build Windows EXE
-        run: |
-          cd windows
-          dotnet publish Ponten.sln -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
-          mkdir -p ../dist
-          mv PontenWPF/bin/Release/net8.0-windows/win-x64/publish/PontenWPF.exe ../dist/Ponten-Windows.exe
+          name: Ponten-Windows-${{ github.sha }}
+          path: dist/
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             macos/dist/*.dmg
-            dist/Ponten-Windows.exe
+            dist/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
