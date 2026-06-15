@@ -7,21 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A001 /* PontenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001; };
-		A002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002; };
-		A003 /* SignatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003; };
-		A004 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004; };
-		A005 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F005; };
-		A006 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006; };
-		A007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F008; };
-		/* Test target sources */
-		B001 /* SignatureManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010; };
-		/* Test target links main app */
-		B002 /* Ponten.app in Frameworks */ = {isa = PBXBuildFile; fileRef = F000; };
+		1120A2BBD5F5CDEF342B0263 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */; };
+		1331B8C6458D4593AD8B54F3 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43484E7F379C374B0B69DF15 /* EmptyStateView.swift */; };
+		171BB0EA90A4FC55C5FD3537 /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7628AF5738F410268B6B01 /* ImageEditorView.swift */; };
+		472D05B59AD328CEBC0EC3E0 /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AA7F404CE26C6EFA1DED02 /* FooterView.swift */; };
+		6BAE60826E8D53E01F415ADE /* ImageProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95262DBEF0D230B8D9EEEE7 /* ImageProcessorTests.swift */; };
+		7E0E2D3B436FF382F391C3D1 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */; };
+		851DCEFE56EBE19AA75F5C54 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2679ED8624C7A36115C89115 /* HeaderView.swift */; };
+		A001 /* PontenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001 /* PontenApp.swift */; };
+		A002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* AppDelegate.swift */; };
+		A003 /* SignatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* SignatureManager.swift */; };
+		A004 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004 /* MenuBarView.swift */; };
+		A005 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F005 /* Components.swift */; };
+		A006 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006 /* EventMonitor.swift */; };
+		A007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F008 /* Assets.xcassets */; };
+		B001 /* SignatureManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* SignatureManagerTests.swift */; };
+		C1D6B0461FDDF1E5F9E1EDB1 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D71898F773ACC800CD5B077 /* ImageProcessor.swift */; };
+		D5EDA8B94534507A56EAE3CF /* SignatureActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */; };
+		DDCAFC6F19059A9BEDA211D3 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F754AF0AA1DECA02DF29D /* DrawingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		F000 /* Ponten.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ponten.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0D71898F773ACC800CD5B077 /* ImageProcessor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageProcessor.swift; sourceTree = "<group>"; };
+		2679ED8624C7A36115C89115 /* HeaderView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
+		2C7628AF5738F410268B6B01 /* ImageEditorView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageEditorView.swift; sourceTree = "<group>"; };
+		39AA7F404CE26C6EFA1DED02 /* FooterView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FooterView.swift; sourceTree = "<group>"; };
+		43484E7F379C374B0B69DF15 /* EmptyStateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GlobalShortcutManager.swift; sourceTree = "<group>"; };
+		C80F754AF0AA1DECA02DF29D /* DrawingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DrawingView.swift; sourceTree = "<group>"; };
+		D95262DBEF0D230B8D9EEEE7 /* ImageProcessorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ImageProcessorTests.swift; sourceTree = "<group>"; };
+		F000 /* Ponten.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ponten.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F001 /* PontenApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PontenApp.swift; sourceTree = "<group>"; };
 		F002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F003 /* SignatureManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureManager.swift; sourceTree = "<group>"; };
@@ -31,28 +46,31 @@
 		F007 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F009 /* Ponten.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ponten.entitlements; sourceTree = "<group>"; };
-		/* Test references */
 		F010 /* SignatureManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureManagerTests.swift; sourceTree = "<group>"; };
 		F011 /* PontenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignatureActiveView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		E001 /* Frameworks (main) */ = {
+		E001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
-			files = ();
+			files = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		E002 /* Frameworks (tests) */ = {
+		E002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
-			files = ();
+			files = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		G000 /* root */ = {
+		G000 = {
 			isa = PBXGroup;
 			children = (
 				G001 /* Ponten */,
@@ -85,37 +103,62 @@
 		};
 		G003 /* Models */ = {
 			isa = PBXGroup;
-			children = (F003);
+			children = (
+				F003 /* SignatureManager.swift */,
+				0D71898F773ACC800CD5B077 /* ImageProcessor.swift */,
+			);
 			path = Models;
 			sourceTree = "<group>";
 		};
 		G004 /* Views */ = {
 			isa = PBXGroup;
-			children = (F004, F005);
+			children = (
+				F004 /* MenuBarView.swift */,
+				F005 /* Components.swift */,
+				F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */,
+				39AA7F404CE26C6EFA1DED02 /* FooterView.swift */,
+				C80F754AF0AA1DECA02DF29D /* DrawingView.swift */,
+				2679ED8624C7A36115C89115 /* HeaderView.swift */,
+				43484E7F379C374B0B69DF15 /* EmptyStateView.swift */,
+				FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */,
+				2C7628AF5738F410268B6B01 /* ImageEditorView.swift */,
+			);
 			path = Views;
 			sourceTree = "<group>";
 		};
 		G005 /* Utilities */ = {
 			isa = PBXGroup;
-			children = (F006);
+			children = (
+				F006 /* EventMonitor.swift */,
+				C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */,
+			);
 			path = Utilities;
 			sourceTree = "<group>";
 		};
 		G006 /* Resources */ = {
 			isa = PBXGroup;
-			children = (F007, F008);
+			children = (
+				F007 /* Info.plist */,
+				F008 /* Assets.xcassets */,
+			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
 		G007 /* PontenTests */ = {
 			isa = PBXGroup;
-			children = (F010);
+			children = (
+				F010 /* SignatureManagerTests.swift */,
+				D95262DBEF0D230B8D9EEEE7 /* ImageProcessorTests.swift */,
+			);
 			path = PontenTests;
 			sourceTree = "<group>";
 		};
 		G009 /* Products */ = {
 			isa = PBXGroup;
-			children = (F000, F011);
+			children = (
+				F000 /* Ponten.app */,
+				F011 /* PontenTests.xctest */,
+			);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -124,34 +167,39 @@
 /* Begin PBXNativeTarget section */
 		T000 /* Ponten */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = XCB000;
-			buildPhases = (P001, E001, P003);
-			buildRules = ();
-			dependencies = ();
+			buildConfigurationList = XCB000 /* Build configuration list for PBXNativeTarget "Ponten" */;
+			buildPhases = (
+				P001 /* Sources */,
+				E001 /* Frameworks */,
+				P003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
 			name = Ponten;
 			productName = Ponten;
-			productReference = F000;
+			productReference = F000 /* Ponten.app */;
 			productType = "com.apple.product-type.application";
 		};
 		T001 /* PontenTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = XCB002;
-			buildPhases = (P004, E002);
-			buildRules = ();
-			dependencies = (TD001);
+			buildConfigurationList = XCB002 /* Build configuration list for PBXNativeTarget "PontenTests" */;
+			buildPhases = (
+				P004 /* Sources */,
+				E002 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				TD001 /* PBXTargetDependency */,
+			);
 			name = PontenTests;
 			productName = PontenTests;
-			productReference = F011;
+			productReference = F011 /* PontenTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
-
-/* Begin PBXTargetDependency section */
-		TD001 = {
-			isa = PBXTargetDependency;
-			target = T000;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		PROJ000 /* Project object */ = {
@@ -161,20 +209,31 @@
 				LastSwiftUpdateCheck = 1500;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					T000 = { CreatedOnToolsVersion = 15.0; };
-					T001 = { CreatedOnToolsVersion = 15.0; TestTargetID = T000; };
+					T000 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+					T001 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = T000;
+					};
 				};
 			};
-			buildConfigurationList = XCB001;
+			buildConfigurationList = XCB001 /* Build configuration list for PBXProject "Ponten" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
-			knownRegions = (en, Base);
+			knownRegions = (
+				en,
+				Base,
+			);
 			mainGroup = G000;
-			productRefGroup = G009;
+			productRefGroup = G009 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (T000, T001);
+			targets = (
+				T000 /* Ponten */,
+				T001 /* PontenTests */,
+			);
 		};
 /* End PBXProject section */
 
@@ -182,28 +241,56 @@
 		P003 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (A007);
+			files = (
+				A007 /* Assets.xcassets in Resources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		P001 /* Sources (main) */ = {
+		P001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (A001, A002, A003, A004, A005, A006);
+			files = (
+				A001 /* PontenApp.swift in Sources */,
+				A002 /* AppDelegate.swift in Sources */,
+				A003 /* SignatureManager.swift in Sources */,
+				A004 /* MenuBarView.swift in Sources */,
+				A005 /* Components.swift in Sources */,
+				A006 /* EventMonitor.swift in Sources */,
+				7E0E2D3B436FF382F391C3D1 /* AboutView.swift in Sources */,
+				472D05B59AD328CEBC0EC3E0 /* FooterView.swift in Sources */,
+				DDCAFC6F19059A9BEDA211D3 /* DrawingView.swift in Sources */,
+				851DCEFE56EBE19AA75F5C54 /* HeaderView.swift in Sources */,
+				1331B8C6458D4593AD8B54F3 /* EmptyStateView.swift in Sources */,
+				D5EDA8B94534507A56EAE3CF /* SignatureActiveView.swift in Sources */,
+				171BB0EA90A4FC55C5FD3537 /* ImageEditorView.swift in Sources */,
+				C1D6B0461FDDF1E5F9E1EDB1 /* ImageProcessor.swift in Sources */,
+				1120A2BBD5F5CDEF342B0263 /* GlobalShortcutManager.swift in Sources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		P004 /* Sources (tests) */ = {
+		P004 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
-			files = (B001);
+			files = (
+				B001 /* SignatureManagerTests.swift in Sources */,
+				6BAE60826E8D53E01F415ADE /* ImageProcessorTests.swift in Sources */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		TD001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T000 /* Ponten */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
-		XCC001 /* Debug (project) */ = {
+		XCC001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -242,7 +329,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = ("DEBUG=1", "$(inherited)");
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -259,7 +349,7 @@
 			};
 			name = Debug;
 		};
-		XCC002 /* Release (project) */ = {
+		XCC002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -289,7 +379,7 @@
 			};
 			name = Release;
 		};
-		XCC003 /* Debug (app target) */ = {
+		XCC003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -301,16 +391,19 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Ponten/Resources/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Ponten Contributors. MIT License.";
-				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ponten.app;
-				PRODUCT_NAME = "Ponten";
+				PRODUCT_NAME = Ponten;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
 			};
 			name = Debug;
 		};
-		XCC004 /* Release (app target) */ = {
+		XCC004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -322,16 +415,19 @@
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Ponten/Resources/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Ponten Contributors. MIT License.";
-				LD_RUNPATH_SEARCH_PATHS = ("$(inherited)", "@executable_path/../Frameworks");
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ponten.app;
-				PRODUCT_NAME = "Ponten";
+				PRODUCT_NAME = Ponten;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.9;
 			};
 			name = Release;
 		};
-		XCC005 /* Debug (test target) */ = {
+		XCC005 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -348,7 +444,7 @@
 			};
 			name = Debug;
 		};
-		XCC006 /* Release (test target) */ = {
+		XCC006 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -370,24 +466,32 @@
 /* Begin XCConfigurationList section */
 		XCB000 /* Build configuration list for PBXNativeTarget "Ponten" */ = {
 			isa = XCConfigurationList;
-			buildConfigurations = (XCC003, XCC004);
+			buildConfigurations = (
+				XCC003 /* Debug */,
+				XCC004 /* Release */,
+			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		XCB001 /* Build configuration list for PBXProject "Ponten" */ = {
 			isa = XCConfigurationList;
-			buildConfigurations = (XCC001, XCC002);
+			buildConfigurations = (
+				XCC001 /* Debug */,
+				XCC002 /* Release */,
+			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		XCB002 /* Build configuration list for PBXNativeTarget "PontenTests" */ = {
 			isa = XCConfigurationList;
-			buildConfigurations = (XCC005, XCC006);
+			buildConfigurations = (
+				XCC005 /* Debug */,
+				XCC006 /* Release */,
+			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = PROJ000 /* Project object */;
 }

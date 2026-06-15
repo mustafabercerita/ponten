@@ -25,33 +25,36 @@ jobs:
 
       - name: Build (Debug)
         run: |
+          set -o pipefail
           cd macos && xcodebuild build \
             -project "Ponten.xcodeproj" \
             -scheme "Ponten" \
             -configuration Debug \
             -destination "platform=macOS,arch=arm64" \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty --color || true
+            | xcpretty --color
 
       - name: Run Unit Tests
         run: |
+          set -o pipefail
           cd macos && xcodebuild test \
             -project "Ponten.xcodeproj" \
             -scheme "Ponten" \
             -destination "platform=macOS,arch=arm64" \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty --color || true
+            | xcpretty --color
 
       - name: Build (Release)
         if: github.ref == 'refs/heads/main'
         run: |
+          set -o pipefail
           cd macos && xcodebuild archive \
             -project "Ponten.xcodeproj" \
             -scheme "Ponten" \
             -configuration Release \
             -archivePath "${{ runner.temp }}/Ponten.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
-            | xcpretty --color || true
+            | xcpretty --color
 
       - name: Upload build artifact
         if: github.ref == 'refs/heads/main'
