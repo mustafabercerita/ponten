@@ -156,7 +156,12 @@ class ImageProcessor {
         maxX = min(width - 1, maxX + padding)
         maxY = min(height - 1, maxY + padding)
         
-        let cropRect = CGRect(x: minX, y: minY, width: maxX - minX, height: maxY - minY)
+        // Convert bottom-left coordinates (pixelData) to top-left (cgImage.cropping)
+        let topY = height - 1 - maxY
+        let cropWidth = maxX - minX + 1
+        let cropHeight = maxY - minY + 1
+        
+        let cropRect = CGRect(x: minX, y: topY, width: cropWidth, height: cropHeight)
         guard let croppedCGImage = cgImage.cropping(to: cropRect) else { return nil }
         
         return NSImage(cgImage: croppedCGImage, size: NSSize(width: croppedCGImage.width, height: croppedCGImage.height))
