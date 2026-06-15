@@ -178,5 +178,13 @@ namespace PontenWPF
         {
             DebounceUpdate();
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _originalImage?.Dispose();
+            _currentProcessedBitmap?.Dispose();
+            _debounceCts?.Dispose();
+            base.OnClosed(e);
+        }
     }
 }

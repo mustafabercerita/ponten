@@ -195,12 +195,16 @@ namespace PontenWPF
 
         private const int VK_MENU = 0x12; // Alt key
         private const int VK_SHIFT = 0x10;
+        private const int VK_LWIN = 0x5B;
+        private const int VK_RWIN = 0x5C;
 
         public void AutoPaste()
         {
-            // First ensure Alt and Shift are released to avoid triggering e.g. Ctrl+Alt+V
+            // First ensure Alt, Shift, and Win keys are released to avoid triggering unintended shortcuts
             keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             keybd_event(VK_SHIFT, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+            keybd_event(VK_LWIN, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
+            keybd_event(VK_RWIN, 0, KEYEVENTF_KEYUP, UIntPtr.Zero);
             
             // Add a tiny delay
             System.Threading.Thread.Sleep(50);

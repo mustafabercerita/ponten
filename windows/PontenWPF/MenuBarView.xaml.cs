@@ -164,6 +164,7 @@ namespace PontenWPF
                 string path = _storage.GetSignatureFilePath(filename);
                 
                 bitmap.Save(path, System.Drawing.Imaging.ImageFormat.Png);
+                bitmap.Dispose();
                 
                 _storage.AddSignature(new SignatureItem { Id = id, Filename = filename });
                 LoadSignatures();
@@ -201,6 +202,7 @@ namespace PontenWPF
                         string path = _storage.GetSignatureFilePath(filename);
                         
                         processedBmp.Save(path, System.Drawing.Imaging.ImageFormat.Png);
+                        processedBmp.Dispose();
                         
                         _storage.AddSignature(new SignatureItem { Id = id, Filename = filename });
                         LoadSignatures();
