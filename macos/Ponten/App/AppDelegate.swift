@@ -239,6 +239,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Popover Control
 
     @objc private func togglePopover(_ sender: Any?) {
+        if let event = NSApp.currentEvent, event.type == .rightMouseUp {
+            let menu = NSMenu()
+            menu.addItem(NSMenuItem(title: "Quit Ponten", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+            if let button = statusItem.button {
+                menu.popUp(positioning: nil, at: NSPoint(x: 0, y: button.bounds.height), in: button)
+            }
+            return
+        }
+
         if popover.isShown {
             closePopover()
         } else {
