@@ -309,7 +309,7 @@ create_dmg() {
 
     # 3. Set Finder window appearance via AppleScript
     info "Configuring Finder window layout..."
-    osascript <<APPLESCRIPT
+    osascript <<APPLESCRIPT || true
 tell application "Finder"
     tell disk "${VOLUME_NAME}"
         open
@@ -337,7 +337,7 @@ tell application "Finder"
         close
     end tell
 end tell
-APPLESCRIPT || true
+APPLESCRIPT
 
     # 4. Set volume icon (optional — uses system folder icon as fallback)
     # Give Finder time to flush metadata
