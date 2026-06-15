@@ -7,6 +7,7 @@ struct ImageEditorView: View {
     
     @State private var contrast: Double = 1.0
     @State private var brightness: Double = 0.0
+    @State private var thicken: Double = 0.0
     @State private var rotation: Double = 0
     @State private var autoTrim: Bool = true
     @State private var removeBackground: Bool = true
@@ -85,6 +86,13 @@ struct ImageEditorView: View {
                     Slider(value: $brightness, in: -0.5...0.5)
                 }
                 
+                // Thicken Slider
+                HStack {
+                    Text("Thicken")
+                        .frame(width: 80, alignment: .leading)
+                    Slider(value: $thicken, in: 0.0...3.0)
+                }
+                
                 HStack(spacing: 24) {
                     Toggle("Auto-Trim Margins", isOn: $autoTrim)
                     Toggle("Remove Background", isOn: $removeBackground)
@@ -99,6 +107,7 @@ struct ImageEditorView: View {
             HStack {
                 Button("Cancel") {
                     manager.pendingImageToEdit = nil
+                    manager.pendingEditSignatureID = nil
                 }
                 .keyboardShortcut(.escape, modifiers: [])
                 
@@ -119,6 +128,7 @@ struct ImageEditorView: View {
         }
         .onChange(of: contrast) { _ in updatePreview() }
         .onChange(of: brightness) { _ in updatePreview() }
+        .onChange(of: thicken) { _ in updatePreview() }
         .onChange(of: rotation) { _ in updatePreview() }
         .onChange(of: autoTrim) { _ in updatePreview() }
         .onChange(of: removeBackground) { _ in updatePreview() }
@@ -129,12 +139,20 @@ struct ImageEditorView: View {
         
         let currentContrast = contrast
         let currentBrightness = brightness
+        let currentThicken = thicken
         let currentRotation = rotation
         let currentAutoTrim = autoTrim
         let currentRemoveBg = removeBackground
         
         DispatchQueue.global(qos: .userInitiated).async {
             var img = sourceImage
+            
+            // 0. Thicken Lines
+            if currentThicken > 0 {
+                if let thickened = ImageProcessor.thickenLines(image: img, radius: currentThicken) {
+                    img = thickened
+                }
+            }
             
             // 1. Color Adjustments
             if let colorAdjusted = ImageProcessor.adjustColor(image: img, contrast: currentContrast, brightness: currentBrightness) {
@@ -174,12 +192,14 @@ struct ImageEditorView: View {
     private func saveEditedImage() {
         guard let finalImage = previewImage else { return }
         
+        let targetID = manager.pendingEditSignatureID
         manager.pendingImageToEdit = nil
+        manager.pendingEditSignatureID = nil
         manager.isProcessing = true
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                try manager.saveSignature(image: finalImage, removeBackground: false, vectorize: removeBackground)
+                try manager.saveSignature(image: finalImage, removeBackground: false, vectorize: removeBackground, overwriteID: targetID)
                 DispatchQueue.main.async {
                     manager.isProcessing = false
                 }

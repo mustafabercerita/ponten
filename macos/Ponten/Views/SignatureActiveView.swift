@@ -63,6 +63,10 @@ struct SignatureActiveView: View {
                                 }
                                 .buttonStyle(.plain)
                                 .contextMenu {
+                                    Button("Edit") {
+                                        manager.pendingEditSignatureID = sig.item.id
+                                        manager.pendingImageToEdit = sig.image
+                                    }
                                     Button("Rename") {
                                         signatureToRename = sig.item.id
                                         newSignatureName = sig.item.name ?? "Signature"

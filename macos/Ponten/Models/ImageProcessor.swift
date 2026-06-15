@@ -4,6 +4,36 @@ import CoreImage.CIFilterBuiltins
 
 class ImageProcessor {
     
+    /// Thickens dark lines by rendering over a white background and applying morphological minimum
+    static func thickenLines(image: NSImage, radius: Double) -> NSImage? {
+        guard radius > 0 else { return image }
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
+        
+        // 1. Draw over white background
+        let width = cgImage.width
+        let height = cgImage.height
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
+        
+        context.setFillColor(NSColor.white.cgColor)
+        context.fill(CGRect(x: 0, y: 0, width: width, height: height))
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        
+        guard let whiteBgCGImage = context.makeImage() else { return nil }
+        let ciImage = CIImage(cgImage: whiteBgCGImage)
+        
+        // 2. Morphology Minimum
+        let filter = CIFilter.morphologyMinimum()
+        filter.inputImage = ciImage
+        filter.radius = Float(radius)
+        
+        guard let outputImage = filter.outputImage else { return nil }
+        let ciContext = CIContext(options: nil)
+        guard let finalCGImage = ciContext.createCGImage(outputImage, from: ciImage.extent) else { return nil }
+        
+        return NSImage(cgImage: finalCGImage, size: image.size)
+    }
+    
     /// Adjusts contrast and brightness of an NSImage
     static func adjustColor(image: NSImage, contrast: Double, brightness: Double) -> NSImage? {
         guard let tiffData = image.tiffRepresentation,

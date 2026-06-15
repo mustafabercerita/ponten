@@ -57,6 +57,7 @@ final class SignatureManager: ObservableObject {
     @Published var errorMessage: String?
     @Published var isProcessing: Bool = false
     @Published var pendingImageToEdit: NSImage? = nil
+    @Published var pendingEditSignatureID: UUID? = nil
     
     @Published var autoPaste: Bool = UserDefaults.standard.bool(forKey: "AutoPasteEnabled") {
         didSet {
@@ -151,10 +152,10 @@ final class SignatureManager: ObservableObject {
             throw SignatureError.notWhiteBackground
         }
         
-        try saveSignature(image: img, removeBackground: removeBackground, vectorize: true)
+        try saveSignature(image: img, removeBackground: removeBackground, vectorize: true, overwriteID: nil)
     }
 
-    func saveSignature(image sourceImage: NSImage, removeBackground: Bool = false, vectorize: Bool = false) throws {
+    func saveSignature(image sourceImage: NSImage, removeBackground: Bool = false, vectorize: Bool = false, overwriteID: UUID? = nil) throws {
         var img = sourceImage
 
         if vectorize, let vectorImg = img.replacingWithVectorizedStroke() {
@@ -175,17 +176,28 @@ final class SignatureManager: ObservableObject {
             throw SignatureError.encodingFailed
         }
 
-        let id = UUID()
-        let filename = "\(id.uuidString).png"
+        let isOverwriting = overwriteID != nil
+        let targetID = overwriteID ?? UUID()
+        let existingItem = signatures.first(where: { $0.item.id == targetID })?.item
+        
+        let filename = existingItem?.filename ?? "\(targetID.uuidString).png"
         let path = storageDirectory.appendingPathComponent(filename)
         
         try pngData.write(to: path, options: .atomic)
 
-        let item = SignatureItem(id: id, filename: filename)
+        let item = SignatureItem(id: targetID, filename: filename, name: existingItem?.name)
+        
         DispatchQueue.main.async { [weak self] in
-            self?.signatures.append((item, img))
-            self?.activeSignatureID = id
-            self?.saveIndex()
+            guard let self = self else { return }
+            if isOverwriting {
+                if let idx = self.signatures.firstIndex(where: { $0.item.id == targetID }) {
+                    self.signatures[idx] = (item, img)
+                }
+            } else {
+                self.signatures.append((item, img))
+            }
+            self.activeSignatureID = targetID
+            self.saveIndex()
         }
     }
 
