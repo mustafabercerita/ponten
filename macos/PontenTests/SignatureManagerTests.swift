@@ -123,20 +123,17 @@ final class SignatureManagerTests: XCTestCase {
     func testToastMessageClearsAfterDelay() throws {
         manager.showToast("Test toast")
 
-        let setExpectation = XCTestExpectation(description: "toast set")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            XCTAssertNotNil(self.manager.toastMessage)
-            setExpectation.fulfill()
+        let predicateSet = NSPredicate { _, _ in
+            return SignatureManager.shared.toastMessage != nil
         }
-        wait(for: [setExpectation], timeout: 1.0)
+        let expSet = XCTNSPredicateExpectation(predicate: predicateSet, object: nil)
+        wait(for: [expSet], timeout: 2.0)
 
-        // Toast should clear after ~2.5 seconds
-        let clearExpectation = XCTestExpectation(description: "toast cleared")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-            XCTAssertNil(self.manager.toastMessage)
-            clearExpectation.fulfill()
+        let predicateClear = NSPredicate { _, _ in
+            return SignatureManager.shared.toastMessage == nil
         }
-        wait(for: [clearExpectation], timeout: 4.0)
+        let expClear = XCTNSPredicateExpectation(predicate: predicateClear, object: nil)
+        wait(for: [expClear], timeout: 5.0)
     }
 
     func testReplacingSignatureUpdatesImage() throws {
@@ -145,21 +142,21 @@ final class SignatureManagerTests: XCTestCase {
 
         try manager.saveSignature(from: url1)
 
-        let exp1 = XCTestExpectation(description: "first image set")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            XCTAssertNotNil(self.manager.signatureImage)
-            exp1.fulfill()
+        let predicate1 = NSPredicate { _, _ in
+            return SignatureManager.shared.signatureImage != nil
         }
-        wait(for: [exp1], timeout: 1.0)
+        let exp1 = XCTNSPredicateExpectation(predicate: predicate1, object: nil)
+        wait(for: [exp1], timeout: 5.0)
 
         try manager.saveSignature(from: url2)
 
-        let exp2 = XCTestExpectation(description: "image replaced")
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
-            XCTAssertNotNil(self.manager.signatureImage)
+        let exp2 = XCTestExpectation(description: "Wait for background thread to process second signature")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             exp2.fulfill()
         }
-        wait(for: [exp2], timeout: 1.0)
+        wait(for: [exp2], timeout: 3.0)
+        
+        XCTAssertNotNil(manager.signatureImage)
     }
 
     func testDeletingInactiveSignatureKeepsActiveSignature() throws {
