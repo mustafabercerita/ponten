@@ -15,7 +15,7 @@ struct SignatureActiveView: View {
             // Preview area (also a drop target)
             ZStack {
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(manager.showWhiteCanvas ? Color.white : Color(NSColor.controlBackgroundColor))
+                    .fill(Color(NSColor.controlBackgroundColor))
                     .overlay(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
                             .strokeBorder(
@@ -49,6 +49,10 @@ struct SignatureActiveView: View {
                                             .scaledToFit()
                                             .frame(maxWidth: 240, maxHeight: 80)
                                             .padding(8)
+                                            .background(
+                                                RoundedRectangle(cornerRadius: 6)
+                                                    .fill(manager.showWhiteCanvas ? Color.white : Color.clear)
+                                            )
                                         
                                         Text(sig.item.name ?? "Signature")
                                             .font(.system(size: 11, weight: .medium))
@@ -90,16 +94,10 @@ struct SignatureActiveView: View {
                 VStack {
                     HStack {
                         Spacer()
-                        Button(action: {
-                            manager.showWhiteCanvas.toggle()
-                        }) {
-                            Image(systemName: manager.showWhiteCanvas ? "square.fill" : "square")
-                                .foregroundColor(.secondary.opacity(0.5))
-                                .font(.system(size: 12))
-                                .help("Toggle White Canvas")
-                        }
-                        .buttonStyle(.plain)
-                        .padding(8)
+                        Toggle("White Canvas", isOn: $manager.showWhiteCanvas)
+                            .toggleStyle(.switch)
+                            .controlSize(.mini)
+                            .padding(8)
                     }
                     Spacer()
                 }
