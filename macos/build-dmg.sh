@@ -66,6 +66,8 @@ SOURCE_FILES=(
     "Ponten/Utilities/EventMonitor.swift"
     "Ponten/Utilities/GlobalShortcutManager.swift"
     "Ponten/Views/DrawingView.swift"
+    "Ponten/Models/ImageProcessor.swift"
+    "Ponten/Views/ImageEditorView.swift"
 )
 
 # ── Help ──────────────────────────────────────────────────────────────────────
