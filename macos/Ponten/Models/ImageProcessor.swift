@@ -9,15 +9,20 @@ class ImageProcessor {
         guard radius > 0 else { return image }
         guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return nil }
         
-        // 1. Draw over white background
-        let width = cgImage.width
-        let height = cgImage.height
+        // Add padding to prevent the thickened lines from being clipped
+        let padding = Int(ceil(radius)) + 4
+        
+        // 1. Draw over white background with padding
+        let width = cgImage.width + (padding * 2)
+        let height = cgImage.height + (padding * 2)
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         guard let context = CGContext(data: nil, width: width, height: height, bitsPerComponent: 8, bytesPerRow: 0, space: colorSpace, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
         
         context.setFillColor(NSColor.white.cgColor)
         context.fill(CGRect(x: 0, y: 0, width: width, height: height))
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+        
+        // Draw the original image centered
+        context.draw(cgImage, in: CGRect(x: padding, y: padding, width: cgImage.width, height: cgImage.height))
         
         guard let whiteBgCGImage = context.makeImage() else { return nil }
         let ciImage = CIImage(cgImage: whiteBgCGImage)
@@ -31,7 +36,7 @@ class ImageProcessor {
         let ciContext = CIContext(options: nil)
         guard let finalCGImage = ciContext.createCGImage(outputImage, from: ciImage.extent) else { return nil }
         
-        return NSImage(cgImage: finalCGImage, size: image.size)
+        return NSImage(cgImage: finalCGImage, size: NSSize(width: width, height: height))
     }
     
     /// Adjusts contrast and brightness of an NSImage
