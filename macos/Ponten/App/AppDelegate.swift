@@ -215,7 +215,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func setupEventMonitor() {
         eventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
-            guard let self, self.popover.isShown else { return }
+            guard let self, self.popover.isShown, !self.signatureManager.isFileDialogOpen else { return }
             self.closePopover()
         }
     }

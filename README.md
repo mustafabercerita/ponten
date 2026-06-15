@@ -7,7 +7,7 @@
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue?logo=apple)
 ![Windows 10+](https://img.shields.io/badge/Windows-10%2B-blue?logo=windows)
-![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange?logo=swift)
+![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange?logo=swift)
 ![.NET 8.0](https://img.shields.io/badge/.NET-8.0-purple?logo=dotnet)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen)
@@ -19,7 +19,7 @@
 
 Every time you need to sign a document — Word, Excel, Google Docs, a PDF editor, an email — you have to:
 
-1. Open Finder
+1. Open Finder / File Explorer
 2. Navigate to your signature file
 3. Copy the image
 4. Paste it into the document
@@ -31,32 +31,31 @@ Every time you need to sign a document — Word, Excel, Google Docs, a PDF edito
 ## Demo Flow
 
 ```
-Install app → 🖊 icon appears in menu bar → click icon
-→ Add Signature (choose PNG or drag & drop)
+Install app → 🖊 icon appears in menu bar / system tray → click icon
+→ Add Signature (choose PNG, drag & drop, or draw)
 → preview thumbnail shows in popover
-→ press ⌥⌘S from anywhere
+→ press ⌥⌘S (Mac) or Ctrl+Alt+S (Win) from anywhere
 → "Signature copied & pasted ✓"
 → Signature is automatically pasted into your active document!
 ```
 
 ---
 
-## Features (v1.1)
+## Features
 
 | Feature | Description |
 |---|---|
-| **Cross-Platform** | Native apps built for both macOS and Windows |
-| **System-Tray Architecture** | Lives quietly in the macOS menu bar or Windows system tray — no taskbar clutter |
-| **Global hotkey (⌥⌘S / Ctrl+Alt+S)** | Copy and paste your signature without even opening the popover |
-| **Auto-Paste Functionality** | Automatically pastes the signature into your active application |
-| **Accessibility Permissions** | Seamlessly prompts for and handles accessibility access needed for auto-paste |
-| **Native Auto-Updater** | Built-in GitHub Releases auto-updater to keep you on the latest version |
-| **Drag & Drop** | Drag an image file directly onto the popover to set your signature |
-| **Live preview** | Thumbnail of the active signature in the popover |
-| **One-click Sign** | Copies signature image to clipboard instantly |
-| **Change Signature** | Swap active signature at any time |
-| **Persistent storage** | Signature survives app restarts (stored locally) |
-| **Native Performance** | Built with native Swift/AppKit and C#/WPF — zero Electron bloat |
+| **Cross-Platform** | Native apps built for both macOS and Windows. |
+| **System-Tray Architecture** | Lives quietly in the macOS menu bar or Windows system tray — no taskbar clutter. |
+| **Global hotkey** | Copy and paste your signature without even opening the popover (⌥⌘S on Mac, Ctrl+Alt+S on Win). |
+| **Auto-Paste Functionality** | Automatically pastes the signature into your active application! |
+| **Native Auto-Updater** | Built-in GitHub Releases auto-updater to keep you on the latest version seamlessly. |
+| **Drag & Drop** | Drag an image file directly onto the popover to set your signature. |
+| **Live Preview & Pen Tools** | Adjust stroke thickness visually using native morphology techniques. |
+| **Background Removal** | Automatically drops white backgrounds from JPEG/PNG images so your signature is clean and transparent. |
+| **Built-in Drawing Canvas** | Draw your signature natively using your trackpad, mouse, or Apple Pencil! |
+| **Multiple Signatures** | Save and quickly switch between different signatures directly from the popover grid. |
+| **Native Performance** | Built with native Swift/AppKit and C#/WPF — zero Electron bloat. |
 
 ---
 
@@ -91,7 +90,7 @@ This is the easiest way to install.
 <br>
 
 1. Go to the [Releases](https://github.com/mustafabercerita/ponten/releases) page.
-2. Download `Ponten-1.1.0.dmg` (for Mac) or `Ponten-1.1.0.exe` (for Windows).
+2. Download `Ponten-1.2.7.dmg` (for Mac) or `Ponten-Windows.exe` (for Windows).
 3. **Mac**: Open the downloaded file and drag the **Ponten** icon into the **Applications** folder.
 4. **Windows**: Run the `.exe` file. The app will quietly launch in your System Tray (bottom right corner).
 
@@ -99,7 +98,7 @@ This is the easiest way to install.
 
 ---
 
-### Option B — One-command CLI install ⚡
+### Option B — One-command CLI install ⚡ (macOS)
 
 ```bash
 git clone https://github.com/mustafabercerita/ponten.git
@@ -125,15 +124,6 @@ That's it. The script will:
 ./install.sh --help       # Show all options
 ```
 
-#### Or with Make
-
-```bash
-make          # build + install
-make run      # build + install + launch
-make clean    # remove build artifacts
-make uninstall
-```
-
 ---
 
 ### Option C — Build with Xcode
@@ -144,14 +134,13 @@ make uninstall
 
 > `LSUIElement = YES` — the app intentionally does **not** appear in the Dock or ⌘Tab.
 
-### First use
+---
 
-1. Click the 🖊 menu bar icon
-2. Click **Add Signature** (or drag a PNG file onto the popover)
-3. Preview appears immediately
-4. Click **Sign** (or press **⌥⌘S** from anywhere) to copy to clipboard
-5. The app will prompt you for Accessibility Permissions the first time you use Auto-Paste.
-6. Once granted, **⌥⌘S** will automatically copy AND paste the signature wherever your text cursor is active.
+### Option D — Build with .NET CLI (Windows)
+
+1. Clone the repo and navigate to `windows/`.
+2. Run `dotnet build Ponten.sln -c Release`.
+3. Launch `PontenWPF.exe` from `windows/PontenWPF/bin/Release/net8.0-windows/win-x64/`.
 
 ---
 
@@ -159,8 +148,8 @@ make uninstall
 
 | Shortcut | Action |
 |---|---|
-| **⌥⌘S** | Copy & Paste signature to active application (global — works without opening popover) |
-| **⌘Q** | Quit the app |
+| **⌥⌘S** / **Ctrl+Alt+S** | Copy & Paste signature to active application (global — works without opening popover) |
+| **⌘Q** / **Alt+F4** | Quit the app |
 | **Return** | Sign (when popover is open) |
 | **Escape** | Close popover |
 
@@ -172,23 +161,26 @@ make uninstall
 Ponten/
 ├── .github/
 │   └── workflows/
-│       └── ci.yml                   # GitHub Actions CI
+│       └── ci.yml                   # GitHub Actions CI for multi-platform
 │
-├── macos/                           # macOS App (Swift / SwiftUI)
+├── macos/                           # macOS App (Swift / SwiftUI / AppKit)
 │   ├── Ponten.xcodeproj/
 │   ├── Ponten/
 │   │   ├── App/                     # Entry point & AppDelegate
-│   │   ├── Models/                  # Business logic & clipboard
+│   │   ├── Models/                  # Business logic & ImageProcessor
 │   │   ├── Views/                   # SwiftUI UI components
-│   │   ├── Utilities/               # Permissions, updater
 │   │   └── Resources/               # Assets, Plist
-│   ├── PontenTests/
 │   ├── install.sh                   # macOS CLI installer
-│   ├── build-dmg.sh                 # macOS DMG builder
-│   ├── Package.swift                # macOS Package definition
-│   └── Makefile                     # macOS Build scripts
+│   └── build-dmg.sh                 # macOS DMG builder
 │
-├── windows/                         # Windows App (Upcoming)
+├── windows/                         # Windows App (C# / WPF / .NET 8)
+│   ├── Ponten.sln
+│   ├── PontenWPF/
+│   │   ├── App.xaml                 # Entry point
+│   │   ├── MainWindow.xaml          # UI & Tray popup logic
+│   │   ├── SignatureManager.cs      # Core business & Win32 logic
+│   │   └── ImageEditorWindow.xaml   # Windows image editing & pen tools
+│   └── build.ps1                    # Windows build script (Upcoming)
 │
 ├── README.md
 ├── ARCHITECTURE.md
@@ -200,9 +192,7 @@ Ponten/
 
 ## Running Tests
 
-In Xcode: **⌘U** or **Product → Test**
-
-Or via CLI (from the `macos/` directory):
+**macOS (via CLI):**
 ```bash
 cd macos
 xcodebuild -project Ponten.xcodeproj -scheme Ponten -destination 'platform=macOS' test
@@ -218,19 +208,12 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for a full technical walkthrough.
 
 ## Build for Distribution
 
-### Non-App Store (Developer ID)
-
-1. **Product → Archive** in Xcode
-2. **Distribute App → Developer ID → Export**
-3. Optionally notarize: `xcrun notarytool submit ...`
-
 ### CI / Automated builds
 
-Every push to `main` triggers a GitHub Actions workflow that:
-- Builds Debug
-- Runs all unit tests
-- Archives Release
-- Uploads `.xcarchive` as artifact (14-day retention)
+Every push to tags matching `v*` triggers a GitHub Actions workflow that:
+- Builds macOS DMG locally and runs tests.
+- Builds Windows `.exe` using `.NET 8` as a single self-contained file.
+- Publishes the assets automatically to GitHub Releases.
 
 ---
 
@@ -240,11 +223,11 @@ We've recently crossed off several major milestones from our original roadmap! H
 
 ### ✅ Completed
 - [x] **Windows Version:** Native Windows port built with C# and WPF.
+- [x] **Pen Tools & Thickness Adjustments:** Increase ink boldness globally through advanced morphology logic.
 - [x] **Built-in Drawing Canvas:** Draw your signature natively using your trackpad, mouse, or Apple Pencil (via Sidecar) right inside the app!
 - [x] **Multiple signature profiles:** Save and quickly switch between different signatures directly from the popover grid.
 - [x] **Background removal:** Automatically drops white backgrounds from JPEG/PNG images using native CoreImage/System.Drawing filters so your signature is clean and transparent.
 - [x] **Auto-Paste:** Uses macOS Accessibility APIs and Win32 APIs to automatically paste your signature into the active document right after copying.
-- [x] **Global Shortcut Customization:** Record your own custom global hotkey to trigger the app from anywhere.
 - [x] **Drag & Drop Out:** Drag the signature from the popover directly into your target app.
 - [x] **Native Auto-Updater:** Replaced heavy Sparkle framework with a lightweight, native SwiftUI GitHub release checker.
 

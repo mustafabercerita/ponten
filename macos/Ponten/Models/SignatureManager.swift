@@ -217,6 +217,8 @@ final class SignatureManager: ObservableObject {
     }
 
     // MARK: - File Picker
+    
+    @Published var isFileDialogOpen = false
 
     @MainActor
     func openFilePicker() {
@@ -229,7 +231,11 @@ final class SignatureManager: ObservableObject {
 
         NSApp.activate(ignoringOtherApps: true)
 
-        if panel.runModal() == .OK, let url = panel.url {
+        isFileDialogOpen = true
+        let response = panel.runModal()
+        isFileDialogOpen = false
+        
+        if response == .OK, let url = panel.url {
             let accessed = url.startAccessingSecurityScopedResource()
             
             if let image = NSImage(contentsOf: url) {
