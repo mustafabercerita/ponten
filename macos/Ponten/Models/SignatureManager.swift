@@ -21,6 +21,7 @@ enum ShortcutChoice: Int, CaseIterable, Identifiable {
 struct SignatureItem: Codable, Identifiable, Equatable {
     var id: UUID
     var filename: String
+    var name: String?
 }
 
 struct IndexWrapper: Codable {
@@ -331,10 +332,17 @@ final class SignatureManager: ObservableObject {
         cmdUp?.post(tap: .cghidEventTap)
     }
 
-    // MARK: - Delete
+    // MARK: - Signatures Management
 
-    func deleteSignature() {
-        guard let id = activeSignatureID else { return }
+    func renameSignature(id: UUID, newName: String) {
+        if let index = signatures.firstIndex(where: { $0.0.id == id }) {
+            signatures[index].0.name = newName
+            saveIndex()
+        }
+    }
+
+    func deleteSignature(id targetID: UUID? = nil) {
+        guard let id = targetID ?? activeSignatureID else { return }
         
         // Remove file from disk
         if let itemToRemove = signatures.first(where: { $0.item.id == id })?.item {

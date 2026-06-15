@@ -6,6 +6,9 @@ struct SignatureActiveView: View {
     @Binding var showDrawing: Bool
     @State private var showDeleteConfirm = false
     @State private var isDropTargeted = false
+    @State private var signatureToRename: UUID? = nil
+    @State private var newSignatureName: String = ""
+    @State private var showRenameAlert = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -40,18 +43,35 @@ struct SignatureActiveView: View {
                                     manager.activeSignatureID = sig.item.id
                                     manager.copySignatureToClipboard()
                                 }) {
-                                    Image(nsImage: sig.image)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(maxWidth: 240, maxHeight: 100)
-                                        .padding(12)
-                                        .contentShape(Rectangle())
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(manager.activeSignatureID == sig.item.id ? Color.accentColor.opacity(0.1) : Color.clear)
-                                        )
+                                    VStack(spacing: 4) {
+                                        Image(nsImage: sig.image)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(maxWidth: 240, maxHeight: 80)
+                                            .padding(8)
+                                        
+                                        Text(sig.item.name ?? "Signature")
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(.secondary)
+                                            .padding(.bottom, 6)
+                                    }
+                                    .contentShape(Rectangle())
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(manager.activeSignatureID == sig.item.id ? Color.accentColor.opacity(0.1) : Color.clear)
+                                    )
                                 }
                                 .buttonStyle(.plain)
+                                .contextMenu {
+                                    Button("Rename") {
+                                        signatureToRename = sig.item.id
+                                        newSignatureName = sig.item.name ?? "Signature"
+                                        showRenameAlert = true
+                                    }
+                                    Button("Delete", role: .destructive) {
+                                        manager.deleteSignature(id: sig.item.id)
+                                    }
+                                }
                                 .onDrag {
                                     let url = manager.storageDirectory.appendingPathComponent(sig.item.filename)
                                     return NSItemProvider(contentsOf: url) ?? NSItemProvider()
@@ -144,6 +164,17 @@ struct SignatureActiveView: View {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text("This will permanently delete your saved signature.")
+        }
+        .alert("Rename Signature", isPresented: $showRenameAlert) {
+            TextField("Signature Name", text: $newSignatureName)
+            Button("Cancel", role: .cancel) {}
+            Button("Save") {
+                if let id = signatureToRename {
+                    manager.renameSignature(id: id, newName: newSignatureName)
+                }
+            }
+        } message: {
+            Text("Enter a label for this signature.")
         }
     }
 }
