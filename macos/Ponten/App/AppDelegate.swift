@@ -94,10 +94,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
             
             let fm = FileManager.default
-            let dmgDestination = URL(fileURLWithPath: "/tmp/Ponten_Update.dmg")
-            let scriptDestination = URL(fileURLWithPath: "/tmp/install_update.sh")
+            let secureTempDir = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString)
             
             do {
+                try fm.createDirectory(at: secureTempDir, withIntermediateDirectories: true)
+                let dmgDestination = secureTempDir.appendingPathComponent("Ponten_Update.dmg")
+                let scriptDestination = secureTempDir.appendingPathComponent("install_update.sh")
+                
                 if fm.fileExists(atPath: dmgDestination.path) {
                     try fm.removeItem(at: dmgDestination)
                 }
@@ -110,7 +113,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 sleep 2
                 
                 # Mount the DMG
-                hdiutil attach "/tmp/Ponten_Update.dmg" -mountpoint "/Volumes/PontenUpdate" -nobrowse
+                hdiutil attach "\(dmgDestination.path)" -mountpoint "/Volumes/PontenUpdate" -nobrowse
                 
                 # Copy the app to Applications (replacing the old one)
                 rm -rf "/Applications/Ponten.app"
@@ -119,8 +122,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 # Unmount the DMG
                 hdiutil detach "/Volumes/PontenUpdate" -force
                 
-                # Clean up the DMG
-                rm -f "/tmp/Ponten_Update.dmg"
+                # Clean up the secure temp dir
+                rm -rf "\(secureTempDir.path)"
                 
                 # Open the new app
                 open -a "/Applications/Ponten.app"

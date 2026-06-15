@@ -4,6 +4,9 @@ import CoreImage.CIFilterBuiltins
 
 class ImageProcessor {
     
+    /// Shared CIContext to prevent expensive reallocations and Metal shader recompilations on every filter call
+    private static let sharedCIContext = CIContext(options: nil)
+    
     /// Thickens dark lines by rendering over a white background and applying morphological minimum
     static func thickenLines(image: NSImage, radius: Double) -> NSImage? {
         guard radius > 0 else { return image }
@@ -33,8 +36,7 @@ class ImageProcessor {
         filter.radius = Float(radius)
         
         guard let outputImage = filter.outputImage else { return nil }
-        let ciContext = CIContext(options: nil)
-        guard let finalCGImage = ciContext.createCGImage(outputImage, from: ciImage.extent) else { return nil }
+        guard let finalCGImage = sharedCIContext.createCGImage(outputImage, from: ciImage.extent) else { return nil }
         
         return NSImage(cgImage: finalCGImage, size: NSSize(width: width, height: height))
     }
@@ -55,10 +57,9 @@ class ImageProcessor {
         filter.saturation = 0.0
         
         guard let outputImage = filter.outputImage else { return nil }
-        let context = CIContext(options: nil)
-        guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else { return nil }
+        guard let finalCGImage = sharedCIContext.createCGImage(outputImage, from: ciImage.extent) else { return nil }
         
-        return NSImage(cgImage: cgImage, size: image.size)
+        return NSImage(cgImage: finalCGImage, size: image.size)
     }
     
     /// Rotates the image by a given degree (usually 90, 180, 270, -90)
