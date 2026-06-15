@@ -39,69 +39,19 @@ struct SignatureActiveView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 16) {
                             ForEach(manager.signatures, id: \.item.id) { sig in
-                                Button(action: {
-                                    manager.activeSignatureID = sig.item.id
-                                    manager.copySignatureToClipboard()
-                                }) {
-                                    VStack(spacing: 4) {
-                                        Image(nsImage: sig.image)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .frame(maxWidth: 240, maxHeight: 80)
-                                            .padding(8)
-                                            .background(
-                                                RoundedRectangle(cornerRadius: 6)
-                                                    .fill(manager.showWhiteCanvas ? Color.white : Color.clear)
-                                            )
-                                        
-                                        Text(sig.item.name ?? "Signature")
-                                            .font(.system(size: 11, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                            .padding(.bottom, 6)
-                                    }
-                                    .contentShape(Rectangle())
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8)
-                                            .fill(manager.activeSignatureID == sig.item.id ? Color.accentColor.opacity(0.1) : Color.clear)
-                                    )
-                                }
-                                .buttonStyle(.plain)
-                                .contextMenu {
-                                    Button("Edit") {
-                                        manager.pendingEditSignatureID = sig.item.id
-                                        manager.pendingImageToEdit = sig.image
-                                    }
-                                    Button("Rename") {
-                                        signatureToRename = sig.item.id
-                                        newSignatureName = sig.item.name ?? "Signature"
-                                        showRenameAlert = true
-                                    }
-                                    Button("Delete", role: .destructive) {
-                                        manager.deleteSignature(id: sig.item.id)
-                                    }
-                                }
-                                .onDrag {
-                                    let url = manager.storageDirectory.appendingPathComponent(sig.item.filename)
-                                    return NSItemProvider(contentsOf: url) ?? NSItemProvider()
-                                }
+                                SignatureCardView(
+                                    manager: manager,
+                                    sig: sig,
+                                    signatureToRename: $signatureToRename,
+                                    newSignatureName: $newSignatureName,
+                                    showRenameAlert: $showRenameAlert
+                                )
                             }
                         }
                         .padding(.horizontal, 14)
                     }
                 }
                 
-                // White Canvas Toggle
-                VStack {
-                    HStack {
-                        Spacer()
-                        Toggle("White Canvas", isOn: $manager.showWhiteCanvas)
-                            .toggleStyle(.switch)
-                            .controlSize(.mini)
-                            .padding(8)
-                    }
-                    Spacer()
-                }
-
                 // Drop hint overlay
                 if isDropTargeted {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -159,6 +109,12 @@ struct SignatureActiveView: View {
                 }
                 .buttonStyle(SecondaryButtonStyle())
                 .accessibilityLabel("Draw new signature")
+                
+                Toggle("White Canvas", isOn: $manager.showWhiteCanvas)
+                    .toggleStyle(.switch)
+                    .controlSize(.mini)
+                    .labelsHidden()
+                    .help("Toggle White Canvas")
 
                 Spacer()
 
@@ -195,6 +151,65 @@ struct SignatureActiveView: View {
             }
         } message: {
             Text("Enter a label for this signature.")
+        }
+    }
+}
+
+struct SignatureCardView: View {
+    @ObservedObject var manager: SignatureManager
+    let sig: (item: SignatureItem, image: NSImage)
+    @Binding var signatureToRename: UUID?
+    @Binding var newSignatureName: String
+    @Binding var showRenameAlert: Bool
+
+    var body: some View {
+        Button(action: {
+            manager.activeSignatureID = sig.item.id
+            manager.copySignatureToClipboard()
+        }) {
+            VStack(spacing: 4) {
+                ZStack {
+                    if manager.showWhiteCanvas {
+                        RoundedRectangle(cornerRadius: 6).fill(Color.white)
+                    }
+                    Image(nsImage: sig.image)
+                        .resizable()
+                        .scaledToFit()
+                        .padding(4)
+                }
+                .frame(maxWidth: 240)
+                .frame(height: 70)
+                .padding(.top, 4)
+                
+                Text(sig.item.name ?? "Signature")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.secondary)
+                    .padding(.bottom, 6)
+            }
+            .contentShape(Rectangle())
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(manager.activeSignatureID == sig.item.id ? Color.accentColor.opacity(0.1) : Color.clear)
+            )
+        }
+        .buttonStyle(.plain)
+        .contextMenu {
+            Button("Edit") {
+                manager.pendingEditSignatureID = sig.item.id
+                manager.pendingImageToEdit = sig.image
+            }
+            Button("Rename") {
+                signatureToRename = sig.item.id
+                newSignatureName = sig.item.name ?? "Signature"
+                showRenameAlert = true
+            }
+            Button("Delete", role: .destructive) {
+                manager.deleteSignature(id: sig.item.id)
+            }
+        }
+        .onDrag {
+            let url = manager.storageDirectory.appendingPathComponent(sig.item.filename)
+            return NSItemProvider(contentsOf: url) ?? NSItemProvider()
         }
     }
 }
