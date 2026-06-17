@@ -188,6 +188,53 @@ public sealed class E2ETestFixture : IDisposable
         throw new TimeoutException("Required UI element was not found.");
     }
 
+    public AutomationElement RequireTextContaining(
+        Window window,
+        string substring,
+        TimeSpan? timeout = null)
+    {
+        timeout ??= TimeSpan.FromSeconds(10);
+        var deadline = DateTime.UtcNow.Add(timeout.Value);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            foreach (var text in window.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.Text)))
+            {
+                if (text.Name?.Contains(substring, StringComparison.OrdinalIgnoreCase) == true)
+                {
+                    return text;
+                }
+            }
+
+            Thread.Sleep(200);
+        }
+
+        throw new TimeoutException($"Text containing '{substring}' was not found.");
+    }
+
+    public void WaitForAutoPasteEnabled(string dataDirectory, TimeSpan? timeout = null)
+    {
+        timeout ??= TimeSpan.FromSeconds(5);
+        var deadline = DateTime.UtcNow.Add(timeout.Value);
+        var indexPath = Path.Combine(dataDirectory, "index.json");
+
+        while (DateTime.UtcNow < deadline)
+        {
+            if (File.Exists(indexPath))
+            {
+                var json = File.ReadAllText(indexPath);
+                if (json.Contains("\"AutoPaste\": true", StringComparison.Ordinal))
+                {
+                    return;
+                }
+            }
+
+            Thread.Sleep(100);
+        }
+
+        throw new TimeoutException("AutoPaste setting was not persisted to index.json.");
+    }
+
     public static void SeedSignature(string dataDirectory, string name = "Test Signature")
     {
         Directory.CreateDirectory(dataDirectory);

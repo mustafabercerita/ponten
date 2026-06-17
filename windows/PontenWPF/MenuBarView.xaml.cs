@@ -538,8 +538,13 @@ namespace PontenWPF
             _storage.ApplyLaunchAtLogin(LaunchAtLoginCheck.IsChecked ?? false);
         }
 
-        private void AutoPasteCheck_Click(object sender, RoutedEventArgs e)
+        private void AutoPasteCheck_Changed(object sender, RoutedEventArgs e)
         {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
             _storage.Settings.AutoPaste = AutoPasteCheck.IsChecked ?? false;
             _storage.SaveIndex();
         }

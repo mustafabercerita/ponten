@@ -47,10 +47,7 @@ public class MenuBarE2ETests
             cf => cf.ByControlType(ControlType.Button).And(cf.ByName("Sign"))).AsButton();
         signButton.Invoke();
 
-        var statusText = fixture.RequireElement(
-            window,
-            cf => cf.ByControlType(ControlType.Text).And(cf.ByName("Signature copied ✓")),
-            TimeSpan.FromSeconds(5));
+        var statusText = fixture.RequireTextContaining(window, "copied", TimeSpan.FromSeconds(5));
         Assert.Contains("copied", statusText.Name, StringComparison.OrdinalIgnoreCase);
     }
 
@@ -69,9 +66,10 @@ public class MenuBarE2ETests
 
             if (!autoPaste.IsChecked.GetValueOrDefault())
             {
-                autoPaste.Click();
-                Thread.Sleep(300);
+                autoPaste.Toggle();
             }
+
+            fixture.WaitForAutoPasteEnabled(dataDirectory);
 
             var quitButton = fixture.RequireElement(window, cf => cf.ByName("Quit")).AsButton();
             quitButton.Invoke();

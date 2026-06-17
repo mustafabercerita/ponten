@@ -79,7 +79,8 @@
             </ScrollViewer>
             
             <!-- Sign Button -->
-            <Button Grid.Row="2" Background="#007ACC" Foreground="White" BorderThickness="0" Padding="10" Margin="0,0,0,15" Click="SignButton_Click">
+            <Button Grid.Row="2" Background="#007ACC" Foreground="White" BorderThickness="0" Padding="10" Margin="0,0,0,15" Click="SignButton_Click"
+                    AutomationProperties.Name="Sign">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
@@ -132,7 +133,8 @@
             <StackPanel Grid.Row="4" Margin="0,10,0,0">
                 <TextBlock Text="Settings" Foreground="White" FontWeight="SemiBold" Margin="0,0,0,10"/>
                 <CheckBox x:Name="LaunchAtLoginCheck" Content="Launch at Login" Foreground="LightGray" Margin="0,0,0,8" Click="LaunchAtLoginCheck_Click"/>
-                <CheckBox x:Name="AutoPasteCheck" Content="Auto-paste after copying" Foreground="LightGray" Margin="0,0,0,8" Click="AutoPasteCheck_Click"/>
+                <CheckBox x:Name="AutoPasteCheck" Content="Auto-paste after copying" Foreground="LightGray" Margin="0,0,0,8"
+                          Checked="AutoPasteCheck_Changed" Unchecked="AutoPasteCheck_Changed"/>
                 
                 <Grid Margin="0,5,0,0">
                     <TextBlock Text="Global Shortcut" Foreground="LightGray" VerticalAlignment="Center"/>
