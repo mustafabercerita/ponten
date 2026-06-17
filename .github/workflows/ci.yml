@@ -79,7 +79,6 @@ jobs:
       - name: Run Unit & E2E Tests
         run: |
           cd windows
-          dotnet clean Ponten.sln -c Release
           dotnet test Ponten.sln -c Release --logger "console;verbosity=normal"
         shell: bash
 
