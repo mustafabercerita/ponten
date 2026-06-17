@@ -28,6 +28,8 @@ struct FooterView: View {
                 .toggleStyle(.checkbox)
                 .accessibilityIdentifier("auto-paste-toggle")
                 .accessibilityLabel("Auto-paste after copying")
+                .accessibilityValue(manager.autoPaste ? "1" : "0")
+                .accessibilityAddTraits(manager.autoPaste ? .isSelected : [])
                 .onChange(of: manager.autoPaste) { newValue in
                     guard !E2EMode.isEnabled, newValue else { return }
                     let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]

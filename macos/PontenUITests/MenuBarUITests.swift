@@ -62,7 +62,7 @@ final class MenuBarUITests: XCTestCase {
 
         let autoPaste = window.checkBoxes["Auto-paste after copying"]
         XCTAssertTrue(autoPaste.waitForExistence(timeout: 5))
-        if autoPaste.value as? String != "1" {
+        if !isCheckboxChecked(autoPaste) {
             autoPaste.click()
         }
         try waitForAutoPasteEnabled(dataDirectory: dataDirectory)
@@ -79,7 +79,7 @@ final class MenuBarUITests: XCTestCase {
 
         let restartedAutoPaste = restarted.checkBoxes["Auto-paste after copying"]
         XCTAssertTrue(restartedAutoPaste.waitForExistence(timeout: 5))
-        XCTAssertEqual(restartedAutoPaste.value as? String, "1")
+        XCTAssertTrue(waitForCheckboxChecked(restartedAutoPaste, timeout: 10))
 
         try? FileManager.default.removeItem(atPath: dataDirectory)
     }
@@ -95,6 +95,28 @@ final class MenuBarUITests: XCTestCase {
     }
 
     // MARK: - Helpers
+
+    private func isCheckboxChecked(_ checkbox: XCUIElement) -> Bool {
+        if let stringValue = checkbox.value as? String {
+            return stringValue == "1" || stringValue.caseInsensitiveCompare("true") == .orderedSame
+        }
+        if let intValue = checkbox.value as? Int {
+            return intValue == 1
+        }
+        if let numberValue = checkbox.value as? NSNumber {
+            return numberValue.intValue == 1 || numberValue.boolValue
+        }
+        return checkbox.isSelected
+    }
+
+    private func waitForCheckboxChecked(_ checkbox: XCUIElement, timeout: TimeInterval) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if isCheckboxChecked(checkbox) { return true }
+            Thread.sleep(forTimeInterval: 0.2)
+        }
+        return isCheckboxChecked(checkbox)
+    }
 
     private func waitForWindowToClose(_ element: XCUIElement, timeout: TimeInterval) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
