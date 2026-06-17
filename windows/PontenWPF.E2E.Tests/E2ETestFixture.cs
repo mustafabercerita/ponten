@@ -212,6 +212,30 @@ public sealed class E2ETestFixture : IDisposable
         throw new TimeoutException($"Text containing '{substring}' was not found.");
     }
 
+    public FlaUI.Core.AutomationElements.CheckBox WaitForCheckBoxChecked(
+        Window window,
+        string label,
+        TimeSpan? timeout = null)
+    {
+        timeout ??= TimeSpan.FromSeconds(10);
+        var deadline = DateTime.UtcNow.Add(timeout.Value);
+
+        while (DateTime.UtcNow < deadline)
+        {
+            var checkBox = window.FindFirstDescendant(
+                cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.CheckBox).And(cf.ByName(label)))?.AsCheckBox();
+
+            if (checkBox?.IsChecked == true)
+            {
+                return checkBox;
+            }
+
+            Thread.Sleep(200);
+        }
+
+        throw new TimeoutException($"Checkbox '{label}' was not checked.");
+    }
+
     public void WaitForAutoPasteEnabled(string dataDirectory, TimeSpan? timeout = null)
     {
         timeout ??= TimeSpan.FromSeconds(5);

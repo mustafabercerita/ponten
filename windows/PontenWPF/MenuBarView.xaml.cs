@@ -37,6 +37,8 @@ namespace PontenWPF
         private ImageProcessor _manager = new ImageProcessor();
         private GlobalShortcutManager? _shortcutManager;
         private bool _suppressSelectionCopy;
+        private bool _suppressSettingsSave;
+        private bool _isClosing;
         private DispatcherTimer? _statusTimer;
 
         public ObservableCollection<SignatureDisplayItem> DisplayItems { get; set; } = new();
@@ -47,6 +49,7 @@ namespace PontenWPF
             this.Deactivated += MenuBarView_Deactivated;
             this.Loaded += MenuBarView_Loaded;
             this.SourceInitialized += MenuBarView_SourceInitialized;
+            this.Closing += (_, _) => _isClosing = true;
             this.Closed += MenuBarView_Closed;
 
             SignaturesListBox.ItemsSource = DisplayItems;
@@ -104,6 +107,7 @@ namespace PontenWPF
 
         private void MenuBarView_Closed(object? sender, EventArgs e)
         {
+            _isClosing = true;
             _statusTimer?.Stop();
             _shortcutManager?.Dispose();
         }
@@ -113,9 +117,11 @@ namespace PontenWPF
             var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
             VersionLabel.Text = $"v{version?.Major}.{version?.Minor}.{version?.Build}";
             LoadSignatures();
+            _suppressSettingsSave = true;
             LaunchAtLoginCheck.IsChecked = _storage.Settings.LaunchAtLogin;
             AutoPasteCheck.IsChecked = _storage.Settings.AutoPaste;
             RemoveBgToggle.IsChecked = _storage.Settings.RemoveBackground;
+            _suppressSettingsSave = false;
 
             if (E2EMode.IsEnabled)
             {
@@ -227,15 +233,22 @@ namespace PontenWPF
 
             try
             {
-                Clipboard.SetImage(active.ImageSource);
-                ShowStatus("Signature copied ✓");
+                if (E2EMode.IsEnabled)
+                {
+                    ShowStatus("Signature copied ✓");
+                }
+                else
+                {
+                    Clipboard.SetImage(active.ImageSource);
+                    ShowStatus("Signature copied ✓");
+                }
 
                 if (hideWindow)
                 {
                     Hide();
                 }
 
-                if (autoPaste)
+                if (autoPaste && !E2EMode.IsEnabled)
                 {
                     await Task.Delay(150);
                     await Dispatcher.InvokeAsync(() => _manager.AutoPaste());
@@ -540,7 +553,7 @@ namespace PontenWPF
 
         private void AutoPasteCheck_Changed(object sender, RoutedEventArgs e)
         {
-            if (!IsLoaded)
+            if (!IsLoaded || _isClosing || _suppressSettingsSave)
             {
                 return;
             }

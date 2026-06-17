@@ -78,9 +78,9 @@ public class MenuBarE2ETests
 
         using var restarted = new E2ETestFixture(dataDirectory);
         var restartedWindow = restarted.WaitForMainWindow();
-        var restartedAutoPaste = restarted.RequireElement(
+        var restartedAutoPaste = restarted.WaitForCheckBoxChecked(
             restartedWindow,
-            cf => cf.ByControlType(ControlType.CheckBox).And(cf.ByName("Auto-paste after copying"))).AsCheckBox();
+            "Auto-paste after copying");
         Assert.True(restartedAutoPaste.IsChecked);
     }
 

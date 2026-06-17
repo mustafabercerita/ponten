@@ -149,7 +149,8 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock x:Name="StatusText" Grid.Row="0" Text="" Foreground="#4CAF50" FontSize="12"
-                           HorizontalAlignment="Center" Margin="0,0,0,8" Visibility="Collapsed"/>
+                           HorizontalAlignment="Center" Margin="0,0,0,8" Visibility="Collapsed"
+                           AutomationProperties.Name="StatusText"/>
                 <Grid Grid.Row="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
