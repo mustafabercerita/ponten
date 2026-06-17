@@ -29,14 +29,11 @@ struct FooterView: View {
                 .accessibilityIdentifier("auto-paste-toggle")
                 .accessibilityLabel("Auto-paste after copying")
                 .onChange(of: manager.autoPaste) { newValue in
-                    if newValue {
-                        let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]
-                        let accessEnabled = AXIsProcessTrustedWithOptions(options)
-                        if !accessEnabled {
-                            manager.showToast("Please allow Accessibility access in System Settings")
-                            // Removing the forced toggle-off so users don't have to click twice after granting permission
-                            // manager.autoPaste = false
-                        }
+                    guard !E2EMode.isEnabled, newValue else { return }
+                    let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]
+                    let accessEnabled = AXIsProcessTrustedWithOptions(options)
+                    if !accessEnabled {
+                        manager.showToast("Please allow Accessibility access in System Settings")
                     }
                 }
             }
