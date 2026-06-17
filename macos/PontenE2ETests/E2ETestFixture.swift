@@ -521,7 +521,7 @@ final class E2ETestFixture {
         return try body()
     }
 
-    private func performOnMainAndWait(_ block: () throws -> Void) throws {
+    private func performOnMainAndWait(_ block: @escaping () throws -> Void) throws {
         if Thread.isMainThread {
             try block()
             return
