@@ -10,8 +10,10 @@ final class E2ETestFixture {
     private static let serializationLock = NSLock()
 
     static var useInProcess: Bool {
-        ProcessInfo.processInfo.environment["CI"] == "true"
-            || ProcessInfo.processInfo.environment["PONTEN_E2E_IN_PROCESS"] == "1"
+        let env = ProcessInfo.processInfo.environment
+        return env["CI"] == "true"
+            || env["GITHUB_ACTIONS"] == "true"
+            || env["PONTEN_E2E_IN_PROCESS"] == "1"
     }
 
     let dataDirectory: String

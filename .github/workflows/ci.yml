@@ -38,7 +38,7 @@ jobs:
         run: |
           set -o pipefail
           sudo /usr/sbin/DevToolsSecurity -enable
-          cd macos && xcodebuild test \
+          cd macos && CI=true GITHUB_ACTIONS=true xcodebuild test \
             -project "Ponten.xcodeproj" \
             -scheme "Ponten" \
             -destination "platform=macOS,arch=arm64" \
