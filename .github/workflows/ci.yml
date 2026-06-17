@@ -34,11 +34,20 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color
 
+      - name: Grant Accessibility for E2E tests
+        run: |
+          set -euo pipefail
+          sudo /usr/sbin/DevToolsSecurity -enable
+          TCC_DB="$HOME/Library/Application Support/com.apple.TCC/TCC.db"
+          if [ -f "$TCC_DB" ]; then
+            sudo sqlite3 "$TCC_DB" "INSERT OR REPLACE INTO access VALUES('kTCCServiceAccessibility','com.apple.dt.Xcode',0,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1685462788);"
+            sudo sqlite3 "$TCC_DB" "INSERT OR REPLACE INTO access VALUES('kTCCServiceAccessibility','/usr/libexec/xpcproxy',0,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1685462789);"
+          fi
+
       - name: Run Unit & E2E Tests
         run: |
           set -o pipefail
-          sudo /usr/sbin/DevToolsSecurity -enable
-          cd macos && CI=true GITHUB_ACTIONS=true xcodebuild test \
+          cd macos && xcodebuild test \
             -project "Ponten.xcodeproj" \
             -scheme "Ponten" \
             -destination "platform=macOS,arch=arm64" \

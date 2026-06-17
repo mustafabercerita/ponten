@@ -9,9 +9,9 @@ final class E2ETestFixture {
 
     private static let serializationLock = NSLock()
 
-    /// In-process hosting is the default (same-process AX). Opt out with `PONTEN_E2E_OUT_OF_PROCESS=1`.
+    /// In-process hosting avoids cross-process AX restrictions. Enable with `PONTEN_E2E_IN_PROCESS=1`.
     static var useInProcess: Bool {
-        ProcessInfo.processInfo.environment["PONTEN_E2E_OUT_OF_PROCESS"] != "1"
+        ProcessInfo.processInfo.environment["PONTEN_E2E_IN_PROCESS"] == "1"
     }
 
     let dataDirectory: String
@@ -184,37 +184,32 @@ final class E2ETestFixture {
 
     private func launchApp(dataDirectory: String) throws {
         let appBundle = try Self.resolveAppBundle()
+        let executable = appBundle.appendingPathComponent("Contents/MacOS/Ponten")
 
         var environment = ProcessInfo.processInfo.environment
         environment["PONTEN_E2E"] = "1"
         environment["PONTEN_DATA_DIR"] = dataDirectory
 
-        let openProcess = Process()
-        openProcess.executableURL = URL(fileURLWithPath: "/usr/bin/open")
-        openProcess.arguments = [
-            "-n", "-a", appBundle.path,
-            "--args", "--e2e", "--data-dir=\(dataDirectory)"
-        ]
-        openProcess.environment = environment
-        try openProcess.run()
-        openProcess.waitUntilExit()
+        let appProcess = Process()
+        appProcess.executableURL = executable
+        appProcess.arguments = ["--e2e", "--data-dir=\(dataDirectory)"]
+        appProcess.environment = environment
+        try appProcess.run()
 
-        guard openProcess.terminationStatus == 0 else {
-            throw NSError(
-                domain: "PontenE2E",
-                code: 2,
-                userInfo: [NSLocalizedDescriptionKey: "Failed to launch Ponten via open (exit \(openProcess.terminationStatus))."]
-            )
-        }
+        process = appProcess
+        appPID = appProcess.processIdentifier
 
         let deadline = Date().addingTimeInterval(20)
         while Date() < deadline {
-            if let running = NSRunningApplication.runningApplications(withBundleIdentifier: "com.ponten.app")
-                .first(where: { !$0.isTerminated }) {
-                appPID = running.processIdentifier
-                if waitForMainWindow(timeout: 0.5) != nil {
-                    return
-                }
+            if !appProcess.isRunning {
+                throw NSError(
+                    domain: "PontenE2E",
+                    code: 2,
+                    userInfo: [NSLocalizedDescriptionKey: "Ponten exited before the E2E window appeared (status \(appProcess.terminationStatus))."]
+                )
+            }
+            if waitForMainWindow(timeout: 0.5) != nil {
+                return
             }
             Thread.sleep(forTimeInterval: 0.2)
         }
