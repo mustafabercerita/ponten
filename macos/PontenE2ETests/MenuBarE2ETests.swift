@@ -163,7 +163,7 @@ final class MenuBarE2ETests: XCTestCase {
                json.contains("\"autoPaste\":true") || json.contains("\"autoPaste\": true") {
                 return
             }
-            Thread.sleep(forTimeInterval: 0.1)
+            RunLoop.main.run(until: Date().addingTimeInterval(0.1))
         }
 
         throw NSError(
@@ -185,7 +185,7 @@ final class MenuBarE2ETests: XCTestCase {
             } else {
                 return true
             }
-            Thread.sleep(forTimeInterval: 0.1)
+            RunLoop.main.run(until: Date().addingTimeInterval(0.1))
         }
         throw NSError(
             domain: "PontenE2E",

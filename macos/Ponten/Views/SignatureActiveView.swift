@@ -194,6 +194,7 @@ struct SignatureCardView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(sig.item.name ?? "Signature")
         .contextMenu {
             Button("Edit") {
                 manager.pendingEditSignatureID = sig.item.id

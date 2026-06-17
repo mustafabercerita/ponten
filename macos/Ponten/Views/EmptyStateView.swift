@@ -63,6 +63,7 @@ struct EmptyStateView: View {
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(isDropTargeted ? .accentColor : .primary)
                             .accessibilityIdentifier("empty-state")
+                            .accessibilityLabel(isDropTargeted ? "Drop to add signature" : "No signatures yet.")
 
                         if !isDropTargeted {
                             Text("Choose a PNG, JPEG, or TIFF file\nor drag one here.")

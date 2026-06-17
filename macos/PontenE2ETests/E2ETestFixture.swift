@@ -155,18 +155,18 @@ final class E2ETestFixture {
         setenv("PONTEN_DATA_DIR", dataDirectory, 1)
         setenv("PONTEN_E2E_IN_PROCESS", "1", 1)
 
-        try performOnMainAndWait {
+        try performOnMainWithRunLoop {
             Self.ensureTestApplication()
             self.inProcessHost = E2EInProcessHost(dataDirectory: dataDirectory)
             self.appPID = ProcessInfo.processInfo.processIdentifier
         }
 
-        let deadline = Date().addingTimeInterval(10)
+        let deadline = Date().addingTimeInterval(15)
         while Date() < deadline {
-            if waitForMainWindow(timeout: 0.5) != nil {
+            if waitForMainWindow(timeout: 0.25) != nil {
                 return
             }
-            Thread.sleep(forTimeInterval: 0.2)
+            pumpMainRunLoop(for: 0.1)
         }
 
         throw NSError(
@@ -176,23 +176,15 @@ final class E2ETestFixture {
         )
     }
 
-    private static var runLoopThread: Thread?
+    private static var applicationBootstrapped = false
 
     private static func ensureTestApplication() {
         let app = NSApplication.shared
-        app.setActivationPolicy(.regular)
-
-        if runLoopThread == nil {
-            let thread = Thread {
-                while !Thread.current.isCancelled {
-                    RunLoop.current.run(mode: .default, before: Date().addingTimeInterval(0.1))
-                }
-            }
-            thread.name = "PontenE2ERunLoop"
-            thread.start()
-            runLoopThread = thread
+        if !applicationBootstrapped {
+            app.setActivationPolicy(.regular)
+            app.finishLaunching()
+            applicationBootstrapped = true
         }
-
         app.activate(ignoringOtherApps: true)
     }
 
@@ -237,7 +229,7 @@ final class E2ETestFixture {
 
     private func terminateApp() {
         if usesInProcess {
-            try? performOnMainAndWait {
+            try? performOnMainWithRunLoop {
                 self.inProcessHost?.close()
                 self.inProcessHost = nil
             }
@@ -276,7 +268,7 @@ final class E2ETestFixture {
                 return window
             }
 
-            Thread.sleep(forTimeInterval: 0.2)
+            waitInterval(0.2)
         }
 
         return nil
@@ -317,7 +309,7 @@ final class E2ETestFixture {
             if let match = findDescendant(in: root, role: role, title: title, titleContains: titleContains) {
                 return match
             }
-            Thread.sleep(forTimeInterval: 0.2)
+            waitInterval(0.2)
         }
 
         let label = [role, title, titleContains].compactMap { $0 }.joined(separator: " / ")
@@ -351,7 +343,7 @@ final class E2ETestFixture {
                boolAttribute(checkbox, attribute: kAXValueAttribute) == true {
                 return checkbox
             }
-            Thread.sleep(forTimeInterval: 0.2)
+            waitInterval(0.2)
         }
 
         throw NSError(
@@ -369,7 +361,7 @@ final class E2ETestFixture {
             if FileManager.default.fileExists(atPath: markerPath.path) {
                 return
             }
-            Thread.sleep(forTimeInterval: 0.2)
+            waitInterval(0.2)
         }
 
         throw NSError(
@@ -530,26 +522,28 @@ final class E2ETestFixture {
         return try body()
     }
 
-    private func performOnMainAndWait(_ block: @escaping () throws -> Void) throws {
-        if Thread.isMainThread {
-            try block()
-            return
-        }
-
+    /// Schedules UI work on the main queue and pumps `RunLoop.main` until it completes.
+    /// Required for SwiftUI/AppKit hosting inside XCTest, which runs on the main thread.
+    private func performOnMainWithRunLoop(_ block: @escaping () throws -> Void) throws {
         var thrown: Error?
+        var completed = false
         let work = block
-        let group = DispatchGroup()
-        group.enter()
+
         DispatchQueue.main.async {
             do {
                 try work()
             } catch {
                 thrown = error
             }
-            group.leave()
+            completed = true
         }
 
-        guard group.wait(timeout: .now() + 10) == .success else {
+        let deadline = Date().addingTimeInterval(30)
+        while !completed && Date() < deadline {
+            pumpMainRunLoop(for: 0.05)
+        }
+
+        guard completed else {
             throw NSError(
                 domain: "PontenE2E",
                 code: 11,
@@ -558,6 +552,21 @@ final class E2ETestFixture {
         }
 
         if let thrown { throw thrown }
+    }
+
+    private func waitInterval(_ interval: TimeInterval) {
+        if usesInProcess || Thread.isMainThread {
+            pumpMainRunLoop(for: interval)
+        } else {
+            Thread.sleep(forTimeInterval: interval)
+        }
+    }
+
+    private func pumpMainRunLoop(for interval: TimeInterval) {
+        let deadline = Date().addingTimeInterval(interval)
+        while Date() < deadline {
+            RunLoop.main.run(mode: .default, before: Date().addingTimeInterval(0.05))
+        }
     }
 }
 
