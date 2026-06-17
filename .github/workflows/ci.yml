@@ -34,13 +34,14 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color
 
-      - name: Run Unit Tests
+      - name: Run Unit & E2E Tests
         run: |
           set -o pipefail
           cd macos && xcodebuild test \
             -project "Ponten.xcodeproj" \
             -scheme "Ponten" \
             -destination "platform=macOS,arch=arm64" \
+            -parallel-testing-enabled NO \
             CODE_SIGNING_ALLOWED=NO \
             | xcpretty --color
 

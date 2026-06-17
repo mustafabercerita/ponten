@@ -23,7 +23,8 @@ Ponten/
 │   │   ├── Models/        SignatureManager, SignatureStore, ImageProcessor
 │   │   ├── Views/         MenuBarView, HeaderView, SignatureActiveView, …
 │   │   └── Utilities/     GlobalShortcutManager, EventMonitor
-│   └── PontenTests/       XCTest (DI via init(store:))
+│   ├── PontenTests/       XCTest unit tests (DI via init(store:))
+│   └── PontenE2ETests/    XCTest + AXUIElement E2E (launches real Ponten.app)
 └── windows/
     ├── PontenWPF/             App, MenuBarView, SignatureStorage, ImageProcessor, …
     ├── PontenWPF.Tests/       xUnit (custom storage directory)

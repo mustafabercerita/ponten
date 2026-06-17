@@ -101,11 +101,14 @@ Release builds use **Inno Setup**: `windows/installer.iss`. CI compiles it on ve
 ```bash
 cd macos
 xcodebuild test -project Ponten.xcodeproj -scheme Ponten \
-  -destination "platform=macOS,arch=arm64" CODE_SIGNING_ALLOWED=NO
+  -destination "platform=macOS,arch=arm64" \
+  -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO
 
 # or via SPM:
 swift test
 ```
+
+**E2E tests** (`PontenE2ETests`): 5 XCTest + Accessibility tests that launch `Ponten.app` and drive the menu UI via `AXUIElement`. macOS-only; requires a prior build of `Ponten` (the fixture locates `Ponten.app` under DerivedData / build products).
 
 ### Windows
 
@@ -114,7 +117,7 @@ cd windows
 dotnet test Ponten.sln -c Release   # unit (12) + E2E (5)
 ```
 
-**E2E tests** (`PontenWPF.E2E.Tests`): 5 FlaUI + xUnit tests that launch `PontenWPF.exe` and drive the tray popover UI. Windows-only; requires a prior build of `PontenWPF` (the test fixture locates `PontenWPF.exe` under `bin/`).
+**Windows E2E tests** (`PontenWPF.E2E.Tests`): 5 FlaUI + xUnit tests that launch `PontenWPF.exe` and drive the tray popover UI. Windows-only; requires a prior build of `PontenWPF` (the test fixture locates `PontenWPF.exe` under `bin/`).
 
 **E2E mode flags** (set by the test fixture; useful for manual debugging):
 
@@ -127,7 +130,7 @@ dotnet test Ponten.sln -c Release   # unit (12) + E2E (5)
 
 Runs on every push/PR to `main`/`develop` and on `v*` tags:
 
-- **macOS**: Debug build → unit tests → Release archive (on `main`)
+- **macOS**: Debug build → unit + E2E tests → Release archive (on `main`)
 - **Windows** (`windows-latest`): `dotnet test Ponten.sln -c Release` (unit + E2E) → publish single-file exe → Inno Setup (on tags)
 - **Release job** (on tags): `build-dmg.sh` + upload DMG + Windows artifacts to GitHub Releases
 

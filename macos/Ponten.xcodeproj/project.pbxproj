@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1120A2BBD5F5CDEF342B0263 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */; };
+		A008 /* E2EMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* E2EMode.swift */; };
+		B002 /* E2ETestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* E2ETestFixture.swift */; };
+		B003 /* MenuBarE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* MenuBarE2ETests.swift */; };
 		1331B8C6458D4593AD8B54F3 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43484E7F379C374B0B69DF15 /* EmptyStateView.swift */; };
 		171BB0EA90A4FC55C5FD3537 /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7628AF5738F410268B6B01 /* ImageEditorView.swift */; };
 		472D05B59AD328CEBC0EC3E0 /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AA7F404CE26C6EFA1DED02 /* FooterView.swift */; };
@@ -50,6 +53,10 @@
 		F009 /* Ponten.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ponten.entitlements; sourceTree = "<group>"; };
 		F010 /* SignatureManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignatureManagerTests.swift; sourceTree = "<group>"; };
 		F011 /* PontenTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F012 /* E2EMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = E2EMode.swift; sourceTree = "<group>"; };
+		F013 /* E2ETestFixture.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = E2ETestFixture.swift; sourceTree = "<group>"; };
+		F014 /* MenuBarE2ETests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MenuBarE2ETests.swift; sourceTree = "<group>"; };
+		F015 /* PontenE2ETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenE2ETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignatureActiveView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -69,6 +76,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		E003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -77,6 +91,7 @@
 			children = (
 				G001 /* Ponten */,
 				G007 /* PontenTests */,
+				G008 /* PontenE2ETests */,
 				G009 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -134,6 +149,7 @@
 			children = (
 				F006 /* EventMonitor.swift */,
 				C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */,
+				F012 /* E2EMode.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -156,11 +172,21 @@
 			path = PontenTests;
 			sourceTree = "<group>";
 		};
+		G008 /* PontenE2ETests */ = {
+			isa = PBXGroup;
+			children = (
+				F013 /* E2ETestFixture.swift */,
+				F014 /* MenuBarE2ETests.swift */,
+			);
+			path = PontenE2ETests;
+			sourceTree = "<group>";
+		};
 		G009 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				F000 /* Ponten.app */,
 				F011 /* PontenTests.xctest */,
+				F015 /* PontenE2ETests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -202,6 +228,23 @@
 			productReference = F011 /* PontenTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		T002 /* PontenE2ETests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = XCB003 /* Build configuration list for PBXNativeTarget "PontenE2ETests" */;
+			buildPhases = (
+				P005 /* Sources */,
+				E003 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				TD002 /* PBXTargetDependency */,
+			);
+			name = PontenE2ETests;
+			productName = PontenE2ETests;
+			productReference = F015 /* PontenE2ETests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -216,6 +259,10 @@
 						CreatedOnToolsVersion = 15.0;
 					};
 					T001 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = T000;
+					};
+					T002 = {
 						CreatedOnToolsVersion = 15.0;
 						TestTargetID = T000;
 					};
@@ -236,6 +283,7 @@
 			targets = (
 				T000 /* Ponten */,
 				T001 /* PontenTests */,
+				T002 /* PontenE2ETests */,
 			);
 		};
 /* End PBXProject section */
@@ -272,6 +320,7 @@
 				C1D6B0461FDDF1E5F9E1EDB1 /* ImageProcessor.swift in Sources */,
 				1120A2BBD5F5CDEF342B0263 /* GlobalShortcutManager.swift in Sources */,
 				C5E489EB5810162538BA0D6C /* SignatureStore.swift in Sources */,
+				A008 /* E2EMode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,14 +333,46 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		P005 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B002 /* E2ETestFixture.swift in Sources */,
+				B003 /* MenuBarE2ETests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
 		TD001 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = T000 /* Ponten */;
+			targetProxy = TP001 /* PBXContainerItemProxy */;
+		};
+		TD002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = T000 /* Ponten */;
+			targetProxy = TP002 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXContainerItemProxy section */
+		TP001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = PROJ000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T000;
+			remoteInfo = Ponten;
+		};
+		TP002 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = PROJ000 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = T000;
+			remoteInfo = Ponten;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin XCBuildConfiguration section */
 		XCC001 /* Debug */ = {
@@ -465,6 +546,36 @@
 			};
 			name = Release;
 		};
+		XCC007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.2.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ponten.app.e2etests;
+				PRODUCT_NAME = PontenE2ETests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		XCC008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 1.2.12;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ponten.app.e2etests;
+				PRODUCT_NAME = PontenE2ETests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -491,6 +602,15 @@
 			buildConfigurations = (
 				XCC005 /* Debug */,
 				XCC006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		XCB003 /* Build configuration list for PBXNativeTarget "PontenE2ETests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				XCC007 /* Debug */,
+				XCC008 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

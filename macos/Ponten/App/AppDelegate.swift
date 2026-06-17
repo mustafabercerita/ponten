@@ -9,12 +9,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var signatureManager = SignatureManager.shared
     private var eventMonitor: EventMonitor?
     private var globalHotkeyMonitor: Any?
+    private var e2eWindow: NSWindow?
 
     private var observers: [NSObjectProtocol] = []
 
     // MARK: - App Lifecycle
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        if E2EMode.isEnabled {
+            NSApp.setActivationPolicy(.regular)
+            setupE2EWindow()
+            return
+        }
+
         // Menu-bar-only: hide from Dock and ⌘Tab switcher
         NSApp.setActivationPolicy(.accessory)
 
@@ -195,6 +202,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NotificationCenter.default.removeObserver(observer)
         }
         observers.removeAll()
+    }
+
+    // MARK: - E2E Window
+
+    private func setupE2EWindow() {
+        NSApp.setActivationPolicy(.regular)
+
+        let contentView = MenuBarView()
+            .environmentObject(signatureManager)
+        let hostingController = NSHostingController(rootView: contentView)
+
+        let hasSignature = signatureManager.signatureImage != nil
+        let height = max(hasSignature ? 360 : 260, 400)
+        hostingController.view.frame = NSRect(x: 0, y: 0, width: 300, height: height)
+
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: height),
+            styleMask: [.titled, .closable, .miniaturizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "Ponten Menu"
+        window.contentViewController = hostingController
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+        NSApp.activate(ignoringOtherApps: true)
+        e2eWindow = window
     }
 
     // MARK: - Status Item

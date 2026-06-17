@@ -26,7 +26,8 @@ struct FooterView: View {
                         .foregroundColor(.secondary)
                 }
                 .toggleStyle(.checkbox)
-                .accessibilityLabel("Automatically paste signature after copying")
+                .accessibilityIdentifier("auto-paste-toggle")
+                .accessibilityLabel("Auto-paste after copying")
                 .onChange(of: manager.autoPaste) { newValue in
                     if newValue {
                         let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]
@@ -89,7 +90,8 @@ struct FooterView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
                 .keyboardShortcut("q", modifiers: .command)
-                .accessibilityLabel("Quit Ponten")
+                .accessibilityIdentifier("quit-button")
+                .accessibilityLabel("Quit")
             }
         }
         .padding(.horizontal, 14)

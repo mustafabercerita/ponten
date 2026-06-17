@@ -7,9 +7,14 @@ struct SignatureItem: Codable, Identifiable, Equatable {
     var name: String?
 }
 
+struct UserSettings: Codable, Equatable {
+    var autoPaste: Bool = false
+}
+
 struct IndexWrapper: Codable {
     var items: [SignatureItem]
     var activeID: UUID?
+    var settings: UserSettings?
 }
 
 /// Persists signature image files and the index manifest on disk.
@@ -69,8 +74,16 @@ final class SignatureStore {
         return wrapper.activeID
     }
 
-    func saveIndex(items: [SignatureItem], activeID: UUID?) throws {
-        let wrapper = IndexWrapper(items: items, activeID: activeID)
+    func loadSettings() -> UserSettings? {
+        guard let data = try? Data(contentsOf: indexPath),
+              let wrapper = try? JSONDecoder().decode(IndexWrapper.self, from: data) else {
+            return nil
+        }
+        return wrapper.settings
+    }
+
+    func saveIndex(items: [SignatureItem], activeID: UUID?, settings: UserSettings? = nil) throws {
+        let wrapper = IndexWrapper(items: items, activeID: activeID, settings: settings)
         let data = try JSONEncoder().encode(wrapper)
         try data.write(to: indexPath, options: .atomic)
     }

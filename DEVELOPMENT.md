@@ -30,7 +30,22 @@ swift test                                         # SPM alternative
 
 `install.sh` / `build-dmg.sh` use a manual source list — prefer Xcode for dev; update the list if using CLI scripts.
 
-`macos/Package.swift` defines `Ponten` + `PontenTests` for `swift build` / `swift test`.
+`macos/Package.swift` defines `Ponten` + `PontenTests` + `PontenE2ETests` for `swift build` / `swift test`.
+
+### macOS E2E tests (XCTest + Accessibility)
+
+`PontenE2ETests/` contains **5** end-to-end tests that launch the real `Ponten.app` and drive the UI via `AXUIElement`. They run **only on macOS** — not on Windows or Linux.
+
+```bash
+cd macos
+xcodebuild build -project Ponten.xcodeproj -scheme Ponten -configuration Debug \
+  -destination "platform=macOS,arch=arm64" CODE_SIGNING_ALLOWED=NO
+xcodebuild test -project Ponten.xcodeproj -scheme Ponten \
+  -destination "platform=macOS,arch=arm64" -only-testing:PontenE2ETests \
+  -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO
+```
+
+E2E mode: `--e2e` or `PONTEN_E2E=1`. Isolated data dir: `--data-dir=<path>` or `PONTEN_DATA_DIR`.
 
 ---
 
@@ -75,4 +90,4 @@ E2E mode: `--e2e` or `PONTEN_E2E=1`. Isolated data dir: `--data-dir=<path>` or `
 
 ## CI
 
-`.github/workflows/ci.yml` — PRs: macOS build+unit test, Windows unit+E2E test+publish. Tags `v*`: DMG + Inno installer + GitHub Release.
+`.github/workflows/ci.yml` — PRs: macOS build+unit+E2E test, Windows unit+E2E test+publish. Tags `v*`: DMG + Inno installer + GitHub Release.

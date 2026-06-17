@@ -195,6 +195,7 @@ Ponten/
 │   │   ├── Utilities/               # GlobalShortcutManager, EventMonitor
 │   │   └── Resources/               # Assets, Plist
 │   ├── PontenTests/                 # XCTest suite (11 tests)
+│   ├── PontenE2ETests/              # XCTest + AX E2E tests (5 tests, macOS-only)
 │   ├── Package.swift                # Swift Package Manager manifest
 │   ├── Makefile                     # CLI build shortcuts
 │   ├── install.sh                   # macOS CLI installer
@@ -229,11 +230,21 @@ Ponten/
 
 ## Running Tests
 
-**macOS (Xcode) — 11 unit tests:**
+**macOS (Xcode) — 11 unit tests + 5 E2E (16 total via scheme test):**
 ```bash
 cd macos
 xcodebuild -project Ponten.xcodeproj -scheme Ponten \
-  -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
+  -destination 'platform=macOS' test -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO
+```
+
+**macOS E2E only (XCTest + Accessibility, macOS-only):**
+```bash
+cd macos
+xcodebuild build -project Ponten.xcodeproj -scheme Ponten -configuration Debug \
+  -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO
+xcodebuild test -project Ponten.xcodeproj -scheme Ponten \
+  -destination 'platform=macOS' -only-testing:PontenE2ETests \
+  -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO
 ```
 
 **macOS (Swift Package Manager — alternative):**
@@ -271,7 +282,7 @@ Release history: [CHANGELOG.md](CHANGELOG.md) · Developer setup: [DEVELOPMENT.m
 ### CI / Automated builds
 
 CI runs on pushes to `main` and `develop`, and on pull requests targeting `main`.  
-On Windows, CI runs unit tests and FlaUI E2E tests (`Category=E2E`).  
+CI runs unit tests and E2E tests on both platforms (Windows: FlaUI; macOS: XCTest + AX).
 Pushing a tag matching `v*` triggers a GitHub Actions release that:
 - Builds macOS DMG and runs unit tests
 - Builds Windows installer (`Ponten-Setup-X.Y.Z.exe`) via Inno Setup

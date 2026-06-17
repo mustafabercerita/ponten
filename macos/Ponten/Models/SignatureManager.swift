@@ -21,7 +21,19 @@ enum ShortcutChoice: Int, CaseIterable, Identifiable {
 /// Persists and vends signature images.
 final class SignatureManager: ObservableObject {
 
-    static let shared = SignatureManager()
+    private static let settingsDefaults: UserDefaults = {
+        if let suiteName = E2EMode.userDefaultsSuiteName,
+           let defaults = UserDefaults(suiteName: suiteName) {
+            return defaults
+        }
+        return .standard
+    }()
+
+    static let shared = SignatureManager(
+        store: SignatureStore(
+            storageDirectory: E2EMode.dataDirectory ?? SignatureStore.defaultStorageDirectory()
+        )
+    )
 
     // MARK: - Published State
 
@@ -45,21 +57,31 @@ final class SignatureManager: ObservableObject {
     @Published var pendingImageToEdit: NSImage? = nil
     @Published var pendingEditSignatureID: UUID? = nil
 
-    @Published var showWhiteCanvas: Bool = UserDefaults.standard.object(forKey: "ShowWhiteCanvas") == nil ? true : UserDefaults.standard.bool(forKey: "ShowWhiteCanvas") {
+    @Published var showWhiteCanvas: Bool = {
+        let defaults = SignatureManager.settingsDefaults
+        return defaults.object(forKey: "ShowWhiteCanvas") == nil ? true : defaults.bool(forKey: "ShowWhiteCanvas")
+    }() {
         didSet {
-            UserDefaults.standard.set(showWhiteCanvas, forKey: "ShowWhiteCanvas")
+            SignatureManager.settingsDefaults.set(showWhiteCanvas, forKey: "ShowWhiteCanvas")
         }
     }
 
-    @Published var autoPaste: Bool = UserDefaults.standard.bool(forKey: "AutoPasteEnabled") {
+    @Published var autoPaste: Bool = {
+        SignatureManager.settingsDefaults.bool(forKey: "AutoPasteEnabled")
+    }() {
         didSet {
-            UserDefaults.standard.set(autoPaste, forKey: "AutoPasteEnabled")
+            SignatureManager.settingsDefaults.set(autoPaste, forKey: "AutoPasteEnabled")
+            if E2EMode.isEnabled {
+                saveIndex()
+            }
         }
     }
     @Published var launchAtLogin: Bool = false
-    @Published var globalShortcut: ShortcutChoice = ShortcutChoice(rawValue: UserDefaults.standard.integer(forKey: "GlobalShortcut")) ?? .optCmdS {
+    @Published var globalShortcut: ShortcutChoice = {
+        ShortcutChoice(rawValue: SignatureManager.settingsDefaults.integer(forKey: "GlobalShortcut")) ?? .optCmdS
+    }() {
         didSet {
-            UserDefaults.standard.set(globalShortcut.rawValue, forKey: "GlobalShortcut")
+            SignatureManager.settingsDefaults.set(globalShortcut.rawValue, forKey: "GlobalShortcut")
             GlobalShortcutManager.shared.updateShortcut(globalShortcut)
         }
     }
@@ -88,12 +110,17 @@ final class SignatureManager: ObservableObject {
     private func loadSignatures() {
         signatures = store.load()
         activeSignatureID = store.loadActiveID() ?? signatures.first?.0.id
+
+        if E2EMode.isEnabled, let settings = store.loadSettings() {
+            autoPaste = settings.autoPaste
+        }
     }
 
     private func saveIndex() {
         let items = signatures.map { $0.item }
+        let settings = E2EMode.isEnabled ? UserSettings(autoPaste: autoPaste) : nil
         do {
-            try store.saveIndex(items: items, activeID: activeSignatureID)
+            try store.saveIndex(items: items, activeID: activeSignatureID, settings: settings)
         } catch {
             showToast("Failed to save signatures: \(error.localizedDescription)")
         }
@@ -248,6 +275,14 @@ final class SignatureManager: ObservableObject {
 
     @discardableResult
     func copySignatureToClipboard() -> Bool {
+        guard signatureImage != nil else { return false }
+
+        if E2EMode.isEnabled {
+            writeE2ECopyMarker()
+            showToast("Signature copied to clipboard ✓")
+            return true
+        }
+
         guard let image = signatureImage else { return false }
 
         let pasteboard = NSPasteboard.general
@@ -270,6 +305,17 @@ final class SignatureManager: ObservableObject {
             showToast("Failed to copy — try again.")
         }
         return success
+    }
+
+    private func writeE2ECopyMarker() {
+        guard let dataDirectory = E2EMode.dataDirectory else { return }
+        let markerPath = dataDirectory.appendingPathComponent("e2e-last-copy.txt")
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        do {
+            try timestamp.write(to: markerPath, atomically: true, encoding: .utf8)
+        } catch {
+            print("Failed to write E2E copy marker: \(error)")
+        }
     }
 
     // MARK: - Auto-Paste
@@ -316,6 +362,7 @@ final class SignatureManager: ObservableObject {
     // MARK: - Launch at Login
 
     func setLaunchAtLogin(_ enabled: Bool) {
+        if E2EMode.isEnabled { return }
         guard #available(macOS 13.0, *) else { return }
         do {
             if enabled {

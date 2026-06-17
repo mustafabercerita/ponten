@@ -25,6 +25,17 @@ Dir.glob("macos/Ponten/Models/*.swift").each do |file|
   target.add_file_references([file_ref])
 end
 
+# Add missing files in Utilities
+utilities_group = project.main_group.find_subpath(File.join('Ponten', 'Utilities'), true)
+Dir.glob("macos/Ponten/Utilities/*.swift").each do |file|
+  basename = File.basename(file)
+  next if utilities_group.files.any? { |f| f.path == basename }
+
+  puts "Adding utility #{basename}"
+  file_ref = utilities_group.new_file(basename)
+  target.add_file_references([file_ref])
+end
+
 # Also add Tests if missing
 test_target = project.targets.find { |t| t.name == 'PontenTests' }
 if test_target

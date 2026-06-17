@@ -21,6 +21,11 @@ let package = Package(
             name: "PontenTests",
             dependencies: ["Ponten"],
             path: "PontenTests"
+        ),
+        .testTarget(
+            name: "PontenE2ETests",
+            dependencies: ["Ponten"],
+            path: "PontenE2ETests"
         )
     ]
 )

@@ -91,6 +91,7 @@ struct SignatureActiveView: View {
             .buttonStyle(PrimaryButtonStyle())
             .padding(.horizontal, 14)
             .keyboardShortcut(.return, modifiers: [])
+            .accessibilityIdentifier("sign-button")
             .accessibilityLabel("Copy signature to clipboard")
             .accessibilityHint("Copies your signature image so you can paste it anywhere")
 
