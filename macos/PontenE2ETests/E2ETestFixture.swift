@@ -521,21 +521,25 @@ final class E2ETestFixture {
         return try body()
     }
 
-    /// TEST_HOST deadlocks on `DispatchQueue.main.sync`; XCTWaiter pumps the run loop safely.
-    private func performOnMainAndWait(_ block: @escaping () throws -> Void) throws {
-        var thrown: Error?
-        let expectation = XCTestExpectation(description: "Ponten E2E main-thread UI work")
+    private func performOnMainAndWait(_ block: () throws -> Void) throws {
+        if Thread.isMainThread {
+            try block()
+            return
+        }
 
+        var thrown: Error?
+        let group = DispatchGroup()
+        group.enter()
         DispatchQueue.main.async {
             do {
                 try block()
             } catch {
                 thrown = error
             }
-            expectation.fulfill()
+            group.leave()
         }
 
-        guard XCTWaiter.wait(for: [expectation], timeout: 10) == .completed else {
+        guard group.wait(timeout: .now() + 10) == .success else {
             throw NSError(
                 domain: "PontenE2E",
                 code: 11,
