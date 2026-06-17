@@ -28,25 +28,52 @@ public sealed class E2ETestFixture : IDisposable
 
         KillStalePontenProcesses();
         Automation = new UIA3Automation();
-        Application = LaunchApp(DataDirectory);
+
+        Process? launchedProcess = null;
+        try
+        {
+            Application = LaunchApp(DataDirectory, out launchedProcess);
+        }
+        catch
+        {
+            if (launchedProcess != null)
+            {
+                ForceKillProcess(launchedProcess);
+            }
+
+            Automation.Dispose();
+            throw;
+        }
     }
 
     private static void KillStalePontenProcesses()
     {
         foreach (var process in Process.GetProcessesByName("PontenWPF"))
         {
-            try
+            ForceKillProcess(process);
+        }
+
+        // Give Windows a moment to release per-run mutexes and UI handles.
+        Thread.Sleep(250);
+    }
+
+    private static void ForceKillProcess(Process process)
+    {
+        try
+        {
+            if (!process.HasExited)
             {
-                if (!process.HasExited)
-                {
-                    process.Kill(entireProcessTree: true);
-                    process.WaitForExit(3000);
-                }
+                process.Kill(entireProcessTree: true);
+                process.WaitForExit(5000);
             }
-            catch
-            {
-                // Best-effort cleanup between E2E runs.
-            }
+        }
+        catch
+        {
+            // Best-effort cleanup between E2E runs.
+        }
+        finally
+        {
+            process.Dispose();
         }
     }
 
@@ -72,7 +99,7 @@ public sealed class E2ETestFixture : IDisposable
         throw new FileNotFoundException("PontenWPF.exe not found. Build the solution before running E2E tests.");
     }
 
-    private static Application LaunchApp(string dataDirectory)
+    private static Application LaunchApp(string dataDirectory, out Process launchedProcess)
     {
         var exePath = ResolveAppExecutable();
         var startInfo = new ProcessStartInfo
@@ -95,21 +122,43 @@ public sealed class E2ETestFixture : IDisposable
         startInfo.Environment["PONTEN_E2E"] = "1";
         startInfo.Environment["PONTEN_DATA_DIR"] = dataDirectory;
 
-        var process = Process.Start(startInfo)
+        launchedProcess = Process.Start(startInfo)
             ?? throw new InvalidOperationException($"Failed to start Ponten at {exePath}");
 
-        if (!process.WaitForInputIdle(15_000))
+        WaitForLaunchReady(launchedProcess);
+        return Application.Attach(launchedProcess);
+    }
+
+    private static void WaitForLaunchReady(Process process)
+    {
+        // WPF apps often never report "input idle" on CI because the dispatcher
+        // keeps pumping messages. Poll for a fast exit or best-effort idle, then
+        // attach and let WaitForMainWindow confirm the UI is actually up.
+        var deadline = DateTime.UtcNow.AddSeconds(30);
+
+        while (DateTime.UtcNow < deadline)
         {
-            throw new TimeoutException($"Ponten process {process.Id} did not become idle.");
+            process.Refresh();
+
+            if (process.HasExited)
+            {
+                throw new InvalidOperationException(
+                    $"Ponten exited during launch with code {process.ExitCode}. Another instance may be holding the mutex.");
+            }
+
+            if (process.WaitForInputIdle(500))
+            {
+                return;
+            }
+
+            Thread.Sleep(250);
         }
 
         if (process.HasExited)
         {
             throw new InvalidOperationException(
-                $"Ponten exited immediately with code {process.ExitCode}. Another instance may be holding the mutex.");
+                $"Ponten exited during launch with code {process.ExitCode}. Another instance may be holding the mutex.");
         }
-
-        return Application.Attach(process);
     }
 
     public Window WaitForMainWindow(TimeSpan? timeout = null)
@@ -335,18 +384,30 @@ public sealed class E2ETestFixture : IDisposable
                 try
                 {
                     Application.Close();
-                    Application.WaitWhileBusy(TimeSpan.FromSeconds(5));
+                    Application.WaitWhileBusy(TimeSpan.FromSeconds(3));
                 }
                 catch
                 {
-                    Application.Kill();
+                    // Fall through to process-tree kill.
                 }
             }
 
             if (!Application.HasExited)
             {
-                Application.Kill();
-                Application.WaitWhileBusy(TimeSpan.FromSeconds(5));
+                try
+                {
+                    Application.Kill();
+                    Application.WaitWhileBusy(TimeSpan.FromSeconds(3));
+                }
+                catch
+                {
+                    // Fall through to process-tree kill.
+                }
+            }
+
+            if (!Application.HasExited)
+            {
+                ForceKillProcess(Process.GetProcessById(Application.ProcessId));
             }
         }
         catch
