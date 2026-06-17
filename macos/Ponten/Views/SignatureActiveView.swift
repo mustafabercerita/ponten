@@ -56,7 +56,7 @@ struct SignatureActiveView: View {
                 if isDropTargeted {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(Color.accentColor.opacity(0.08))
-                    Text("Drop to replace")
+                    Text("Drop to add")
                         .font(.caption)
                         .foregroundColor(.accentColor)
                         .fontWeight(.medium)

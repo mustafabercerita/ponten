@@ -92,7 +92,11 @@ final class SignatureManager: ObservableObject {
 
     private func saveIndex() {
         let items = signatures.map { $0.item }
-        store.saveIndex(items: items, activeID: activeSignatureID)
+        do {
+            try store.saveIndex(items: items, activeID: activeSignatureID)
+        } catch {
+            showToast("Failed to save signatures: \(error.localizedDescription)")
+        }
     }
 
     private func loadLaunchAtLoginState() {
@@ -184,7 +188,11 @@ final class SignatureManager: ObservableObject {
             let accessed = url.startAccessingSecurityScopedResource()
 
             if let image = NSImage(contentsOf: url) {
-                self.pendingImageToEdit = image
+                if image.hasPredominantlyWhiteOrTransparentEdges() {
+                    self.pendingImageToEdit = image
+                } else {
+                    self.showToast(SignatureError.notWhiteBackground.localizedDescription)
+                }
             } else {
                 self.showToast(SignatureError.invalidImage.localizedDescription)
             }
@@ -207,7 +215,7 @@ final class SignatureManager: ObservableObject {
             _ = provider.loadObject(ofClass: NSImage.self) { [weak self] image, _ in
                 guard let self = self, let nsImage = image as? NSImage else { return }
                 DispatchQueue.main.async {
-                    self.pendingImageToEdit = nsImage
+                    self.acceptImportedImage(nsImage)
                 }
             }
             return true
@@ -218,12 +226,21 @@ final class SignatureManager: ObservableObject {
     func importURL(_ url: URL) {
         if let image = NSImage(contentsOf: url) {
             DispatchQueue.main.async {
-                self.pendingImageToEdit = image
+                self.acceptImportedImage(image)
             }
         } else {
             DispatchQueue.main.async {
                 self.errorMessage = SignatureError.invalidImage.localizedDescription
             }
+        }
+    }
+
+    @MainActor
+    private func acceptImportedImage(_ image: NSImage) {
+        if image.hasPredominantlyWhiteOrTransparentEdges() {
+            pendingImageToEdit = image
+        } else {
+            showToast(SignatureError.notWhiteBackground.localizedDescription)
         }
     }
 

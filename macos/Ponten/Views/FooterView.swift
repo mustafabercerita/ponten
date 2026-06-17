@@ -79,6 +79,7 @@ struct FooterView: View {
                 .accessibilityLabel("About Ponten")
                 .popover(isPresented: $showAbout, arrowEdge: .bottom) {
                     AboutView()
+                        .environmentObject(manager)
                 }
                 
                 Button("Quit") {

@@ -49,6 +49,15 @@ final class SignatureStore {
                 loaded.append((item, img))
             }
         }
+
+        if loaded.count < wrapper.items.count {
+            let prunedItems = loaded.map { $0.0 }
+            let prunedActiveID = wrapper.activeID.flatMap { id in
+                prunedItems.contains(where: { $0.id == id }) ? id : prunedItems.first?.id
+            }
+            try? saveIndex(items: prunedItems, activeID: prunedActiveID)
+        }
+
         return loaded
     }
 
@@ -60,11 +69,10 @@ final class SignatureStore {
         return wrapper.activeID
     }
 
-    func saveIndex(items: [SignatureItem], activeID: UUID?) {
+    func saveIndex(items: [SignatureItem], activeID: UUID?) throws {
         let wrapper = IndexWrapper(items: items, activeID: activeID)
-        if let data = try? JSONEncoder().encode(wrapper) {
-            try? data.write(to: indexPath, options: .atomic)
-        }
+        let data = try JSONEncoder().encode(wrapper)
+        try data.write(to: indexPath, options: .atomic)
     }
 
     func deleteFile(filename: String) {
@@ -91,7 +99,7 @@ final class SignatureStore {
 
         let id = UUID()
         let newItem = SignatureItem(id: id, filename: "signature.png")
-        saveIndex(items: [newItem], activeID: id)
+        try? saveIndex(items: [newItem], activeID: id)
         return [(newItem, img)]
     }
 }

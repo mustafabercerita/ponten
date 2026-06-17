@@ -21,7 +21,7 @@ namespace PontenWPF
         {
             InitializeComponent();
             _originalImage = new Bitmap(originalImage);
-            DebounceUpdate();
+            Loaded += OnWindowLoaded;
         }
 
         // Keep default constructor for backward compatibility if needed
@@ -29,6 +29,11 @@ namespace PontenWPF
         {
             InitializeComponent();
             LoadDummyImage();
+            Loaded += OnWindowLoaded;
+        }
+
+        private void OnWindowLoaded(object sender, RoutedEventArgs e)
+        {
             DebounceUpdate();
         }
 
@@ -79,14 +84,15 @@ namespace PontenWPF
                 ImageScale.ScaleX = ZoomSlider.Value;
                 ImageScale.ScaleY = ZoomSlider.Value;
             }
-            if (ImageRotate != null && RotateSlider != null)
-            {
-                ImageRotate.Angle = RotateSlider.Value;
-            }
 
             int thickness = (int)(ThicknessSlider?.Value ?? 0);
             bool removeBg = RemoveBgCheckBox?.IsChecked ?? false;
-            
+            bool autoTrim = AutoTrimCheckBox?.IsChecked ?? false;
+            double contrast = ContrastSlider?.Value ?? 1.0;
+            double brightness = BrightnessSlider?.Value ?? 0.0;
+            float angle = (float)(RotateSlider?.Value ?? 0);
+            int padding = Math.Max(10, thickness + 12);
+
             Task.Run(async () =>
             {
                 try
@@ -94,18 +100,27 @@ namespace PontenWPF
                     await Task.Delay(100, token);
                     if (token.IsCancellationRequested) return;
 
-                    await ProcessImageAsync(thickness, removeBg, token);
+                    await ProcessImageAsync(thickness, removeBg, autoTrim, contrast, brightness, angle, padding, token);
                 }
                 catch (OperationCanceledException)
                 {
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    App.Log($"Image processing error: {ex.Message}");
                 }
             }, token);
         }
 
-        private async Task ProcessImageAsync(int thickness, bool removeBg, CancellationToken token)
+        private async Task ProcessImageAsync(
+            int thickness,
+            bool removeBg,
+            bool autoTrim,
+            double contrast,
+            double brightness,
+            float angle,
+            int padding,
+            CancellationToken token)
         {
             Bitmap processingBmp;
             lock (this)
@@ -121,6 +136,27 @@ namespace PontenWPF
                     Bitmap current = processingBmp;
                     try
                     {
+                        if (thickness > 0)
+                        {
+                            var dilated = _imageProcessor.Dilation(current, thickness);
+                            if (current != processingBmp) current.Dispose();
+                            current = dilated;
+                        }
+
+                        if (contrast != 1.0 || brightness != 0.0)
+                        {
+                            var adjusted = _imageProcessor.AdjustColor(current, contrast, brightness);
+                            if (current != processingBmp) current.Dispose();
+                            current = adjusted;
+                        }
+
+                        if (angle != 0)
+                        {
+                            var rotated = _imageProcessor.Rotate(current, angle);
+                            if (current != processingBmp) current.Dispose();
+                            current = rotated;
+                        }
+
                         if (removeBg)
                         {
                             var stripped = _imageProcessor.StripWhiteBackground(current);
@@ -128,13 +164,13 @@ namespace PontenWPF
                             current = stripped;
                         }
 
-                        if (thickness > 0)
+                        if (autoTrim)
                         {
-                            var dilated = _imageProcessor.Dilation(current, thickness);
+                            var trimmed = _imageProcessor.AutoTrimWhitespace(current, padding);
                             if (current != processingBmp) current.Dispose();
-                            current = dilated;
+                            current = trimmed;
                         }
-                        
+
                         if (current == processingBmp)
                         {
                             current = new Bitmap(processingBmp);
@@ -166,6 +202,10 @@ namespace PontenWPF
                     PreviewImage.Source = imageSource;
                 });
             }
+            catch (Exception ex)
+            {
+                App.Log($"Image processing error: {ex.Message}");
+            }
             finally
             {
                 if (processingBmp != null)
@@ -189,11 +229,6 @@ namespace PontenWPF
                 bitmapImage.Freeze();
                 return bitmapImage;
             }
-        }
-
-        private void UpdatePreviewAsync()
-        {
-            DebounceUpdate();
         }
 
         protected override void OnClosed(EventArgs e)

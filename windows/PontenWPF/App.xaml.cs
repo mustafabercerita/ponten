@@ -1,5 +1,3 @@
-using System.Configuration;
-using System.Data;
 using System.Windows;
 using System.Threading;
 using System.IO;
@@ -14,6 +12,7 @@ public partial class App : Application
     private TaskbarIcon? notifyIcon;
     private static Mutex? _mutex;
     private bool _hasMutex;
+    private bool _shownDispatcherError;
     private const string MutexName = "PontenWPF.SingleInstance";
 
     protected override void OnStartup(StartupEventArgs e)
@@ -22,7 +21,6 @@ public partial class App : Application
         
         Log("App startup initiated");
         string? exePath = Environment.ProcessPath ?? System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName;
-        Log($"Executable Path: {exePath ?? "null"}");
         Log($"Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}");
         
         _mutex = new Mutex(true, MutexName, out _hasMutex);
@@ -30,18 +28,47 @@ public partial class App : Application
         if (!_hasMutex)
         {
             Log("Another instance is already running. Exiting.");
+            MessageBox.Show(
+                "Ponten is already running in the system tray",
+                "Ponten",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
             Environment.Exit(0);
             return;
         }
 
         AppDomain.CurrentDomain.UnhandledException += (s, args) =>
         {
-            Log($"Unhandled Exception: {args.ExceptionObject}");
+            if (args.ExceptionObject is Exception ex)
+            {
+                LogException("Unhandled Exception", ex);
+            }
+            else
+            {
+                Log("Unhandled Exception occurred");
+            }
         };
         DispatcherUnhandledException += (s, args) =>
         {
-            Log($"Dispatcher Unhandled Exception: {args.Exception}");
-            args.Handled = true;
+            LogException("Dispatcher Unhandled Exception", args.Exception);
+
+            if (IsNonFatalException(args.Exception))
+            {
+                args.Handled = true;
+                return;
+            }
+
+            if (!_shownDispatcherError)
+            {
+                _shownDispatcherError = true;
+                MessageBox.Show(
+                    $"An unexpected error occurred: {args.Exception.Message}",
+                    "Ponten",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+
+            args.Handled = false;
         };
 
         base.OnStartup(e);
@@ -117,8 +144,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Log($"Failed to instantiate Tray Icon: {ex}");
-            Log($"Stacktrace: {ex.StackTrace}");
+            LogException("Failed to instantiate Tray Icon", ex);
         }
         
         MainWindow = new MenuBarView();
@@ -154,6 +180,7 @@ public partial class App : Application
     }
     
     private static readonly object _logLock = new object();
+
     public static void Log(string message)
     {
         try
@@ -163,11 +190,40 @@ public partial class App : Application
                 string logDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ponten", "logs");
                 Directory.CreateDirectory(logDir);
                 string logFile = Path.Combine(logDir, "app.log");
-                string formattedMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {message}{Environment.NewLine}";
+                string formattedMessage = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {SanitizeForLog(message)}{Environment.NewLine}";
                 File.AppendAllText(logFile, formattedMessage);
             }
         }
         catch { /* Ignore logging failures */ }
+    }
+
+    public static void LogException(string context, Exception ex)
+    {
+        Log($"{context}: {ex.GetType().Name} - {ex.Message}");
+    }
+
+    private static bool IsNonFatalException(Exception ex)
+    {
+        return ex is OperationCanceledException or System.IO.IOException;
+    }
+
+    private static string SanitizeForLog(string message)
+    {
+#if DEBUG
+        return message;
+#else
+        if (string.IsNullOrEmpty(message))
+        {
+            return message;
+        }
+
+        string sanitized = message.Split(new[] { Environment.NewLine, "\n" }, StringSplitOptions.None)[0];
+        sanitized = System.Text.RegularExpressions.Regex.Replace(
+            sanitized,
+            @"[A-Za-z]:\\[^\s]+|/[\w./-]+",
+            "[path]");
+        return sanitized;
+#endif
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -128,6 +128,33 @@ final class SignatureManagerTests: XCTestCase {
     }
 
     @MainActor
+    func testSaveIndexPersistsActiveID() throws {
+        let url = try makePNGFile()
+        try manager.saveSignature(from: url)
+        let activeID = try XCTUnwrap(manager.activeSignatureID)
+
+        XCTAssertEqual(testStore.loadActiveID(), activeID)
+        XCTAssertEqual(testStore.load().count, 1)
+    }
+
+    @MainActor
+    func testLoadPrunesMissingPNGEntries() throws {
+        let existingID = UUID()
+        let missingID = UUID()
+        let existingItem = SignatureItem(id: existingID, filename: "exists.png")
+        let missingItem = SignatureItem(id: missingID, filename: "missing.png")
+        try testStore.saveIndex(items: [existingItem, missingItem], activeID: missingID)
+        _ = try makePNGFile(named: "exists.png")
+
+        let reloadedStore = SignatureStore(storageDirectory: testDirectory)
+        let loaded = reloadedStore.load()
+
+        XCTAssertEqual(loaded.count, 1)
+        XCTAssertEqual(loaded.first?.0.id, existingID)
+        XCTAssertEqual(reloadedStore.loadActiveID(), existingID)
+    }
+
+    @MainActor
     func testDeletingInactiveSignatureKeepsActiveSignature() throws {
         let url1 = try makePNGFile(named: "sig1.png")
         let url2 = try makePNGFile(named: "sig2.png")

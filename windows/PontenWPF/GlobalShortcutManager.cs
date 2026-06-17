@@ -15,6 +15,7 @@ namespace PontenWPF
         private IntPtr _hWnd;
         private int _hotKeyId;
 
+        public bool Success { get; private set; }
         public event Action? HotKeyPressed;
 
         public GlobalShortcutManager(IntPtr hWnd)
@@ -31,8 +32,11 @@ namespace PontenWPF
             }
 
             _hotKeyId = id;
-            RegisterHotKey(_hWnd, id, modifiers, key);
-            ComponentDispatcher.ThreadPreprocessMessage += ThreadPreprocessMessageMethod;
+            Success = RegisterHotKey(_hWnd, id, modifiers, key);
+            if (Success)
+            {
+                ComponentDispatcher.ThreadPreprocessMessage += ThreadPreprocessMessageMethod;
+            }
         }
 
         private void ThreadPreprocessMessageMethod(ref MSG msg, ref bool handled)

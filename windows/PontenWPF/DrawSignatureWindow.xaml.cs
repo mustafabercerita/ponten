@@ -26,6 +26,23 @@ namespace PontenWPF
             SignatureCanvas.DefaultDrawingAttributes = defaultAttributes;
         }
 
+        private void ThicknessSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (SignatureCanvas == null || ThicknessSlider == null)
+            {
+                return;
+            }
+
+            double thickness = ThicknessSlider.Value;
+            var attributes = SignatureCanvas.DefaultDrawingAttributes.Clone() as System.Windows.Ink.DrawingAttributes
+                ?? new System.Windows.Ink.DrawingAttributes();
+            attributes.Color = Colors.Black;
+            attributes.Width = thickness;
+            attributes.Height = thickness;
+            attributes.FitToCurve = true;
+            SignatureCanvas.DefaultDrawingAttributes = attributes;
+        }
+
         private void Clear_Click(object sender, RoutedEventArgs e)
         {
             SignatureCanvas.Strokes.Clear();

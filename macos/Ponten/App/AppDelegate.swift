@@ -70,8 +70,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                             return
                         }
                         
-                        self?.signatureManager.showToast("Downloading Update v\(cleanTag)...")
-                        self?.downloadAndInstallUpdate(from: downloadUrl)
+                        if silent {
+                            self?.signatureManager.showToast("Update v\(cleanTag) available. Use Check for Updates to install.")
+                        } else {
+                            self?.promptForUpdateDownload(version: cleanTag, downloadURL: downloadUrl)
+                        }
                         
                     } else {
                         if !silent { self?.signatureManager.showToast("You're up to date! (v\(currentVersion))") }
@@ -82,6 +85,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
         task.resume()
+    }
+
+    private func promptForUpdateDownload(version: String, downloadURL: URL) {
+        let alert = NSAlert()
+        alert.messageText = "Update Available"
+        alert.informativeText = "Ponten v\(version) is available. Download and install now?"
+        alert.alertStyle = .informational
+        alert.addButton(withTitle: "Download")
+        alert.addButton(withTitle: "Cancel")
+
+        NSApp.activate(ignoringOtherApps: true)
+        let response = alert.runModal()
+        guard response == .alertFirstButtonReturn else { return }
+
+        signatureManager.showToast("Downloading Update v\(version)...")
+        downloadAndInstallUpdate(from: downloadURL)
     }
     
     private func downloadAndInstallUpdate(from url: URL) {
@@ -206,9 +225,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let contentView = MenuBarView()
             .environmentObject(signatureManager)
         let hostingController = NSHostingController(rootView: contentView)
-        hostingController.view.frame = NSRect(x: 0, y: 0, width: 300, height: 380)
+
+        let hasSignature = signatureManager.signatureImage != nil
+        let height: CGFloat = hasSignature ? 360 : 260
+        hostingController.view.frame = NSRect(x: 0, y: 0, width: 300, height: height)
         popover.contentViewController = hostingController
-        popover.contentSize = NSSize(width: 300, height: 380)
+        popover.contentSize = NSSize(width: 300, height: height)
     }
 
     // MARK: - Event Monitor (close on outside click)

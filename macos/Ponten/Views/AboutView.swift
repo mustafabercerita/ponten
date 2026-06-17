@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AboutView: View {
+    @EnvironmentObject private var manager: SignatureManager
+
     private var appVersion: String {
         return Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
     }
@@ -40,7 +42,7 @@ struct AboutView: View {
                 Image(systemName: "keyboard")
                     .font(.caption2)
                     .foregroundColor(.secondary)
-                Text("Global shortcut: ⌥⌘S")
+                Text("Global shortcut: \(manager.globalShortcut.description)")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }

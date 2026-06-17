@@ -17,5 +17,9 @@
          (~/Library/Containers/com.ponten.app/...), which is allowed by app-sandbox. -->
     <key>com.apple.security.files.downloads.read-write</key>
     <false/>
+
+    <!-- Outbound network access for GitHub Releases updater (check + download DMG). -->
+    <key>com.apple.security.network.client</key>
+    <true/>
 </dict>
 </plist>

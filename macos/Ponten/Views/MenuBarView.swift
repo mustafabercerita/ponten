@@ -57,6 +57,12 @@ struct MenuBarView: View {
             }
         }
         .animation(.spring(response: 0.32, dampingFraction: 0.78), value: manager.toastMessage)
+        .onChange(of: manager.errorMessage) { message in
+            if let message {
+                manager.showToast(message)
+                manager.errorMessage = nil
+            }
+        }
     }
 }
 

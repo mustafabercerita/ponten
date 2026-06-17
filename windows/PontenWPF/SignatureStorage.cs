@@ -16,7 +16,8 @@ namespace PontenWPF
     public class UserSettings
     {
         public bool LaunchAtLogin { get; set; } = false;
-        public bool AutoPaste { get; set; } = true;
+        public bool AutoPaste { get; set; } = false;
+        public bool RemoveBackground { get; set; } = true;
     }
 
     public class IndexWrapper
@@ -93,7 +94,33 @@ namespace PontenWPF
                 changed = true;
             }
 
+            SyncLaunchAtLoginFromRegistry(ref changed);
+
             if (changed) SaveIndex();
+        }
+
+        private void SyncLaunchAtLoginFromRegistry(ref bool changed)
+        {
+            bool registryEnabled = IsLaunchAtLoginEnabledInRegistry();
+            if (Settings.LaunchAtLogin != registryEnabled)
+            {
+                Settings.LaunchAtLogin = registryEnabled;
+                changed = true;
+            }
+        }
+
+        private static bool IsLaunchAtLoginEnabledInRegistry()
+        {
+            try
+            {
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false);
+                return key?.GetValue("PontenSignatures") != null;
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Failed to read Launch at Login registry state: {ex.Message}");
+                return false;
+            }
         }
 
         public void SaveIndex()
@@ -107,7 +134,9 @@ namespace PontenWPF
             try
             {
                 string json = JsonSerializer.Serialize(wrapper, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(_indexPath, json);
+                string tempPath = _indexPath + ".tmp";
+                File.WriteAllText(tempPath, json);
+                File.Move(tempPath, _indexPath, overwrite: true);
             }
             catch (Exception ex)
             {
@@ -132,7 +161,7 @@ namespace PontenWPF
                 if (File.Exists(path))
                 {
                     try { File.Delete(path); }
-                    catch (Exception ex) { App.Log($"Failed to delete signature image {path}: {ex.Message}"); }
+                    catch (Exception ex) { App.Log($"Failed to delete signature image {item.Filename}: {ex.Message}"); }
                 }
                 
                 if (ActiveSignatureID == id)

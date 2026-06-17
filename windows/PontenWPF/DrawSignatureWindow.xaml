@@ -3,18 +3,26 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Draw Signature" Height="400" Width="600"
         WindowStartupLocation="CenterScreen"
-        Icon="pack://application:,,,/Assets/Ponten.ico">
-    <Grid>
+        Icon="pack://application:,,,/Assets/Ponten.ico"
+        Background="#1E1E1E" Foreground="White">
+    <Grid Background="#1E1E1E">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10,10,10,0">
+            <TextBlock Text="Thickness:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <Slider x:Name="ThicknessSlider" Minimum="1" Maximum="10" Value="3" Width="150"
+                    VerticalAlignment="Center" ValueChanged="ThicknessSlider_ValueChanged"/>
+        </StackPanel>
         
-        <Border BorderBrush="LightGray" BorderThickness="1" Margin="10" Background="White">
+        <Border Grid.Row="1" BorderBrush="LightGray" BorderThickness="1" Margin="10" Background="White">
             <InkCanvas x:Name="SignatureCanvas" Background="Transparent" />
         </Border>
         
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,10,10">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10,0,10,10">
             <Button Content="Clear" Width="80" Padding="5" Margin="0,0,10,0" Click="Clear_Click"/>
             <Button Content="Cancel" Width="80" Padding="5" Margin="0,0,10,0" Click="Cancel_Click"/>
             <Button Content="Save" Width="80" Padding="5" Background="#007ACC" Foreground="White" Click="Save_Click"/>
