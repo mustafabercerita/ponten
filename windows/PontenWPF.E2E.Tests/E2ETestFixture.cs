@@ -70,7 +70,18 @@ public sealed class E2ETestFixture : IDisposable
     private static Application LaunchApp(string dataDirectory)
     {
         var exePath = ResolveAppExecutable();
-        return Application.Launch(exePath, $"--e2e --data-dir=\"{dataDirectory}\"");
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = exePath,
+            Arguments = $"--e2e --data-dir=\"{dataDirectory}\"",
+            WorkingDirectory = Path.GetDirectoryName(exePath) ?? AppContext.BaseDirectory,
+            UseShellExecute = true
+        };
+
+        var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException($"Failed to start Ponten at {exePath}");
+
+        return Application.Attach(process);
     }
 
     public Window WaitForMainWindow(TimeSpan? timeout = null)

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using System.Windows.Automation;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
@@ -51,26 +50,11 @@ namespace PontenWPF
             this.Closed += MenuBarView_Closed;
 
             SignaturesListBox.ItemsSource = DisplayItems;
-            ConfigureAutomationIds();
 
             if (E2EMode.IsEnabled)
             {
                 ShowInTaskbar = true;
             }
-        }
-
-        private void ConfigureAutomationIds()
-        {
-            AutomationProperties.SetAutomationId(this, "PontenMainWindow");
-            AutomationProperties.SetAutomationId(EmptyStateText, "EmptyState");
-            AutomationProperties.SetAutomationId(SignaturesListBox, "SignaturesList");
-            AutomationProperties.SetAutomationId(SignButton, "SignButton");
-            AutomationProperties.SetAutomationId(AddButton, "AddButton");
-            AutomationProperties.SetAutomationId(RemoveBgToggle, "RemoveBgToggle");
-            AutomationProperties.SetAutomationId(AutoPasteCheck, "AutoPasteCheck");
-            AutomationProperties.SetAutomationId(LaunchAtLoginCheck, "LaunchAtLoginCheck");
-            AutomationProperties.SetAutomationId(StatusText, "StatusText");
-            AutomationProperties.SetAutomationId(QuitButton, "QuitButton");
         }
 
         private void MenuBarView_SourceInitialized(object? sender, EventArgs e)
