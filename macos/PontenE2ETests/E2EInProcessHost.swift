@@ -1,6 +1,5 @@
 import AppKit
 import SwiftUI
-@testable import Ponten
 
 /// Hosts `MenuBarView` in-process for CI where cross-process Accessibility is unavailable.
 /// Must be created on the main thread.

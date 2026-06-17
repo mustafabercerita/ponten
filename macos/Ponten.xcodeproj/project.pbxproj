@@ -7,14 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		016710FF9737DA46C09E0AF4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F008 /* Assets.xcassets */; };
 		11121088C09D15315CCFE69C /* E2EInProcessHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2411416A70CEA0740C21E207 /* E2EInProcessHost.swift */; };
 		1120A2BBD5F5CDEF342B0263 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */; };
 		1331B8C6458D4593AD8B54F3 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43484E7F379C374B0B69DF15 /* EmptyStateView.swift */; };
 		171BB0EA90A4FC55C5FD3537 /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7628AF5738F410268B6B01 /* ImageEditorView.swift */; };
+		1F70543CF6BA77616D5D6871 /* Components.swift in Sources */ = {isa = PBXBuildFile; fileRef = F005 /* Components.swift */; };
+		269A0BC2654FAB21D9956828 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006 /* EventMonitor.swift */; };
+		2D67FA73A28F07F1C18E11FA /* SignatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* SignatureManager.swift */; };
+		3E00656C42C6F89A0714DBD4 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F004 /* MenuBarView.swift */; };
+		3F0F2EB29D34BBF310950D33 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */; };
+		463565FF26682FC83E6F7373 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */; };
 		472D05B59AD328CEBC0EC3E0 /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AA7F404CE26C6EFA1DED02 /* FooterView.swift */; };
 		6BAE60826E8D53E01F415ADE /* ImageProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D95262DBEF0D230B8D9EEEE7 /* ImageProcessorTests.swift */; };
+		70AA5507152201FE21B691C5 /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AA7F404CE26C6EFA1DED02 /* FooterView.swift */; };
 		7E0E2D3B436FF382F391C3D1 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */; };
+		8464BC4936E5F56B14EB1D27 /* SignatureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4B16AFA79F617EF93C299C /* SignatureStore.swift */; };
 		851DCEFE56EBE19AA75F5C54 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2679ED8624C7A36115C89115 /* HeaderView.swift */; };
+		93603BF112407324811E4170 /* SignatureActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */; };
+		98DB0E87C5D1808D71B65AA0 /* ImageEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C7628AF5738F410268B6B01 /* ImageEditorView.swift */; };
+		993D8590F2331BA628E196BE /* E2EMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* E2EMode.swift */; };
 		A001 /* PontenApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F001 /* PontenApp.swift */; };
 		A002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* AppDelegate.swift */; };
 		A003 /* SignatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* SignatureManager.swift */; };
@@ -23,6 +35,8 @@
 		A006 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006 /* EventMonitor.swift */; };
 		A007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F008 /* Assets.xcassets */; };
 		A008 /* E2EMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* E2EMode.swift */; };
+		AA131B6F823BAF77A36B0006 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43484E7F379C374B0B69DF15 /* EmptyStateView.swift */; };
+		AEC907187E97FC9D591DFC3C /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2679ED8624C7A36115C89115 /* HeaderView.swift */; };
 		B001 /* SignatureManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* SignatureManagerTests.swift */; };
 		B002 /* E2ETestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* E2ETestFixture.swift */; };
 		B003 /* MenuBarE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* MenuBarE2ETests.swift */; };
@@ -30,6 +44,9 @@
 		C5E489EB5810162538BA0D6C /* SignatureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF4B16AFA79F617EF93C299C /* SignatureStore.swift */; };
 		D5EDA8B94534507A56EAE3CF /* SignatureActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */; };
 		DDCAFC6F19059A9BEDA211D3 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F754AF0AA1DECA02DF29D /* DrawingView.swift */; };
+		E227748BFD17A7A85F0BB4CC /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F754AF0AA1DECA02DF29D /* DrawingView.swift */; };
+		E49D5E26ADC30A1F4FC34350 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D71898F773ACC800CD5B077 /* ImageProcessor.swift */; };
+		F42985978478A2CFCA0F98B8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -254,6 +271,7 @@
 			buildPhases = (
 				P005 /* Sources */,
 				E003 /* Frameworks */,
+				678765B0130E056581EC67B8 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -309,6 +327,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		678765B0130E056581EC67B8 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				016710FF9737DA46C09E0AF4 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		P003 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -360,6 +386,22 @@
 				B002 /* E2ETestFixture.swift in Sources */,
 				B003 /* MenuBarE2ETests.swift in Sources */,
 				11121088C09D15315CCFE69C /* E2EInProcessHost.swift in Sources */,
+				F42985978478A2CFCA0F98B8 /* AppDelegate.swift in Sources */,
+				2D67FA73A28F07F1C18E11FA /* SignatureManager.swift in Sources */,
+				E49D5E26ADC30A1F4FC34350 /* ImageProcessor.swift in Sources */,
+				8464BC4936E5F56B14EB1D27 /* SignatureStore.swift in Sources */,
+				3E00656C42C6F89A0714DBD4 /* MenuBarView.swift in Sources */,
+				1F70543CF6BA77616D5D6871 /* Components.swift in Sources */,
+				463565FF26682FC83E6F7373 /* AboutView.swift in Sources */,
+				70AA5507152201FE21B691C5 /* FooterView.swift in Sources */,
+				E227748BFD17A7A85F0BB4CC /* DrawingView.swift in Sources */,
+				AEC907187E97FC9D591DFC3C /* HeaderView.swift in Sources */,
+				AA131B6F823BAF77A36B0006 /* EmptyStateView.swift in Sources */,
+				93603BF112407324811E4170 /* SignatureActiveView.swift in Sources */,
+				98DB0E87C5D1808D71B65AA0 /* ImageEditorView.swift in Sources */,
+				269A0BC2654FAB21D9956828 /* EventMonitor.swift in Sources */,
+				3F0F2EB29D34BBF310950D33 /* GlobalShortcutManager.swift in Sources */,
+				993D8590F2331BA628E196BE /* E2EMode.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -553,7 +595,6 @@
 		XCC007 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -563,14 +604,12 @@
 				PRODUCT_NAME = PontenE2ETests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ponten.app/Contents/MacOS/Ponten";
 			};
 			name = Debug;
 		};
 		XCC008 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -580,7 +619,6 @@
 				PRODUCT_NAME = PontenE2ETests;
 				SDKROOT = macosx;
 				SWIFT_VERSION = 5.9;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Ponten.app/Contents/MacOS/Ponten";
 			};
 			name = Release;
 		};
