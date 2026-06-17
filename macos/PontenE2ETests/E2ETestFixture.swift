@@ -185,7 +185,6 @@ final class E2ETestFixture {
         let app = NSApplication.shared
         if !applicationBootstrapped {
             app.setActivationPolicy(.regular)
-            app.finishLaunching()
             applicationBootstrapped = true
         }
         app.activate(ignoringOtherApps: true)
@@ -562,28 +561,27 @@ final class E2ETestFixture {
         return try body()
     }
 
-    /// Schedules UI work on the main queue and pumps `RunLoop.main` until it completes.
-    /// Required for SwiftUI/AppKit hosting inside XCTest, which runs on the main thread.
+    /// XCTest runs on the main thread; async + run-loop pump never drains the main queue on CI.
     private func performOnMainWithRunLoop(_ block: @escaping () throws -> Void) throws {
-        var thrown: Error?
-        var completed = false
-        let work = block
+        if Thread.isMainThread {
+            try block()
+            return
+        }
 
+        var thrown: Error?
+        let work = block
+        let group = DispatchGroup()
+        group.enter()
         DispatchQueue.main.async {
             do {
                 try work()
             } catch {
                 thrown = error
             }
-            completed = true
+            group.leave()
         }
 
-        let deadline = Date().addingTimeInterval(30)
-        while !completed && Date() < deadline {
-            pumpMainRunLoop(for: 0.05)
-        }
-
-        guard completed else {
+        guard group.wait(timeout: .now() + 30) == .success else {
             throw NSError(
                 domain: "PontenE2E",
                 code: 11,

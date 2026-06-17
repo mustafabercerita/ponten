@@ -10,43 +10,49 @@ abort('PontenE2ETests target not found') unless e2e_target
 ponten_group = project.main_group.find_subpath('Ponten', true)
 abort('Ponten group not found') unless ponten_group
 
-EXCLUDED = %w[PontenApp.swift AppDelegate.swift].freeze
+# Only compile models/utilities required by E2EMenuPanelView — no SwiftUI views.
+ALLOWED_PREFIXES = %w[Models/ Utilities/].freeze
+ALLOWED_ROOT = %w[].freeze
 
-def swift_files(group)
+def collect_allowed_files(group, prefix = '')
   files = []
   group.children.each do |child|
     if child.is_a?(Xcodeproj::Project::Object::PBXGroup)
-      files.concat(swift_files(child))
-    elsif child.path&.end_with?('.swift') && !EXCLUDED.include?(File.basename(child.path))
-      files << child
+      child_prefix = prefix.empty? ? "#{child.path}/" : "#{prefix}#{child.path}/"
+      files.concat(collect_allowed_files(child, child_prefix))
+    elsif child.path&.end_with?('.swift')
+      rel = "#{prefix}#{child.path}"
+      basename = File.basename(child.path)
+      allowed = ALLOWED_PREFIXES.any? { |p| rel.start_with?(p) } || ALLOWED_ROOT.include?(basename)
+      files << child if allowed
     end
   end
   files
 end
 
+allowed_refs = collect_allowed_files(ponten_group).uniq
+allowed_basenames = allowed_refs.map { |f| File.basename(f.path) }
+
+# Remove disallowed Ponten sources from the E2E target.
+e2e_target.source_build_phase.files.dup.each do |build_file|
+  path = build_file.file_ref&.path
+  next unless path&.end_with?('.swift')
+  next if %w[E2ETestFixture.swift MenuBarE2ETests.swift E2EInProcessHost.swift E2EMenuPanelView.swift].include?(path)
+
+  unless allowed_basenames.include?(path)
+    puts "Removing #{path} from PontenE2ETests"
+    e2e_target.source_build_phase.files.delete(build_file)
+  end
+end
+
 existing = e2e_target.source_build_phase.files.map { |bf| bf.file_ref&.path }.compact
 
-swift_files(ponten_group).each do |file_ref|
+allowed_refs.each do |file_ref|
   basename = File.basename(file_ref.path)
   next if existing.include?(basename) || existing.include?(file_ref.path)
 
   puts "Linking #{basename} into PontenE2ETests"
   e2e_target.add_file_references([file_ref])
-end
-
-# Remove AppDelegate if it was linked earlier.
-e2e_target.source_build_phase.files.each do |build_file|
-  path = build_file.file_ref&.path
-  next unless path&.end_with?('AppDelegate.swift')
-
-  puts "Removing #{path} from PontenE2ETests"
-  e2e_target.source_build_phase.files.delete(build_file)
-end
-
-assets_ref = ponten_group.find_subpath('Resources', true)&.files&.find { |f| f.path == 'Assets.xcassets' }
-if assets_ref && e2e_target.resources_build_phase.files.none? { |bf| bf.file_ref == assets_ref }
-  puts 'Adding Assets.xcassets to PontenE2ETests resources'
-  e2e_target.add_resources([assets_ref])
 end
 
 %w[Debug Release].each do |config_name|
