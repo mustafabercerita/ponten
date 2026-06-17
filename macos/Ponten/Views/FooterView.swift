@@ -82,7 +82,9 @@ struct FooterView: View {
                 
                 Button("Quit") {
                     if E2EMode.isEnabled && E2EMode.isInProcess {
-                        NSApp.keyWindow?.close()
+                        NSApp.windows
+                            .filter { $0.identifier?.rawValue == "PontenMenu" }
+                            .forEach { $0.close() }
                     } else {
                         NSApp.terminate(nil)
                     }

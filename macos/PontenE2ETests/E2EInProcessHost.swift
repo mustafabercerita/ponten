@@ -33,11 +33,13 @@ final class E2EInProcessHost {
         window.identifier = NSUserInterfaceItemIdentifier("PontenMenu")
         window.setAccessibilityIdentifier("PontenMenu")
         window.contentView = hostingView
+        window.isReleasedWhenClosed = true
         window.center()
         window.makeKeyAndOrderFront(nil)
         window.orderFrontRegardless()
         hostingView.layoutSubtreeIfNeeded()
         window.displayIfNeeded()
+        NSAccessibility.post(element: window, notification: .created)
         NSApp.setActivationPolicy(.regular)
         NSApp.activate(ignoringOtherApps: true)
         self.window = window

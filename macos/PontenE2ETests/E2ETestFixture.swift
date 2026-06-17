@@ -161,9 +161,12 @@ final class E2ETestFixture {
             self.appPID = ProcessInfo.processInfo.processIdentifier
         }
 
+        pumpMainRunLoop(for: 0.5)
+
         let deadline = Date().addingTimeInterval(15)
         while Date() < deadline {
             if waitForMainWindow(timeout: 0.25) != nil {
+                pumpMainRunLoop(for: 0.3)
                 return
             }
             pumpMainRunLoop(for: 0.1)
@@ -251,6 +254,24 @@ final class E2ETestFixture {
 
     // MARK: - Accessibility helpers
 
+    var hasOpenMenuWindow: Bool {
+        if usesInProcess {
+            return hasVisibleMenuWindow()
+        }
+        guard appPID != 0 else { return false }
+        let appElement = AXUIElementCreateApplication(appPID)
+        return findPontenWindow(in: appElement) != nil
+    }
+
+    func waitForMenuWindowToClose(timeout: TimeInterval = 3) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if !hasOpenMenuWindow { return true }
+            waitInterval(0.1)
+        }
+        return !hasOpenMenuWindow
+    }
+
     func waitForMainWindow(timeout: TimeInterval = 20) -> AXUIElement? {
         let deadline = Date().addingTimeInterval(timeout)
 
@@ -259,8 +280,10 @@ final class E2ETestFixture {
                 return nil
             }
 
-            if usesInProcess, hasVisibleMenuWindow() {
-                return AXUIElementCreateApplication(appPID)
+            if usesInProcess {
+                guard hasVisibleMenuWindow() else { return nil }
+                let appElement = AXUIElementCreateApplication(appPID)
+                return findPontenWindow(in: appElement) ?? appElement
             }
 
             let appElement = AXUIElementCreateApplication(appPID)
@@ -275,8 +298,10 @@ final class E2ETestFixture {
     }
 
     private func hasVisibleMenuWindow() -> Bool {
-        NSApp.windows.contains {
-            $0.title == "Ponten Menu" || $0.identifier?.rawValue == "PontenMenu"
+        NSApp.windows.contains { window in
+            let isPontenMenu = window.title == "Ponten Menu"
+                || window.identifier?.rawValue == "PontenMenu"
+            return isPontenMenu && window.isVisible
         }
     }
 
@@ -301,18 +326,25 @@ final class E2ETestFixture {
         role: String? = nil,
         title: String? = nil,
         titleContains: String? = nil,
+        identifier: String? = nil,
         timeout: TimeInterval = 10
     ) throws -> AXUIElement {
         let deadline = Date().addingTimeInterval(timeout)
 
         while Date() < deadline {
-            if let match = findDescendant(in: root, role: role, title: title, titleContains: titleContains) {
+            if let match = findDescendant(
+                in: root,
+                role: role,
+                title: title,
+                titleContains: titleContains,
+                identifier: identifier
+            ) {
                 return match
             }
             waitInterval(0.2)
         }
 
-        let label = [role, title, titleContains].compactMap { $0 }.joined(separator: " / ")
+        let label = [role, title, titleContains, identifier].compactMap { $0 }.joined(separator: " / ")
         throw NSError(
             domain: "PontenE2E",
             code: 4,
@@ -339,7 +371,12 @@ final class E2ETestFixture {
         let deadline = Date().addingTimeInterval(timeout)
 
         while Date() < deadline {
-            if let checkbox = findDescendant(in: root, role: kAXCheckBoxRole as String, title: title),
+            if let checkbox = findDescendant(
+                in: root,
+                role: kAXCheckBoxRole as String,
+                title: title,
+                identifier: "auto-paste-toggle"
+            ),
                boolAttribute(checkbox, attribute: kAXValueAttribute) == true {
                 return checkbox
             }
@@ -446,7 +483,8 @@ final class E2ETestFixture {
         in root: AXUIElement,
         role: String?,
         title: String?,
-        titleContains: String? = nil
+        titleContains: String? = nil,
+        identifier: String? = nil
     ) -> AXUIElement? {
         var queue: [AXUIElement] = []
         if let children = copyAttribute(root, attribute: kAXChildrenAttribute) as? [AXUIElement] {
@@ -458,18 +496,21 @@ final class E2ETestFixture {
             let elementRole = roleAttribute(element)
             let elementTitle = stringAttribute(element, attribute: kAXTitleAttribute)
                 ?? stringAttribute(element, attribute: kAXDescriptionAttribute)
+                ?? stringAttribute(element, attribute: kAXLabelAttribute)
+            let elementIdentifier = stringAttribute(element, attribute: kAXIdentifierAttribute)
 
             let roleMatches = role == nil || elementRole == role
-            let titleMatches: Bool
+            var labelMatches = title == nil && titleContains == nil && identifier == nil
             if let title {
-                titleMatches = elementTitle == title
+                labelMatches = elementTitle == title
             } else if let titleContains {
-                titleMatches = elementTitle?.localizedCaseInsensitiveContains(titleContains) == true
-            } else {
-                titleMatches = true
+                labelMatches = elementTitle?.localizedCaseInsensitiveContains(titleContains) == true
+            }
+            if let identifier, elementIdentifier == identifier {
+                labelMatches = true
             }
 
-            if roleMatches && titleMatches && (role != nil || title != nil || titleContains != nil) {
+            if roleMatches && labelMatches && (role != nil || title != nil || titleContains != nil || identifier != nil) {
                 return element
             }
 

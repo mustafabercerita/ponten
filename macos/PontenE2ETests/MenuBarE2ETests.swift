@@ -19,7 +19,7 @@ final class MenuBarE2ETests: XCTestCase {
 
         let emptyState = try fixture.requireElement(
             in: window,
-            titleContains: "No signatures yet."
+            identifier: "empty-state"
         )
         XCTAssertNotNil(emptyState)
     }
@@ -62,7 +62,8 @@ final class MenuBarE2ETests: XCTestCase {
         let signButton = try fixture.requireElement(
             in: window,
             role: kAXButtonRole as String,
-            title: "Copy signature to clipboard"
+            title: "Copy signature to clipboard",
+            identifier: "sign-button"
         )
         try fixture.press(signButton)
 
@@ -85,7 +86,8 @@ final class MenuBarE2ETests: XCTestCase {
             let autoPaste = try fixture.requireElement(
                 in: window,
                 role: kAXCheckBoxRole as String,
-                title: "Auto-paste after copying"
+                title: "Auto-paste after copying",
+                identifier: "auto-paste-toggle"
             )
 
             if fixture.boolValue(for: autoPaste) != true {
@@ -97,11 +99,12 @@ final class MenuBarE2ETests: XCTestCase {
             let quitButton = try fixture.requireElement(
                 in: window,
                 role: kAXButtonRole as String,
-                title: "Quit"
+                title: "Quit",
+                identifier: "quit-button"
             )
             try fixture.press(quitButton)
             if E2ETestFixture.useInProcess {
-                XCTAssertNil(fixture.waitForMainWindow(timeout: 2))
+                XCTAssertTrue(fixture.waitForMenuWindowToClose())
             } else {
                 try waitForProcessExit(pid: fixture.appPID, timeout: 10)
             }
@@ -140,12 +143,13 @@ final class MenuBarE2ETests: XCTestCase {
         let quitButton = try fixture.requireElement(
             in: window,
             role: kAXButtonRole as String,
-            title: "Quit"
+            title: "Quit",
+            identifier: "quit-button"
         )
         try fixture.press(quitButton)
 
         if E2ETestFixture.useInProcess {
-            XCTAssertNil(fixture.waitForMainWindow(timeout: 2))
+            XCTAssertTrue(fixture.waitForMenuWindowToClose())
         } else {
             XCTAssertTrue(try waitForProcessExit(pid: fixture.appPID, timeout: 10))
         }
