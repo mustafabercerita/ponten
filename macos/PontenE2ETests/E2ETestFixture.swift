@@ -159,7 +159,7 @@ final class E2ETestFixture {
         setenv("PONTEN_DATA_DIR", dataDirectory, 1)
         setenv("PONTEN_E2E_IN_PROCESS", "1", 1)
 
-        try runOnMainSync {
+        try performOnMainAndWait {
             Self.ensureTestApplication()
             self.inProcessHost = E2EInProcessHost(dataDirectory: dataDirectory)
             self.appPID = ProcessInfo.processInfo.processIdentifier
@@ -232,7 +232,7 @@ final class E2ETestFixture {
 
     private func terminateApp() {
         if usesInProcess {
-            runOnMainSync {
+            try? performOnMainAndWait {
                 self.inProcessHost?.close()
                 self.inProcessHost = nil
             }
@@ -499,20 +499,35 @@ final class E2ETestFixture {
         stringAttribute(element, attribute: kAXRoleAttribute)
     }
 
-    /// XCTest runs on the main thread; `DispatchQueue.main.async` + semaphore deadlocks there.
-    private func runOnMainSync(_ block: () throws -> Void) rethrows {
+    /// TEST_HOST runs XCTest on the main thread; sync dispatch deadlocks without run-loop pumping.
+    private func performOnMainAndWait(_ block: @escaping () throws -> Void) throws {
         if Thread.isMainThread {
-            try block()
+            var completed = false
+            var thrown: Error?
+            DispatchQueue.main.async {
+                do {
+                    try block()
+                } catch {
+                    thrown = error
+                }
+                completed = true
+            }
+
+            let deadline = Date().addingTimeInterval(10)
+            while !completed && Date() < deadline {
+                RunLoop.main.run(mode: .default, before: Date().addingTimeInterval(0.05))
+            }
+
+            if let thrown { throw thrown }
+            guard completed else {
+                throw NSError(
+                    domain: "PontenE2E",
+                    code: 11,
+                    userInfo: [NSLocalizedDescriptionKey: "Timed out waiting for main-thread UI work."]
+                )
+            }
         } else {
             try DispatchQueue.main.sync(execute: block)
-        }
-    }
-
-    private func runOnMainSync(_ block: () -> Void) {
-        if Thread.isMainThread {
-            block()
-        } else {
-            DispatchQueue.main.sync(execute: block)
         }
     }
 }

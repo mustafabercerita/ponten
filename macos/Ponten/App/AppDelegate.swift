@@ -22,6 +22,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // PontenE2ETests (TEST_HOST) drives UI via E2EInProcessHost after env is set.
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
+            return
+        }
+
         if E2EMode.isEnabled {
             setupE2EWindow()
             return
