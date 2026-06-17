@@ -12,7 +12,9 @@
     <key>com.apple.security.files.user-selected.read-only</key>
     <true/>
 
-    <!-- Write access to Application Support to persist the signature -->
+    <!-- Downloads folder write access — disabled; not used for signature storage.
+         Persistence uses the sandbox container's Application Support directory
+         (~/Library/Containers/com.ponten.app/...), which is allowed by app-sandbox. -->
     <key>com.apple.security.files.downloads.read-write</key>
     <false/>
 </dict>

@@ -11,7 +11,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 APP_NAME     := Ponten
-VERSION      := 1.2.0
+VERSION      := 1.2.12
 BUNDLE_ID    := com.ponten.app
 MIN_MACOS    := 13.0
 ARCH         := $(shell uname -m)
@@ -55,13 +55,8 @@ bundle: build
 	$(eval BIN_PATH := $(shell swift build -c release --arch arm64 --arch x86_64 --show-bin-path))
 	@rm -rf "$(BUNDLE)"
 	@mkdir -p "$(BUNDLE)/Contents/MacOS" "$(BUNDLE)/Contents/Resources"
-	@cp "$(BIN_PATH)/PontenApp" "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
+	@cp "$(BIN_PATH)/Ponten" "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
 	@chmod +x "$(BUNDLE)/Contents/MacOS/$(APP_NAME)"
-	
-	@# Copy Sparkle.framework if it exists in the build output
-	@[ -d "$(BIN_PATH)/Sparkle.framework" ] && \
-		mkdir -p "$(BUNDLE)/Contents/Frameworks" && \
-		cp -R "$(BIN_PATH)/Sparkle.framework" "$(BUNDLE)/Contents/Frameworks/" || true
 
 	@[ -f "Ponten/Resources/AppIcon.icns" ] && \
 		cp "Ponten/Resources/AppIcon.icns" "$(BUNDLE)/Contents/Resources/" || true
@@ -96,8 +91,6 @@ EOF
 sign: bundle
 	@echo "▶ Signing frameworks and app (ad-hoc)..."
 	$(eval BUNDLE := $(BUILD_DIR)/$(APP_NAME).app)
-	@[ -d "$(BUNDLE)/Contents/Frameworks/Sparkle.framework" ] && \
-		codesign --sign - --force --deep --timestamp=none "$(BUNDLE)/Contents/Frameworks/Sparkle.framework" 2>&1 | grep -v "^$$" || true
 	@codesign --sign - --force --deep --timestamp=none "$(BUNDLE)" 2>&1 | grep -v "^$$" || true
 	@echo "✅ Signed"
 

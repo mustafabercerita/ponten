@@ -7,7 +7,7 @@
 
 ![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue?logo=apple)
 ![Windows 10+](https://img.shields.io/badge/Windows-10%2B-blue?logo=windows)
-![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange?logo=swift)
+![Swift 5.9](https://img.shields.io/badge/Swift-5.9-orange?logo=swift)
 ![.NET 8.0](https://img.shields.io/badge/.NET-8.0-purple?logo=dotnet)
 ![License MIT](https://img.shields.io/badge/License-MIT-green)
 ![Open Source](https://img.shields.io/badge/Open-Source-brightgreen)
@@ -24,7 +24,7 @@ Every time you need to sign a document — Word, Excel, Google Docs, a PDF edito
 3. Copy the image
 4. Paste it into the document
 
-**Ponten eliminates steps 1–3.** Your signature lives in the menu bar, one click away. With the new Auto-Paste feature, it even eliminates step 4!
+**Ponten eliminates steps 1–3.** Your signature lives in the menu bar, one click away. With Auto-Paste enabled, it can also handle step 4 for you.
 
 ---
 
@@ -35,8 +35,8 @@ Install app → 🖊 icon appears in menu bar / system tray → click icon
 → Add Signature (choose PNG, drag & drop, or draw)
 → preview thumbnail shows in popover
 → press ⌥⌘S (Mac) or Ctrl+Alt+S (Win) from anywhere
-→ "Signature copied & pasted ✓"
-→ Signature is automatically pasted into your active document!
+→ "Signature copied to clipboard ✓"
+→ (with Auto-Paste on) signature is pasted into your active document
 ```
 
 ---
@@ -47,8 +47,8 @@ Install app → 🖊 icon appears in menu bar / system tray → click icon
 |---|---|
 | **Cross-Platform** | Native apps built for both macOS and Windows. |
 | **System-Tray Architecture** | Lives quietly in the macOS menu bar or Windows system tray — no taskbar clutter. |
-| **Global hotkey** | Copy and paste your signature without even opening the popover (⌥⌘S on Mac, Ctrl+Alt+S on Win). |
-| **Auto-Paste Functionality** | Automatically pastes the signature into your active application! |
+| **Global hotkey** | Copy your signature without even opening the popover (⌥⌘S on Mac, Ctrl+Alt+S on Win). |
+| **Auto-Paste Functionality** | Optionally pastes the signature into your active application after copying. |
 | **Native Auto-Updater** | Built-in GitHub Releases auto-updater to keep you on the latest version seamlessly. |
 | **Drag & Drop** | Drag an image file directly onto the popover to set your signature. |
 | **Live Preview & Pen Tools** | Adjust stroke thickness visually using native morphology techniques. |
@@ -56,6 +56,8 @@ Install app → 🖊 icon appears in menu bar / system tray → click icon
 | **Built-in Drawing Canvas** | Draw your signature natively using your trackpad, mouse, or Apple Pencil! |
 | **Multiple Signatures** | Save and quickly switch between different signatures directly from the popover grid. |
 | **Native Performance** | Built with native Swift/AppKit and C#/WPF — zero Electron bloat. |
+
+> **Windows tray:** uses [H.NotifyIcon.Wpf](https://www.nuget.org/packages/H.NotifyIcon.Wpf) for reliable system-tray integration.
 
 ---
 
@@ -148,10 +150,24 @@ That's it. The script will:
 
 | Shortcut | Action |
 |---|---|
-| **⌥⌘S** / **Ctrl+Alt+S** | Copy & Paste signature to active application (global — works without opening popover) |
+| **⌥⌘S** / **⌃⌘S** / **⇧⌘S** (macOS) | Copy signature — choose preset in popover settings |
+| **Ctrl+Alt+S** (Windows) | Copy signature (fixed; customization coming soon) |
 | **⌘Q** / **Alt+F4** | Quit the app |
 | **Return** | Sign (when popover is open) |
 | **Escape** | Close popover |
+
+---
+
+## Storage
+
+Signatures and settings are stored locally on each platform:
+
+| Platform | Location |
+|---|---|
+| **macOS** | `~/Library/Application Support/Ponten/` |
+| **Windows** | `%LocalAppData%\Ponten\` |
+
+Both use an `index.json` manifest plus per-signature image files in the same folder.
 
 ---
 
@@ -167,24 +183,36 @@ Ponten/
 │   ├── Ponten.xcodeproj/
 │   ├── Ponten/
 │   │   ├── App/                     # Entry point & AppDelegate
-│   │   ├── Models/                  # Business logic & ImageProcessor
+│   │   ├── Models/
+│   │   │   ├── SignatureManager.swift
+│   │   │   ├── SignatureStore.swift
+│   │   │   └── ImageProcessor.swift
 │   │   ├── Views/                   # SwiftUI UI components
 │   │   └── Resources/               # Assets, Plist
+│   ├── PontenTests/                 # XCTest suite (11 tests)
+│   ├── Package.swift                # Swift Package Manager manifest
+│   ├── Makefile                     # CLI build shortcuts
 │   ├── install.sh                   # macOS CLI installer
 │   └── build-dmg.sh                 # macOS DMG builder
 │
 ├── windows/                         # Windows App (C# / WPF / .NET 8)
 │   ├── Ponten.sln
+│   ├── installer.iss                # Inno Setup installer script
 │   ├── PontenWPF/
 │   │   ├── App.xaml                 # Entry point
-│   │   ├── MainWindow.xaml          # UI & Tray popup logic
-│   │   ├── SignatureManager.cs      # Core business & Win32 logic
-│   │   └── ImageEditorWindow.xaml   # Windows image editing & pen tools
-│   └── build.ps1                    # Windows build script (Upcoming)
+│   │   ├── MenuBarView.xaml         # Tray popover UI
+│   │   ├── ImageProcessor.cs        # Image processing & clipboard logic
+│   │   ├── SignatureStorage.cs      # Persistence layer
+│   │   ├── GlobalShortcutManager.cs # Win32 hotkey registration
+│   │   ├── Updater.cs               # GitHub release checker
+│   │   └── ImageEditorWindow.xaml   # Image editing & pen tools
+│   └── PontenWPF.Tests/             # xUnit suite (7 tests)
 │
+├── add_files.rb                     # Xcode project file sync helper
 ├── README.md
 ├── ARCHITECTURE.md
 ├── CHANGELOG.md
+├── DEVELOPMENT.md
 └── LICENSE (MIT)
 ```
 
@@ -192,17 +220,31 @@ Ponten/
 
 ## Running Tests
 
-**macOS (via CLI):**
+**macOS (Xcode):**
 ```bash
 cd macos
-xcodebuild -project Ponten.xcodeproj -scheme Ponten -destination 'platform=macOS' test
+xcodebuild -project Ponten.xcodeproj -scheme Ponten \
+  -destination 'platform=macOS' test CODE_SIGNING_ALLOWED=NO
+```
+
+**macOS (Swift Package Manager — alternative):**
+```bash
+cd macos
+swift test
+```
+
+**Windows:**
+```bash
+cd windows
+dotnet test Ponten.sln -c Release
 ```
 
 ---
 
 ## Architecture
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for a full technical walkthrough.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for a full technical walkthrough.  
+Release history: [CHANGELOG.md](CHANGELOG.md) · Developer setup: [DEVELOPMENT.md](DEVELOPMENT.md)
 
 ---
 
@@ -210,10 +252,11 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) for a full technical walkthrough.
 
 ### CI / Automated builds
 
-Every push to tags matching `v*` triggers a GitHub Actions workflow that:
-- Builds macOS DMG locally and runs tests.
-- Builds Windows `.exe` using `.NET 8` as a single self-contained file.
-- Publishes the assets automatically to GitHub Releases.
+CI runs on pushes to `main` and `develop`, and on pull requests targeting `main`.  
+Pushing a tag matching `v*` triggers a GitHub Actions release that:
+- Builds macOS DMG and runs tests
+- Builds Windows `.exe` using `.NET 8` as a single self-contained file
+- Publishes assets automatically to GitHub Releases
 
 ---
 
@@ -230,16 +273,17 @@ We've recently crossed off several major milestones from our original roadmap! H
 - [x] **Auto-Paste:** Uses macOS Accessibility APIs and Win32 APIs to automatically paste your signature into the active document right after copying.
 - [x] **Drag & Drop Out:** Drag the signature from the popover directly into your target app.
 - [x] **Native Auto-Updater:** Replaced heavy Sparkle framework with a lightweight, native SwiftUI GitHub release checker.
+- [x] **Swift Package Manager support:** `Package.swift` with test target for CLI builds.
 
 ### 🚀 Upcoming Features
 - [ ] Mac App Store & Microsoft Store release
-- [ ] Swift Package Manager support for modularization
+- [ ] Windows global shortcut customization
 
 ---
 
 ## Contributing
 
-Pull requests are welcome! Please open an issue first to discuss major changes.
+Pull requests are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) and open an issue first to discuss major changes.
 
 ```bash
 git checkout -b feature/my-feature

@@ -8,13 +8,62 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- **SignatureStore extraction** — macOS persistence moved out of `SignatureManager` into dedicated `SignatureStore`
+- **ImageProcessor extensions** — image-processing helpers consolidated in `ImageProcessor.swift`
+- **Windows rename** — `SignatureManager.cs` renamed to `ImageProcessor.cs` for clarity
+- **Test infrastructure** — dependency injection for storage layer; flaky tests stabilized (11 macOS + 7 Windows)
+- **Documentation overhaul** — README, ARCHITECTURE, CHANGELOG, and DEVELOPMENT guides updated
+
+---
+
+## [1.2.12] — 2026-06-15
+
+### Added
+- **Windows installer** — Inno Setup script (`installer.iss`) with Start Menu shortcut and uninstaller
+- **Windows feature parity** — draw signature canvas and global shortcut (Ctrl+Alt+S)
+- **macOS right-click Quit** — Quit option on status-item context menu
+- **Unit tests** — comprehensive macOS (11) and Windows (7) test suites
+
+### Fixed
+- **Windows tray icon** — reliable registration via H.NotifyIcon.Wpf `ForceCreate()` and icon fallback
+- **Windows QA audit** — GDI memory leaks, DPI scaling, thread-safe logging, clipboard robustness
+- **Windows auto-paste** — modifier-key release and focus restoration
+- **CI / releases** — DMG builder fixes, `gh-release` permissions, publish path for test project
+- **macOS popover** — no longer closes while the file-picker dialog is open
+
+### Changed
+- **Windows UI overhaul** — popover layout aligned with macOS design; file-saving bug fixed
+
+---
+
+## [1.2.0] — 2026-06-15
+
+### Added
+- **Windows native port** — C# / WPF / .NET 8 monorepo alongside macOS
+- **Signature vault** — multiple named signatures with carousel switching
+- **Image editor** — rotate, contrast, thicken stroke, auto-trim, zoom, and white-canvas toggle
+- **Native auto-updater** — lightweight GitHub Releases checker (replaces Sparkle)
+- **CI/CD pipeline** — automated multi-platform builds and `v*` tag releases
+- **Pen tools** — thickness adjustment and smart vectorization
+
+### Changed
+- **Project rename** — PersonalSignature → Ponten
+- **Monorepo layout** — `macos/` and `windows/` top-level directories
+
+### Fixed
+- **Image processing** — async background tasks, debounced sliders, morphology clipping
+- **Security** — symlink vulnerability patched in updater
+
+---
+
 ## [1.1.0] — 2026-06-14
 
 ### Added
 - **Built-in Drawing Canvas** — draw your signature natively using your trackpad, mouse, or Apple Pencil
 - **Multiple signature profiles** — save and quickly switch between different signatures
 - **Auto-Paste** — uses macOS Accessibility APIs to paste your signature directly into the active document
-- **Global Shortcut Customization** — record your own custom hotkey
+- **Global Shortcut presets (macOS)** — choose among ⌥⌘S, ⌃⌘S, or ⇧⌘S in popover settings
 - **Drag & Drop Out** — drag the signature from the popover directly into target apps
 - **Native Auto-Updater** — lightweight, native SwiftUI GitHub release checker
 
@@ -28,14 +77,6 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ### Technical
 - **Modular UI Refactoring** — split `MenuBarView` into `HeaderView`, `SignatureActiveView`, `FooterView`, `EmptyStateView`, `DrawingView`, and `AboutView` for better maintainability
-
----
-
-## [Unreleased]
-
-### Planned
-- Touch Bar support
-- App Store release
 
 ---
 
@@ -69,5 +110,10 @@ versioning follows [Semantic Versioning](https://semver.org/).
 - `EventMonitor` for outside-click dismissal
 - macOS 13.0 Ventura minimum deployment target
 
-[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.0.0...HEAD
+---
+
+[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.2.12...HEAD
+[1.2.12]: https://github.com/mustafabercerita/ponten/compare/v1.2.0...v1.2.12
+[1.2.0]: https://github.com/mustafabercerita/ponten/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/mustafabercerita/ponten/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/mustafabercerita/ponten/releases/tag/v1.0.0

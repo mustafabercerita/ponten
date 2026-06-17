@@ -41,6 +41,7 @@ SOURCE_FILES=(
     "Ponten/App/PontenApp.swift"
     "Ponten/App/AppDelegate.swift"
     "Ponten/Models/SignatureManager.swift"
+    "Ponten/Models/SignatureStore.swift"
     "Ponten/Views/MenuBarView.swift"
     "Ponten/Views/HeaderView.swift"
     "Ponten/Views/SignatureActiveView.swift"
@@ -168,10 +169,6 @@ bundle() {
     <true/>
     <key>NSSupportsSuddenTermination</key>
     <true/>
-    <key>SUFeedURL</key>
-    <string>https://example.com/appcast.xml</string>
-    <key>SUPublicEDKey</key>
-    <string>placeholder</string>
     <key>CFBundleIdentifier</key>
     <string>${BUNDLE_ID}</string>
     <key>CFBundleName</key>
