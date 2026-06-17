@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PontenWPF", "PontenWPF\Pont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PontenWPF.Tests", "PontenWPF.Tests\PontenWPF.Tests.csproj", "{27C76EC4-B6BE-4AAF-A091-22A9FF2AFD18}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PontenWPF.E2E.Tests", "PontenWPF.E2E.Tests\PontenWPF.E2E.Tests.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{27C76EC4-B6BE-4AAF-A091-22A9FF2AFD18}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27C76EC4-B6BE-4AAF-A091-22A9FF2AFD18}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27C76EC4-B6BE-4AAF-A091-22A9FF2AFD18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

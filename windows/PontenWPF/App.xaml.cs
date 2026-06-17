@@ -17,6 +17,7 @@ public partial class App : Application
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        E2EMode.Initialize(e.Args);
         Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
         
         Log("App startup initiated");
@@ -149,6 +150,11 @@ public partial class App : Application
         
         MainWindow = new MenuBarView();
         Log("Main Window created");
+
+        if (E2EMode.IsEnabled && MainWindow is MenuBarView menuBarView)
+        {
+            Dispatcher.BeginInvoke(menuBarView.ShowAtBottomRight);
+        }
     }
 
     private void NotifyIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)

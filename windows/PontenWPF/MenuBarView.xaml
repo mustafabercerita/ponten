@@ -86,7 +86,7 @@
             </ScrollViewer>
             
             <!-- Sign Button -->
-            <Button Grid.Row="2" Background="#007ACC" Foreground="White" BorderThickness="0" Padding="10" Margin="0,0,0,15" Click="SignButton_Click">
+            <Button x:Name="SignButton" Grid.Row="2" Background="#007ACC" Foreground="White" BorderThickness="0" Padding="10" Margin="0,0,0,15" Click="SignButton_Click">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
                         <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
@@ -107,7 +107,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Click="AddSignature_Click">
+                <Button x:Name="AddButton" Grid.Column="0" Foreground="White" Background="Transparent" BorderThickness="0" Margin="0,0,10,0" Click="AddSignature_Click">
                     <StackPanel Orientation="Horizontal">
                         <Path Data="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" Fill="White" Width="14" Height="14" Stretch="Uniform" Margin="0,0,4,0"/>
                         <TextBlock Text="Add" VerticalAlignment="Center"/>
@@ -161,7 +161,7 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Content="Check for Updates" Foreground="LightGray" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Click="CheckUpdates_Click"/>
-                    <Button Grid.Column="1" Content="Quit" Foreground="LightGray" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right" Click="Quit_Click"/>
+                    <Button x:Name="QuitButton" Grid.Column="1" Content="Quit" Foreground="LightGray" Background="Transparent" BorderThickness="0" HorizontalAlignment="Right" Click="Quit_Click"/>
                 </Grid>
             </Grid>
         </Grid>

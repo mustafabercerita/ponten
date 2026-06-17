@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using System.Windows.Automation;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
@@ -33,7 +34,7 @@ namespace PontenWPF
 
     public partial class MenuBarView : Window
     {
-        private SignatureStorage _storage = new SignatureStorage();
+        private SignatureStorage _storage = new SignatureStorage(E2EMode.DataDirectory);
         private ImageProcessor _manager = new ImageProcessor();
         private GlobalShortcutManager? _shortcutManager;
         private bool _suppressSelectionCopy;
@@ -50,6 +51,21 @@ namespace PontenWPF
             this.Closed += MenuBarView_Closed;
 
             SignaturesListBox.ItemsSource = DisplayItems;
+            ConfigureAutomationIds();
+        }
+
+        private void ConfigureAutomationIds()
+        {
+            AutomationProperties.SetAutomationId(this, "PontenMainWindow");
+            AutomationProperties.SetAutomationId(EmptyStateText, "EmptyState");
+            AutomationProperties.SetAutomationId(SignaturesListBox, "SignaturesList");
+            AutomationProperties.SetAutomationId(SignButton, "SignButton");
+            AutomationProperties.SetAutomationId(AddButton, "AddButton");
+            AutomationProperties.SetAutomationId(RemoveBgToggle, "RemoveBgToggle");
+            AutomationProperties.SetAutomationId(AutoPasteCheck, "AutoPasteCheck");
+            AutomationProperties.SetAutomationId(LaunchAtLoginCheck, "LaunchAtLoginCheck");
+            AutomationProperties.SetAutomationId(StatusText, "StatusText");
+            AutomationProperties.SetAutomationId(QuitButton, "QuitButton");
         }
 
         private void MenuBarView_SourceInitialized(object? sender, EventArgs e)
@@ -148,6 +164,11 @@ namespace PontenWPF
 
         private void MenuBarView_Deactivated(object? sender, EventArgs e)
         {
+            if (E2EMode.IsEnabled)
+            {
+                return;
+            }
+
             this.Hide();
         }
 
