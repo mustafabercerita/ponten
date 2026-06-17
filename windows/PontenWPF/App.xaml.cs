@@ -89,6 +89,8 @@ public partial class App : Application
         {
             MainWindow = new MenuBarView();
             Log("Main Window created (E2E mode)");
+            MainWindow.Show();
+            MainWindow.Activate();
             return;
         }
 

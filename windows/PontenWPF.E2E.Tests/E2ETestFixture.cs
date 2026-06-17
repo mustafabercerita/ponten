@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -74,15 +75,36 @@ public sealed class E2ETestFixture : IDisposable
         var startInfo = new ProcessStartInfo
         {
             FileName = exePath,
-            Arguments = "--e2e",
+            Arguments = $"--e2e --data-dir=\"{dataDirectory}\"",
             WorkingDirectory = Path.GetDirectoryName(exePath) ?? AppContext.BaseDirectory,
             UseShellExecute = false
         };
+
+        // UseShellExecute=false does not inherit the parent environment.
+        foreach (DictionaryEntry entry in Environment.GetEnvironmentVariables())
+        {
+            if (entry.Key is string key && entry.Value is string value)
+            {
+                startInfo.Environment[key] = value;
+            }
+        }
+
         startInfo.Environment["PONTEN_E2E"] = "1";
         startInfo.Environment["PONTEN_DATA_DIR"] = dataDirectory;
 
         var process = Process.Start(startInfo)
             ?? throw new InvalidOperationException($"Failed to start Ponten at {exePath}");
+
+        if (!process.WaitForInputIdle(15_000))
+        {
+            throw new TimeoutException($"Ponten process {process.Id} did not become idle.");
+        }
+
+        if (process.HasExited)
+        {
+            throw new InvalidOperationException(
+                $"Ponten exited immediately with code {process.ExitCode}. Another instance may be holding the mutex.");
+        }
 
         return Application.Attach(process);
     }
@@ -134,7 +156,8 @@ public sealed class E2ETestFixture : IDisposable
     {
         foreach (var window in windows)
         {
-            if (window.Name == "Ponten Menu")
+            if (window.Name == "Ponten Menu"
+                || window.Properties.AutomationId.ValueOrDefault == "PontenMenu")
             {
                 return window;
             }
@@ -207,19 +230,26 @@ public sealed class E2ETestFixture : IDisposable
         {
             if (!Application.HasExited)
             {
-                Application.Close();
+                try
+                {
+                    Application.Close();
+                    Application.WaitWhileBusy(TimeSpan.FromSeconds(5));
+                }
+                catch
+                {
+                    Application.Kill();
+                }
+            }
+
+            if (!Application.HasExited)
+            {
+                Application.Kill();
+                Application.WaitWhileBusy(TimeSpan.FromSeconds(5));
             }
         }
         catch
         {
-            try
-            {
-                Application.Kill();
-            }
-            catch
-            {
-                // Best-effort cleanup for flaky UI automation shutdown.
-            }
+            // Best-effort cleanup for flaky UI automation shutdown.
         }
 
         Application.Dispose();

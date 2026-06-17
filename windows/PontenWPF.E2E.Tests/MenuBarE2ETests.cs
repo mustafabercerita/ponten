@@ -42,7 +42,9 @@ public class MenuBarE2ETests
         using var fixture = new E2ETestFixture(dataDirectory);
         var window = fixture.WaitForMainWindow();
 
-        var signButton = fixture.RequireElement(window, cf => cf.ByName("Sign")).AsButton();
+        var signButton = fixture.RequireElement(
+            window,
+            cf => cf.ByControlType(ControlType.Button).And(cf.ByName("Sign"))).AsButton();
         signButton.Invoke();
 
         var statusText = fixture.RequireElement(

@@ -54,6 +54,13 @@ namespace PontenWPF
             if (E2EMode.IsEnabled)
             {
                 ShowInTaskbar = true;
+                AllowsTransparency = false;
+                Background = new System.Windows.Media.SolidColorBrush(
+                    System.Windows.Media.Color.FromRgb(0x1E, 0x1E, 0x1E));
+                WindowStyle = WindowStyle.SingleBorderWindow;
+                Topmost = false;
+                System.Windows.Automation.AutomationProperties.SetName(this, "Ponten Menu");
+                System.Windows.Automation.AutomationProperties.SetAutomationId(this, "PontenMenu");
             }
         }
 
