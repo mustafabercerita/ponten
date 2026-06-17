@@ -148,6 +148,7 @@
 				3A77A281BC3A931ECE543803 /* MenuBarUITests.swift */,
 			);
 			name = PontenUITests;
+			path = PontenUITests;
 			sourceTree = "<group>";
 		};
 		B3E770374651C309B367AFCE /* OS X */ = {
