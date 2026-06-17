@@ -185,7 +185,7 @@ final class MenuBarE2ETests: XCTestCase {
 private extension E2ETestFixture {
     func boolValue(for element: AXUIElement) -> Bool? {
         var value: AnyObject?
-        guard AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &value) == .success else {
+        guard AXUIElementCopyAttributeValue(element, kAXValueAttribute, &value) == .success else {
             return nil
         }
         if let number = value as? NSNumber {

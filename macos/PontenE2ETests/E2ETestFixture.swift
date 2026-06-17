@@ -390,7 +390,6 @@ final class E2ETestFixture {
             let elementRole = roleAttribute(element)
             let elementTitle = stringAttribute(element, attribute: kAXTitleAttribute)
                 ?? stringAttribute(element, attribute: kAXDescriptionAttribute)
-                ?? stringAttribute(element, attribute: kAXLabelAttribute)
 
             let roleMatches = role == nil || elementRole == role
             let titleMatches: Bool
@@ -414,18 +413,18 @@ final class E2ETestFixture {
         return nil
     }
 
-    private func copyAttribute(_ element: AXUIElement, attribute: CFString) -> AnyObject? {
+    private func copyAttribute(_ element: AXUIElement, attribute: String) -> AnyObject? {
         var value: AnyObject?
-        let error = AXUIElementCopyAttributeValue(element, attribute, &value)
+        let error = AXUIElementCopyAttributeValue(element, attribute as CFString, &value)
         guard error == .success else { return nil }
         return value
     }
 
-    private func stringAttribute(_ element: AXUIElement, attribute: CFString) -> String? {
+    private func stringAttribute(_ element: AXUIElement, attribute: String) -> String? {
         copyAttribute(element, attribute: attribute) as? String
     }
 
-    private func boolAttribute(_ element: AXUIElement, attribute: CFString) -> Bool? {
+    private func boolAttribute(_ element: AXUIElement, attribute: String) -> Bool? {
         if let number = copyAttribute(element, attribute: attribute) as? NSNumber {
             return number.boolValue
         }
