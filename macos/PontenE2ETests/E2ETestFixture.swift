@@ -9,9 +9,11 @@ final class E2ETestFixture {
 
     private static let serializationLock = NSLock()
 
-    /// In-process hosting avoids cross-process AX restrictions. Enable with `PONTEN_E2E_IN_PROCESS=1`.
+    /// In-process hosting avoids cross-process AX restrictions on CI.
     static var useInProcess: Bool {
-        ProcessInfo.processInfo.environment["PONTEN_E2E_IN_PROCESS"] == "1"
+        let env = ProcessInfo.processInfo.environment
+        return env["PONTEN_E2E_IN_PROCESS"] == "1"
+            || env["GITHUB_ACTIONS"] == "true"
     }
 
     let dataDirectory: String

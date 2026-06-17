@@ -8,6 +8,7 @@ final class GlobalShortcutManager {
     var action: (() -> Void)?
     
     private init() {
+        guard !E2EMode.isEnabled else { return }
         setupHotKey()
     }
     

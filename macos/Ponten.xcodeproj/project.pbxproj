@@ -46,7 +46,6 @@
 		DDCAFC6F19059A9BEDA211D3 /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F754AF0AA1DECA02DF29D /* DrawingView.swift */; };
 		E227748BFD17A7A85F0BB4CC /* DrawingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C80F754AF0AA1DECA02DF29D /* DrawingView.swift */; };
 		E49D5E26ADC30A1F4FC34350 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D71898F773ACC800CD5B077 /* ImageProcessor.swift */; };
-		F42985978478A2CFCA0F98B8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F002 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -386,7 +385,6 @@
 				B002 /* E2ETestFixture.swift in Sources */,
 				B003 /* MenuBarE2ETests.swift in Sources */,
 				11121088C09D15315CCFE69C /* E2EInProcessHost.swift in Sources */,
-				F42985978478A2CFCA0F98B8 /* AppDelegate.swift in Sources */,
 				2D67FA73A28F07F1C18E11FA /* SignatureManager.swift in Sources */,
 				E49D5E26ADC30A1F4FC34350 /* ImageProcessor.swift in Sources */,
 				8464BC4936E5F56B14EB1D27 /* SignatureStore.swift in Sources */,

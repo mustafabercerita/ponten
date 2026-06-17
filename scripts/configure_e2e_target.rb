@@ -10,7 +10,7 @@ abort('PontenE2ETests target not found') unless e2e_target
 ponten_group = project.main_group.find_subpath('Ponten', true)
 abort('Ponten group not found') unless ponten_group
 
-EXCLUDED = %w[PontenApp.swift].freeze
+EXCLUDED = %w[PontenApp.swift AppDelegate.swift].freeze
 
 def swift_files(group)
   files = []
@@ -34,6 +34,15 @@ swift_files(ponten_group).each do |file_ref|
   e2e_target.add_file_references([file_ref])
 end
 
+# Remove AppDelegate if it was linked earlier.
+e2e_target.source_build_phase.files.each do |build_file|
+  path = build_file.file_ref&.path
+  next unless path&.end_with?('AppDelegate.swift')
+
+  puts "Removing #{path} from PontenE2ETests"
+  e2e_target.source_build_phase.files.delete(build_file)
+end
+
 assets_ref = ponten_group.find_subpath('Resources', true)&.files&.find { |f| f.path == 'Assets.xcassets' }
 if assets_ref && e2e_target.resources_build_phase.files.none? { |bf| bf.file_ref == assets_ref }
   puts 'Adding Assets.xcassets to PontenE2ETests resources'
@@ -46,7 +55,6 @@ end
 
     config.build_settings.delete('TEST_HOST')
     config.build_settings.delete('BUNDLE_LOADER')
-    puts "Removed TEST_HOST from PontenE2ETests #{config_name}"
   end
 end
 
