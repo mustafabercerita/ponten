@@ -7,8 +7,6 @@ import XCTest
 /// Category: E2E — tests using this fixture must run serially (one Ponten instance at a time).
 final class E2ETestFixture {
 
-    private static let serializationLock = NSLock()
-
     /// In-process hosting is default (same-process AX). Opt out with `PONTEN_E2E_OUT_OF_PROCESS=1`.
     static var useInProcess: Bool {
         ProcessInfo.processInfo.environment["PONTEN_E2E_OUT_OF_PROCESS"] != "1"
@@ -41,20 +39,16 @@ final class E2ETestFixture {
         )
 
         usesInProcess = Self.useInProcess
-        try Self.withSerialization {
-            if usesInProcess {
-                try launchInProcess(dataDirectory: resolvedDirectory)
-            } else {
-                Self.killStalePontenProcesses()
-                try launchApp(dataDirectory: resolvedDirectory)
-            }
+        if usesInProcess {
+            try launchInProcess(dataDirectory: resolvedDirectory)
+        } else {
+            Self.killStalePontenProcesses()
+            try launchApp(dataDirectory: resolvedDirectory)
         }
     }
 
     deinit {
-        try? Self.withSerialization {
-            terminateApp()
-        }
+        terminateApp()
         if deleteDataDirectoryOnDispose {
             try? FileManager.default.removeItem(atPath: dataDirectory)
         }
@@ -155,13 +149,11 @@ final class E2ETestFixture {
         setenv("PONTEN_DATA_DIR", dataDirectory, 1)
         setenv("PONTEN_E2E_IN_PROCESS", "1", 1)
 
-        try performOnMainWithRunLoop {
-            Self.ensureTestApplication()
-            self.inProcessHost = E2EInProcessHost(dataDirectory: dataDirectory)
-            self.appPID = ProcessInfo.processInfo.processIdentifier
-        }
+        Self.ensureTestApplication()
+        inProcessHost = E2EInProcessHost(dataDirectory: dataDirectory)
+        appPID = ProcessInfo.processInfo.processIdentifier
 
-        pumpMainRunLoop(for: 0.5)
+        pumpMainRunLoop(for: 0.3)
 
         let deadline = Date().addingTimeInterval(15)
         while Date() < deadline {
@@ -231,10 +223,8 @@ final class E2ETestFixture {
 
     private func terminateApp() {
         if usesInProcess {
-            try? performOnMainWithRunLoop {
-                self.inProcessHost?.close()
-                self.inProcessHost = nil
-            }
+            inProcessHost?.close()
+            inProcessHost = nil
         } else if appPID != 0,
                   let running = NSRunningApplication(processIdentifier: appPID),
                   !running.isTerminated {
@@ -543,53 +533,6 @@ final class E2ETestFixture {
 
     private func roleAttribute(_ element: AXUIElement) -> String? {
         stringAttribute(element, attribute: kAXRoleAttribute)
-    }
-
-    private static func withSerialization<T>(_ body: () throws -> T) throws -> T {
-        let deadline = Date().addingTimeInterval(30)
-        while !serializationLock.try() {
-            guard Date() < deadline else {
-                throw NSError(
-                    domain: "PontenE2E",
-                    code: 12,
-                    userInfo: [NSLocalizedDescriptionKey: "Timed out waiting for E2E serialization lock."]
-                )
-            }
-            Thread.sleep(forTimeInterval: 0.05)
-        }
-        defer { serializationLock.unlock() }
-        return try body()
-    }
-
-    /// XCTest runs on the main thread; async + run-loop pump never drains the main queue on CI.
-    private func performOnMainWithRunLoop(_ block: @escaping () throws -> Void) throws {
-        if Thread.isMainThread {
-            try block()
-            return
-        }
-
-        var thrown: Error?
-        let work = block
-        let group = DispatchGroup()
-        group.enter()
-        DispatchQueue.main.async {
-            do {
-                try work()
-            } catch {
-                thrown = error
-            }
-            group.leave()
-        }
-
-        guard group.wait(timeout: .now() + 30) == .success else {
-            throw NSError(
-                domain: "PontenE2E",
-                code: 11,
-                userInfo: [NSLocalizedDescriptionKey: "Timed out waiting for main-thread UI work."]
-            )
-        }
-
-        if let thrown { throw thrown }
     }
 
     private func waitInterval(_ interval: TimeInterval) {

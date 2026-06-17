@@ -127,6 +127,7 @@ final class SignatureManager: ObservableObject {
     }
 
     private func loadLaunchAtLoginState() {
+        guard !E2EMode.isEnabled else { return }
         if #available(macOS 13.0, *) {
             launchAtLogin = SMAppService.mainApp.status == .enabled
         }
