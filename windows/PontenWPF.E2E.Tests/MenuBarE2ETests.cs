@@ -41,6 +41,7 @@ public class MenuBarE2ETests
 
         using var fixture = new E2ETestFixture(dataDirectory);
         var window = fixture.WaitForMainWindow();
+        fixture.RequireElement(window, cf => cf.ByName("Test Signature"));
 
         var signButton = fixture.RequireElement(
             window,
@@ -74,6 +75,7 @@ public class MenuBarE2ETests
             var quitButton = fixture.RequireElement(window, cf => cf.ByName("Quit")).AsButton();
             quitButton.Invoke();
             fixture.Application.WaitWhileBusy(TimeSpan.FromSeconds(10));
+            E2ETestFixture.AssertAutoPastePersisted(dataDirectory);
         }
 
         using var restarted = new E2ETestFixture(dataDirectory);

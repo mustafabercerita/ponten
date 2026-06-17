@@ -202,7 +202,10 @@ namespace PontenWPF
             _statusTimer.Tick += (_, _) =>
             {
                 StatusText.Text = "";
-                StatusText.Visibility = Visibility.Collapsed;
+                if (!E2EMode.IsEnabled)
+                {
+                    StatusText.Visibility = Visibility.Collapsed;
+                }
                 _statusTimer?.Stop();
             };
             _statusTimer.Start();
@@ -621,6 +624,7 @@ namespace PontenWPF
 
         private void Quit_Click(object sender, RoutedEventArgs e)
         {
+            _isClosing = true;
             Application.Current.Shutdown();
         }
 

@@ -236,6 +236,15 @@ public sealed class E2ETestFixture : IDisposable
         throw new TimeoutException($"Checkbox '{label}' was not checked.");
     }
 
+    public static void AssertAutoPastePersisted(string dataDirectory)
+    {
+        var indexPath = Path.Combine(dataDirectory, "index.json");
+        Assert.True(File.Exists(indexPath), "index.json was not created.");
+
+        var json = File.ReadAllText(indexPath);
+        Assert.Contains("\"AutoPaste\": true", json, StringComparison.Ordinal);
+    }
+
     public void WaitForAutoPasteEnabled(string dataDirectory, TimeSpan? timeout = null)
     {
         timeout ??= TimeSpan.FromSeconds(5);
