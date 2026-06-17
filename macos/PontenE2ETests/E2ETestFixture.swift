@@ -496,7 +496,6 @@ final class E2ETestFixture {
             let elementRole = roleAttribute(element)
             let elementTitle = stringAttribute(element, attribute: kAXTitleAttribute)
                 ?? stringAttribute(element, attribute: kAXDescriptionAttribute)
-                ?? stringAttribute(element, attribute: kAXLabelAttribute)
             let elementIdentifier = stringAttribute(element, attribute: kAXIdentifierAttribute)
 
             let roleMatches = role == nil || elementRole == role
