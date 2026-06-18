@@ -387,15 +387,25 @@ namespace PontenWPF.Tests
         public void SaveIndex_FailureInvokesIndexSaveFailed()
         {
             var storage = new SignatureStorage(_testDirectory);
+            Assert.True(storage.SaveIndex());
+
             string? capturedMessage = null;
             storage.IndexSaveFailed += message => capturedMessage = message;
 
-            Directory.CreateDirectory(_indexPath);
-            bool saved = storage.SaveIndex();
+            File.SetAttributes(_indexPath, FileAttributes.ReadOnly);
+            try
+            {
+                storage.Settings.AutoPaste = !storage.Settings.AutoPaste;
+                bool saved = storage.SaveIndex();
 
-            Assert.False(saved);
-            Assert.NotNull(capturedMessage);
-            Assert.Contains("Failed to save index.json", capturedMessage, StringComparison.Ordinal);
+                Assert.False(saved);
+                Assert.NotNull(capturedMessage);
+                Assert.Contains("Failed to save index.json", capturedMessage, StringComparison.Ordinal);
+            }
+            finally
+            {
+                File.SetAttributes(_indexPath, FileAttributes.Normal);
+            }
         }
 
         [Fact]
