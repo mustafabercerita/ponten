@@ -54,6 +54,9 @@
                         </ListBox.ItemTemplate>
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
+                                <EventSetter Event="PreviewMouseLeftButtonDown" Handler="SignatureItem_PreviewMouseLeftButtonDown"/>
+                                <EventSetter Event="PreviewMouseLeftButtonUp" Handler="SignatureItem_PreviewMouseLeftButtonUp"/>
+                                <EventSetter Event="PreviewMouseMove" Handler="SignatureItem_PreviewMouseMove"/>
                                 <Setter Property="Padding" Value="0"/>
                                 <Setter Property="Margin" Value="0"/>
                                 <Setter Property="BorderThickness" Value="2"/>

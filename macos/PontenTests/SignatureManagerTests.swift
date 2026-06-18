@@ -132,7 +132,7 @@ final class SignatureManagerTests: XCTestCase {
         let activeID = try XCTUnwrap(manager.activeSignatureID)
 
         XCTAssertEqual(testStore.loadActiveID(), activeID)
-        XCTAssertEqual(testStore.load().signatures.count, 1)
+        XCTAssertEqual(testStore.load().items.count, 1)
     }
 
     @MainActor
@@ -147,9 +147,9 @@ final class SignatureManagerTests: XCTestCase {
         let reloadedStore = SignatureStore(storageDirectory: testDirectory)
         let result = reloadedStore.load()
 
-        XCTAssertEqual(result.signatures.count, 1)
+        XCTAssertEqual(result.items.count, 1)
         XCTAssertEqual(result.prunedCount, 1)
-        XCTAssertEqual(result.signatures.first?.0.id, existingID)
+        XCTAssertEqual(result.items.first?.id, existingID)
         XCTAssertEqual(reloadedStore.loadActiveID(), existingID)
     }
 
@@ -211,9 +211,25 @@ final class SignatureManagerTests: XCTestCase {
         let reloadedStore = SignatureStore(storageDirectory: testDirectory)
         let result = reloadedStore.load()
 
-        XCTAssertEqual(result.signatures.count, 1)
-        XCTAssertEqual(result.signatures.first?.0.id, id)
+        XCTAssertEqual(result.items.count, 1)
+        XCTAssertEqual(result.items.first?.id, id)
         XCTAssertEqual(reloadedStore.loadActiveID(), id)
+    }
+
+    @MainActor
+    func testCorruptIndexRebuildsFromLegacySignaturePng() throws {
+        _ = try makePNGFile(named: "signature.png")
+        try "not json".write(to: testDirectory.appendingPathComponent("index.json"), atomically: true, encoding: .utf8)
+
+        let reloadedStore = SignatureStore(storageDirectory: testDirectory)
+        let result = reloadedStore.load()
+
+        XCTAssertEqual(result.items.count, 1)
+        let item = try XCTUnwrap(result.items.first)
+        XCTAssertEqual(item.filename, "\(item.id.uuidString).png")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: testDirectory.appendingPathComponent("signature.png").path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: testDirectory.appendingPathComponent(item.filename).path))
+        XCTAssertEqual(reloadedStore.loadActiveID(), item.id)
     }
 
     @MainActor
@@ -240,11 +256,39 @@ final class SignatureManagerTests: XCTestCase {
         let reloadedStore = SignatureStore(storageDirectory: testDirectory)
         let result = reloadedStore.load()
 
-        XCTAssertEqual(result.signatures.count, 1)
+        XCTAssertEqual(result.items.count, 1)
         let settings = try XCTUnwrap(reloadedStore.loadSettings())
         XCTAssertTrue(settings.launchAtLogin)
         XCTAssertFalse(settings.autoPaste)
         XCTAssertFalse(settings.removeBackground)
+    }
+
+    @MainActor
+    func testCorruptIndexPreservesGlobalShortcutAndShowWhiteCanvas() throws {
+        let id = UUID()
+        let filename = "\(id.uuidString).png"
+        _ = try makePNGFile(named: filename)
+        let corruptJSON = """
+        {
+          "items": "not-an-array",
+          "settings": {
+            "globalShortcut": 2,
+            "showWhiteCanvas": false
+          }
+        }
+        """
+        try corruptJSON.write(
+            to: testDirectory.appendingPathComponent("index.json"),
+            atomically: true,
+            encoding: .utf8
+        )
+
+        let reloadedStore = SignatureStore(storageDirectory: testDirectory)
+        _ = reloadedStore.load()
+
+        let settings = try XCTUnwrap(reloadedStore.loadSettings())
+        XCTAssertEqual(settings.globalShortcut, ShortcutChoice.shiftCmdS.rawValue)
+        XCTAssertFalse(settings.showWhiteCanvas)
     }
 
     @MainActor
@@ -254,8 +298,8 @@ final class SignatureManagerTests: XCTestCase {
         let reloadedStore = SignatureStore(storageDirectory: testDirectory)
         let result = reloadedStore.load()
 
-        XCTAssertEqual(result.signatures.count, 1)
-        XCTAssertEqual(result.signatures.first?.0.filename, "signature.png")
+        XCTAssertEqual(result.items.count, 1)
+        XCTAssertEqual(result.items.first?.filename, "signature.png")
         XCTAssertNotNil(reloadedStore.loadActiveID())
     }
 
@@ -282,7 +326,7 @@ final class SignatureManagerTests: XCTestCase {
         manager.deleteSignature(id: id)
 
         XCTAssertFalse(FileManager.default.fileExists(atPath: filePath.path))
-        XCTAssertEqual(testStore.load().signatures.count, 0)
+        XCTAssertEqual(testStore.load().items.count, 0)
     }
 
     @MainActor
@@ -323,8 +367,8 @@ final class SignatureManagerTests: XCTestCase {
         let store = SignatureStore(storageDirectory: testDirectory)
         let result = store.load()
 
-        XCTAssertEqual(result.signatures.count, 1)
-        XCTAssertEqual(result.signatures.first?.0.id, id)
+        XCTAssertEqual(result.items.count, 1)
+        XCTAssertEqual(result.items.first?.id, id)
         XCTAssertEqual(store.loadActiveID(), id)
 
         let settings = try XCTUnwrap(store.loadSettings())
@@ -354,11 +398,30 @@ final class SignatureManagerTests: XCTestCase {
         let store = SignatureStore(storageDirectory: testDirectory)
         let result = store.load()
 
-        XCTAssertEqual(result.signatures.count, 1)
-        XCTAssertEqual(result.signatures.first?.0.name, "E2E Signature")
+        XCTAssertEqual(result.items.count, 1)
+        XCTAssertEqual(result.items.first?.name, "E2E Signature")
         XCTAssertEqual(store.loadSettings()?.autoPaste, false)
         XCTAssertEqual(store.loadSettings()?.launchAtLogin, false)
         XCTAssertEqual(store.loadSettings()?.removeBackground, true)
+    }
+
+    @MainActor
+    func testLoadDefersImageLoadingUntilRequested() throws {
+        let id = UUID()
+        let filename = "\(id.uuidString).png"
+        _ = try makePNGFile(named: filename)
+        let item = SignatureItem(id: id, filename: filename, name: "Deferred")
+        try testStore.saveIndex(items: [item], activeID: id)
+
+        let reloadedManager = SignatureManager(store: SignatureStore(storageDirectory: testDirectory))
+
+        XCTAssertEqual(reloadedManager.signatures.count, 1)
+        XCTAssertNil(reloadedManager.signatures.first?.image)
+        XCTAssertNil(reloadedManager.signatureImage)
+
+        XCTAssertNotNil(reloadedManager.image(for: id))
+        XCTAssertNotNil(reloadedManager.signatures.first?.image)
+        XCTAssertNotNil(reloadedManager.signatureImage)
     }
 
     func testSettingsRoundTripInIndexJson() throws {

@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 using PontenWPF;
 
 namespace PontenWPF.Tests;
@@ -70,6 +71,67 @@ public class ImageProcessorTests
 
         Assert.True(result.Width <= 21);
         Assert.True(result.Height <= 21);
+    }
+
+    [Fact]
+    public void WritePngAtomic_WritesFileSuccessfully()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "ponten-test-" + Guid.NewGuid());
+        string path = Path.Combine(directory, "signature.png");
+        byte[] pngBytes = CreateMinimalPngBytes();
+
+        try
+        {
+            ImageProcessor.WritePngAtomic(path, pngBytes);
+
+            Assert.True(File.Exists(path));
+            Assert.Equal(pngBytes.Length, new FileInfo(path).Length);
+        }
+        finally
+        {
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    [Fact]
+    public void WritePngAtomic_ThrowsUserFacingMessageOnReadOnlyFile()
+    {
+        string directory = Path.Combine(Path.GetTempPath(), "ponten-test-" + Guid.NewGuid());
+        string path = Path.Combine(directory, "signature.png");
+        byte[] pngBytes = CreateMinimalPngBytes();
+
+        try
+        {
+            ImageProcessor.WritePngAtomic(path, pngBytes);
+            File.SetAttributes(path, FileAttributes.ReadOnly);
+
+            var ex = Assert.Throws<IOException>(() => ImageProcessor.WritePngAtomic(path, pngBytes));
+
+            Assert.Contains("Failed to save signature", ex.Message, StringComparison.Ordinal);
+        }
+        finally
+        {
+            if (File.Exists(path))
+            {
+                File.SetAttributes(path, FileAttributes.Normal);
+            }
+
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, recursive: true);
+            }
+        }
+    }
+
+    private static byte[] CreateMinimalPngBytes()
+    {
+        using var bitmap = new Bitmap(4, 4, PixelFormat.Format32bppArgb);
+        using var stream = new MemoryStream();
+        bitmap.Save(stream, ImageFormat.Png);
+        return stream.ToArray();
     }
 
     private static Bitmap CreateWhiteBorderedImage(int width, int height)

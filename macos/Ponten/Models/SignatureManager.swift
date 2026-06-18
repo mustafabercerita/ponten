@@ -38,12 +38,14 @@ final class SignatureManager: ObservableObject {
 
     // MARK: - Published State
 
-    @Published private(set) var signatures: [(item: SignatureItem, image: NSImage)] = []
+    @Published private(set) var signatures: [(item: SignatureItem, image: NSImage?)] = []
     @Published var activeSignatureID: UUID?
+
+    private var imageCache: [UUID: NSImage] = [:]
 
     var signatureImage: NSImage? {
         guard let id = activeSignatureID else { return nil }
-        return signatures.first(where: { $0.item.id == id })?.image
+        return image(for: id)
     }
 
     var signaturePath: URL? {
@@ -142,13 +144,33 @@ final class SignatureManager: ObservableObject {
 
     private func loadSignatures() {
         let result = store.load()
-        signatures = result.signatures
-        activeSignatureID = store.loadActiveID() ?? signatures.first?.0.id
+        imageCache = [:]
+        signatures = result.items.map { ($0, nil) }
+        activeSignatureID = store.loadActiveID() ?? signatures.first?.item.id
 
         if result.prunedCount > 0 {
             let noun = result.prunedCount == 1 ? "signature" : "signatures"
             showToast("\(result.prunedCount) \(noun) removed — image file(s) missing")
         }
+    }
+
+    func image(for id: UUID) -> NSImage? {
+        if let cached = imageCache[id] {
+            return cached
+        }
+        guard let item = signatures.first(where: { $0.item.id == id })?.item,
+              let img = store.loadImage(filename: item.filename) else {
+            return nil
+        }
+        imageCache[id] = img
+        if let index = signatures.firstIndex(where: { $0.item.id == id }) {
+            signatures[index].image = img
+        }
+        return img
+    }
+
+    func ensureImageLoaded(for id: UUID) {
+        _ = image(for: id)
     }
 
     private func currentSettings() -> UserSettings {
@@ -271,6 +293,8 @@ final class SignatureManager: ObservableObject {
         let item = SignatureItem(id: targetID, filename: filename, name: existingItem?.name)
         let previousSignatures = signatures
         let previousActiveID = activeSignatureID
+
+        imageCache[targetID] = img
 
         if isOverwriting {
             if let idx = signatures.firstIndex(where: { $0.item.id == targetID }) {
@@ -398,7 +422,7 @@ final class SignatureManager: ObservableObject {
 
     @discardableResult
     func copySignatureToClipboard() -> Bool {
-        guard signatureImage != nil else { return false }
+        guard let id = activeSignatureID, image(for: id) != nil else { return false }
 
         if E2EMode.isEnabled {
             writeE2ECopyMarker()
@@ -406,7 +430,7 @@ final class SignatureManager: ObservableObject {
             return true
         }
 
-        guard let image = signatureImage else { return false }
+        guard let image = image(for: id) else { return false }
 
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
@@ -480,6 +504,7 @@ final class SignatureManager: ObservableObject {
         let deletedActiveSignature = activeSignatureID == id
 
         signatures.removeAll { $0.item.id == id }
+        imageCache.removeValue(forKey: id)
         if signatures.isEmpty {
             activeSignatureID = nil
         } else if deletedActiveSignature, let first = signatures.first {

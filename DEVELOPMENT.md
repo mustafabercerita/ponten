@@ -2,7 +2,7 @@
 
 ## Version Source of Truth
 
-Bump **all** together, then `git tag vX.Y.Z`. Current: **1.2.13**.
+Bump **all** together, then `git tag vX.Y.Z`. Current: **1.2.14**.
 
 | Location | Key / variable |
 |----------|----------------|
@@ -53,7 +53,7 @@ E2E mode: `--e2e` or `PONTEN_E2E=1`. Isolated data dir: `--data-dir=<path>` or `
 cd windows
 dotnet build Ponten.sln -c Debug
 dotnet run --project PontenWPF/PontenWPF.csproj
-dotnet test Ponten.sln -c Release                  # 12 unit + 5 E2E (CI command)
+dotnet test Ponten.sln -c Release                  # 35 unit + 5 E2E (CI command)
 dotnet publish PontenWPF/PontenWPF.csproj -c Release -r win-x64 \
   --self-contained true -p:PublishSingleFile=true
 ```

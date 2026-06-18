@@ -10,6 +10,26 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.2.14] — 2026-06-18
+
+### Added
+- **macOS lazy-load thumbnails** — signature images load on demand when cards appear; corrupt-index rebuild migrates legacy `signature.png` to UUID filename
+- **Windows drag-out** — drag signatures from the list into target apps via file drop
+- **Windows global shortcut picker** — 3 presets (Ctrl+Alt+S, Ctrl+Shift+S, Alt+Shift+S) persisted in `index.json`; dynamic shortcut labels in UI and About dialog
+- **Windows legacy `signature.png` migration** — renames to UUID filename on load and during corrupt-index recovery
+- **macOS settings in `index.json`** — `globalShortcut` and `showWhiteCanvas` persisted for folder-sync parity with Windows
+
+### Fixed
+- **Windows SaveIndex errors** — surfaced to UI via `ShowStatus` when `index.json` write fails
+- **Windows auto-paste focus** — captures foreground HWND before hiding popup so paste targets the correct window
+- **Windows PNG write errors** — disk-full and I/O failures surfaced via `ShowStatus` through `StorageError`
+- **Windows uninstall** — Launch at Login registry entry removed on uninstall (`installer.iss`)
+
+### Changed
+- **Documentation** — ARCHITECTURE platform parity table, README shortcut section, test counts synced to actual suites
+
+---
+
 ## [1.2.13] — 2026-06-18
 
 ### Added
@@ -136,7 +156,8 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.2.13...HEAD
+[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.2.14...HEAD
+[1.2.14]: https://github.com/mustafabercerita/ponten/compare/v1.2.13...v1.2.14
 [1.2.13]: https://github.com/mustafabercerita/ponten/compare/v1.2.12...v1.2.13
 [1.2.12]: https://github.com/mustafabercerita/ponten/compare/v1.2.0...v1.2.12
 [1.2.0]: https://github.com/mustafabercerita/ponten/compare/v1.1.0...v1.2.0

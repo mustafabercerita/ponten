@@ -45,7 +45,7 @@ struct IndexWrapper: Codable {
 }
 
 struct SignatureLoadResult {
-    var signatures: [(SignatureItem, NSImage)]
+    var items: [SignatureItem]
     var prunedCount: Int
 }
 
@@ -112,34 +112,38 @@ final class SignatureStore {
     func load() -> SignatureLoadResult {
         if !FileManager.default.fileExists(atPath: indexPath.path) {
             let migrated = migrateLegacySignature()
-            return SignatureLoadResult(signatures: migrated, prunedCount: 0)
+            return SignatureLoadResult(items: migrated, prunedCount: 0)
         }
 
         guard let data = try? Data(contentsOf: indexPath),
               let wrapper = try? PontenJSON.makeDecoder().decode(IndexWrapper.self, from: data) else {
             let rebuilt = rebuildFromPNGFiles(preservingSettingsFromCorruptIndex: true)
-            return SignatureLoadResult(signatures: rebuilt, prunedCount: 0)
+            return SignatureLoadResult(items: rebuilt, prunedCount: 0)
         }
 
-        var loaded: [(SignatureItem, NSImage)] = []
+        let fm = FileManager.default
+        var loaded: [SignatureItem] = []
         for item in wrapper.items {
             let path = filePath(for: item.filename)
-            if let img = NSImage(contentsOf: path) {
-                loaded.append((item, img))
+            if fm.fileExists(atPath: path.path) {
+                loaded.append(item)
             }
         }
 
         var prunedCount = 0
         if loaded.count < wrapper.items.count {
             prunedCount = wrapper.items.count - loaded.count
-            let prunedItems = loaded.map { $0.0 }
             let prunedActiveID = wrapper.activeID.flatMap { id in
-                prunedItems.contains(where: { $0.id == id }) ? id : prunedItems.first?.id
+                loaded.contains(where: { $0.id == id }) ? id : loaded.first?.id
             }
-            try? saveIndex(items: prunedItems, activeID: prunedActiveID, settings: wrapper.settings)
+            try? saveIndex(items: loaded, activeID: prunedActiveID, settings: wrapper.settings)
         }
 
-        return SignatureLoadResult(signatures: loaded, prunedCount: prunedCount)
+        return SignatureLoadResult(items: loaded, prunedCount: prunedCount)
+    }
+
+    func loadImage(filename: String) -> NSImage? {
+        NSImage(contentsOf: filePath(for: filename))
     }
 
     func loadActiveID() -> UUID? {
@@ -212,31 +216,43 @@ final class SignatureStore {
 
     // MARK: - Recovery & Migration
 
-    private func rebuildFromPNGFiles(preservingSettingsFromCorruptIndex: Bool = false) -> [(SignatureItem, NSImage)] {
+    private func rebuildFromPNGFiles(preservingSettingsFromCorruptIndex: Bool = false) -> [SignatureItem] {
         let fm = FileManager.default
         guard let files = try? fm.contentsOfDirectory(at: storageDirectory, includingPropertiesForKeys: nil) else {
             return []
         }
 
-        var loaded: [(SignatureItem, NSImage)] = []
+        var loaded: [SignatureItem] = []
         for url in files where url.pathExtension.lowercased() == "png" {
             let filename = url.lastPathComponent
             if filename.hasSuffix(".tmp.png") { continue }
 
+            if filename.lowercased() == "signature.png" {
+                let id = UUID()
+                let newFilename = "\(id.uuidString).png"
+                let newPath = filePath(for: newFilename)
+                do {
+                    try fm.moveItem(at: url, to: newPath)
+                } catch {
+                    continue
+                }
+                loaded.append(SignatureItem(id: id, filename: newFilename, name: nil))
+                continue
+            }
+
             let stem = String(filename.dropLast(4))
             guard let id = UUID(uuidString: stem) else { continue }
-            guard let img = NSImage(contentsOf: url) else { continue }
 
             let item = SignatureItem(id: id, filename: filename, name: nil)
-            loaded.append((item, img))
+            loaded.append(item)
         }
 
-        loaded.sort { $0.0.filename < $1.0.filename }
+        loaded.sort { $0.filename < $1.filename }
 
         if !loaded.isEmpty {
-            let activeID = loaded.first?.0.id
+            let activeID = loaded.first?.id
             let settings = preservingSettingsFromCorruptIndex ? parseSettingsFromCorruptIndex() : nil
-            try? saveIndex(items: loaded.map(\.0), activeID: activeID, settings: settings)
+            try? saveIndex(items: loaded, activeID: activeID, settings: settings)
         }
 
         return loaded
@@ -268,16 +284,15 @@ final class SignatureStore {
         return settings
     }
 
-    private func migrateLegacySignature() -> [(SignatureItem, NSImage)] {
+    private func migrateLegacySignature() -> [SignatureItem] {
         let oldPath = filePath(for: "signature.png")
-        guard FileManager.default.fileExists(atPath: oldPath.path),
-              let img = NSImage(contentsOf: oldPath) else {
+        guard FileManager.default.fileExists(atPath: oldPath.path) else {
             return []
         }
 
         let id = UUID()
         let newItem = SignatureItem(id: id, filename: "signature.png")
         try? saveIndex(items: [newItem], activeID: id)
-        return [(newItem, img)]
+        return [newItem]
     }
 }

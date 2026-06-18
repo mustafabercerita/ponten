@@ -47,7 +47,7 @@ Install app → 🖊 icon appears in menu bar / system tray → click icon
 |---|---|
 | **Cross-Platform** | Native apps built for both macOS and Windows. |
 | **System-Tray Architecture** | Lives quietly in the macOS menu bar or Windows system tray — no taskbar clutter. |
-| **Global hotkey** | Copy your signature without even opening the popover (⌥⌘S on Mac, Ctrl+Alt+S on Win). |
+| **Global hotkey** | Copy your signature without even opening the popover — 3 presets on both platforms (⌥⌘S default on Mac, Ctrl+Alt+S on Win). |
 | **Auto-Paste Functionality** | Optionally pastes the signature into your active application after copying. |
 | **Native Auto-Updater** | Built-in GitHub Releases checker — macOS checks on launch; Windows via the **Check for Updates** button (`Updater.cs`). |
 | **Drag & Drop** | Drag an image file directly onto the popover to set your signature. |
@@ -92,9 +92,9 @@ This is the easiest way to install.
 <br>
 
 1. Go to the [Releases](https://github.com/mustafabercerita/ponten/releases) page.
-2. Download `Ponten-1.2.13.dmg` (for Mac) or `Ponten-Setup-1.2.13.exe` (for Windows installer).
+2. Download `Ponten-1.2.14.dmg` (for Mac) or `Ponten-Setup-1.2.14.exe` (for Windows installer).
 3. **Mac**: Open the downloaded file and drag the **Ponten** icon into the **Applications** folder.
-4. **Windows**: Run `Ponten-Setup-1.2.13.exe` to install the app. It will create a Start Menu shortcut, register the uninstaller, and quietly launch in your System Tray.
+4. **Windows**: Run `Ponten-Setup-1.2.14.exe` to install the app. It will create a Start Menu shortcut, register the uninstaller, and quietly launch in your System Tray.
 
 > **Note for Mac users**: Because this is an open-source app signed ad-hoc, you may need to right-click the app and choose **Open** the first time you run it to bypass macOS Gatekeeper.
 
@@ -153,7 +153,7 @@ That's it. The script will:
 | Shortcut | Action |
 |---|---|
 | **⌥⌘S** / **⌃⌘S** / **⇧⌘S** (macOS) | Copy signature — choose preset in popover settings |
-| **Ctrl+Alt+S** (Windows) | Copy signature (fixed; customization coming soon) |
+| **Ctrl+Alt+S** / **Ctrl+Shift+S** / **Alt+Shift+S** (Windows) | Copy signature — choose preset in popover settings |
 | **⌘Q** / **Alt+F4** | Quit the app |
 | **Return** | Sign (when popover is open) |
 | **Escape** | Close popover |
@@ -194,7 +194,7 @@ Ponten/
 │   │   ├── Views/                   # SwiftUI UI components
 │   │   ├── Utilities/               # GlobalShortcutManager, EventMonitor
 │   │   └── Resources/               # Assets, Plist
-│   ├── PontenTests/                 # XCTest suite (11 tests)
+│   ├── PontenTests/                 # XCTest suite (33 tests)
 │   ├── PontenUITests/               # XCUITest E2E (5 tests in MenuBarUITests.swift; CI)
 │   ├── PontenE2ETests/              # Legacy AX E2E (5 tests; skipped in scheme, local dev)
 │   ├── Package.swift                # Swift Package Manager manifest
@@ -214,7 +214,7 @@ Ponten/
 │   │   ├── GlobalShortcutManager.cs # Win32 hotkey registration
 │   │   ├── Updater.cs               # GitHub release checker
 │   │   └── ImageEditorWindow.xaml   # Image editing & pen tools
-│   ├── PontenWPF.Tests/             # xUnit unit tests (12 tests)
+│   ├── PontenWPF.Tests/             # xUnit unit tests (35 tests)
 │   └── PontenWPF.E2E.Tests/         # FlaUI E2E tests (5 tests, Windows-only)
 │
 ├── add_files.rb                     # Xcode project file sync helper
@@ -231,7 +231,7 @@ Ponten/
 
 ## Running Tests
 
-**macOS (Xcode) — 11 unit tests + 5 E2E (16 total via scheme test):**
+**macOS (Xcode) — 33 unit tests + 5 E2E (38 total via scheme test):**
 ```bash
 cd macos
 xcodebuild -project Ponten.xcodeproj -scheme Ponten \
@@ -254,7 +254,7 @@ cd macos
 swift test
 ```
 
-**Windows — 12 unit tests + 5 E2E (17 total via `dotnet test`):**
+**Windows — 35 unit tests + 5 E2E (40 total via `dotnet test`):**
 ```bash
 cd windows
 dotnet test Ponten.sln -c Release
@@ -303,12 +303,12 @@ We've recently crossed off several major milestones from our original roadmap! H
 - [x] **Background removal:** Automatically drops white backgrounds from JPEG/PNG images using native CoreImage/System.Drawing filters so your signature is clean and transparent.
 - [x] **Auto-Paste:** Uses macOS Accessibility APIs and Win32 APIs to automatically paste your signature into the active document right after copying.
 - [x] **Drag & Drop Out:** Drag the signature from the popover directly into your target app.
+- [x] **Windows global shortcut customization:** Three presets (Ctrl+Alt+S, Ctrl+Shift+S, Alt+Shift+S) with picker in popover settings.
 - [x] **Native Auto-Updater:** Replaced heavy Sparkle framework with a lightweight, native SwiftUI GitHub release checker.
 - [x] **Swift Package Manager support:** `Package.swift` with test target for CLI builds.
 
 ### 🚀 Upcoming Features
 - [ ] Mac App Store & Microsoft Store release
-- [ ] Windows global shortcut customization
 
 ---
 

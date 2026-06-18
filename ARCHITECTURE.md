@@ -1,4 +1,4 @@
-# Architecture — Ponten (v1.2.13)
+# Architecture — Ponten (v1.2.14)
 
 ## Overview
 
@@ -99,7 +99,7 @@ Right-click on the status item shows a minimal context menu (Quit).
 | **Persistence** | Delegates to `SignatureStore` — writes `index.json` + PNG files |
 | **Clipboard** | `NSPasteboard.general.writeObjects([NSImage])` |
 | **Auto-paste** | `CGEvent` posts ⌘V via `pasteToActiveApp()` when `autoPaste` is enabled |
-| **Settings (UserDefaults)** | `ShowWhiteCanvas`, `AutoPasteEnabled`, `GlobalShortcut` |
+| **Settings** | `index.json` → `settings` (`autoPaste`, `launchAtLogin`, `removeBackground`, `globalShortcut`, `showWhiteCanvas`); UserDefaults mirrored for launch-time reads |
 | **Launch at login** | `SMAppService.mainApp` (macOS 13+) |
 | **File import** | `NSOpenPanel`, drag-and-drop, drawing sheet → sets `pendingImageToEdit` |
 | **Multi-signature** | Add, select active, rename, delete; each stored as `{UUID}.png` |
@@ -112,7 +112,9 @@ Owns the on-disk layout under `~/Library/Application Support/Ponten/`:
 
 - **`index.json`** — manifest of signature items + active ID
 - **`{UUID}.png`** — one PNG per signature (new saves use UUID filename)
-- **Legacy migration** — if `index.json` is missing but `signature.png` exists, creates a single-item index pointing at the legacy file (filename kept as `signature.png`)
+- **Legacy migration** — if `index.json` is missing but `signature.png` exists, creates a single-item index pointing at the legacy file (filename kept as `signature.png` until next save)
+- **Corrupt-index recovery** — rebuilds manifest from on-disk PNGs; renames legacy `signature.png` to `{UUID}.png` during rebuild
+- **Lazy image load** — `loadImage(filename:)` called on demand via `SignatureManager.image(for:)` when signature cards appear
 
 API: `load()`, `loadActiveID()`, `saveIndex(items:activeID:)`, `writePNG(data:filename:)`, `deleteFile(filename:)`, `filePath(for:)`.
 
@@ -155,7 +157,7 @@ Singleton registering a global hotkey via `RegisterEventHotKey`. Three presets m
 - `⌃⌘S`
 - `⇧⌘S`
 
-Persisted in UserDefaults; `SignatureManager.globalShortcut` setter calls `updateShortcut(_:)`. If hotkey fires with no signature loaded, `AppDelegate` opens the popover instead.
+Persisted in `index.json` (`settings.globalShortcut`) with UserDefaults mirror; `SignatureManager.globalShortcut` setter calls `updateShortcut(_:)`. If hotkey fires with no signature loaded, `AppDelegate` opens the popover instead.
 
 ### `EventMonitor`
 
@@ -186,12 +188,14 @@ Supporting windows:
 
 ### `SignatureStorage` — Persistence + Settings
 
-Single class handling disk I/O and embedded settings (unlike macOS, where settings split between `index.json` and UserDefaults).
+Single class handling disk I/O and embedded settings.
 
 Storage root: `%LocalAppData%\Ponten\`
 
-- Loads / saves `index.json` (items, activeID, settings)
+- Loads / saves `index.json` (items, activeID, settings including `GlobalShortcut`)
 - Cleans index entries whose PNG files are missing on load
+- **Legacy migration** — renames `signature.png` to `{UUID}.png` on load and during corrupt-index recovery
+- **SaveIndex errors** — raises `IndexSaveFailed` event surfaced to UI via `ShowStatus`
 - `ApplyLaunchAtLogin` — writes/removes `HKCU\...\Run\PontenSignatures` registry value (legacy key name; the app displays **Ponten** in the UI)
 - Testable via `SignatureStorage(string? customStorageDirectory)`
 
@@ -213,13 +217,17 @@ No vectorization on Windows.
 
 ### `GlobalShortcutManager`
 
-Win32 `RegisterHotKey` via P/Invoke. Fixed registration in `MenuBarView_SourceInitialized`:
+Win32 `RegisterHotKey` via P/Invoke. Registration in `MenuBarView_SourceInitialized` reads `Settings.GlobalShortcut`:
 
-- **Ctrl + Alt + S** (`MOD_CONTROL | MOD_ALT`, `VK_S`)
-- Hotkey handler: `HandleHotKeyAsync()` copies the active signature and respects `Settings.AutoPaste` (same as the Sign button)
-- If no signature is loaded, opens the popup instead of copying
+- **Ctrl + Alt + S** (default) — `MOD_CONTROL | MOD_ALT`, `VK_S`
+- **Ctrl + Shift + S** — `MOD_CONTROL | MOD_SHIFT`, `VK_S`
+- **Alt + Shift + S** — `MOD_ALT | MOD_SHIFT`, `VK_S`
 
-Shortcut customization is not implemented on Windows yet — the footer shows a static label (`Shortcut: Ctrl+Alt+S`) rather than a picker or dialog.
+Three presets via `ShortcutChoice` enum; picker in footer (`GlobalShortcutCombo`) persists choice to `index.json`. Dynamic labels in Sign button, About dialog, and status toasts.
+
+Hotkey handler: `HandleHotKeyAsync()` copies the active signature and respects `Settings.AutoPaste` (same as the Sign button). If no signature is loaded, opens the popup instead of copying.
+
+**Auto-paste focus fix** — `CaptureAutoPasteTargetWindow()` records foreground HWND via `GetForegroundWindow()` before the popup hides, so paste targets the correct window.
 
 ### `Updater.cs`
 
@@ -328,18 +336,25 @@ Windows: %LocalAppData%\Ponten\
 
 ### `index.json` Structure
 
-**macOS** (`IndexWrapper`):
+**macOS** (`IndexWrapper` + embedded settings, camelCase on write):
 
 ```json
 {
   "items": [
     { "id": "UUID", "filename": "UUID.png", "name": "Work" }
   ],
-  "activeID": "UUID"
+  "activeID": "UUID",
+  "settings": {
+    "autoPaste": true,
+    "launchAtLogin": false,
+    "removeBackground": true,
+    "globalShortcut": 0,
+    "showWhiteCanvas": true
+  }
 }
 ```
 
-**Windows** (`IndexWrapper` + embedded settings):
+**Windows** (`IndexWrapper` + embedded settings, PascalCase on write; case-insensitive read):
 
 ```json
 {
@@ -350,7 +365,8 @@ Windows: %LocalAppData%\Ponten\
   "settings": {
     "LaunchAtLogin": false,
     "AutoPaste": true,
-    "RemoveBackground": true
+    "RemoveBackground": true,
+    "GlobalShortcut": 0
   }
 }
 ```
@@ -358,18 +374,17 @@ Windows: %LocalAppData%\Ponten\
 ### File Naming
 
 - **New signatures**: `{UUID}.png` where UUID matches the `SignatureItem.id`
-- **Legacy migration (macOS only)**: pre-v1.2 installs stored a single `signature.png`. On first load without `index.json`, `SignatureStore.migrateLegacySignature()` creates an index entry with the existing file (filename stays `signature.png`)
-- **Windows**: no legacy migration path; expects `index.json` from the start
+- **Legacy migration (both platforms)**: pre-v1.2 installs stored a single `signature.png`. On first load without `index.json`, both platforms create an index entry; on subsequent load/save or corrupt-index rebuild, the file is renamed to `{UUID}.png`
 
 ### Settings Storage Split
 
 | Setting | macOS | Windows |
 |---|---|---|
-| Launch at login | `SMAppService` + `@Published launchAtLogin` | `index.json` → `settings.LaunchAtLogin` + Registry Run key (`PontenSignatures`) |
-| Auto-paste | UserDefaults `AutoPasteEnabled` | `index.json` → `settings.AutoPaste` |
-| Remove background default | N/A (per-save in editor) | `index.json` → `settings.RemoveBackground` |
-| Global shortcut | UserDefaults `GlobalShortcut` | Hard-coded Ctrl+Alt+S (static label in footer) |
-| Show white canvas | UserDefaults `ShowWhiteCanvas` | N/A |
+| Launch at login | `index.json` → `settings.launchAtLogin` + `SMAppService` | `index.json` → `settings.LaunchAtLogin` + Registry Run key (`PontenSignatures`) |
+| Auto-paste | `index.json` → `settings.autoPaste` | `index.json` → `settings.AutoPaste` |
+| Remove background default | `index.json` → `settings.removeBackground` | `index.json` → `settings.RemoveBackground` |
+| Global shortcut | `index.json` → `settings.globalShortcut` | `index.json` → `settings.GlobalShortcut` |
+| Show white canvas | `index.json` → `settings.showWhiteCanvas` | N/A |
 
 ---
 
@@ -463,13 +478,16 @@ Save → PNG encode → new UUID entry in index + disk
 | Background removal | ✅ CI filters | ✅ pixel strip |
 | Vectorize on save | ✅ Vision contours | ❌ |
 | Drag & drop import | ✅ | ✅ `Grid_DragOver` / `Grid_Drop` |
-| Global hotkey | ✅ 3 presets (⌥⌘S default) | ✅ fixed Ctrl+Alt+S |
-| Shortcut customization | ✅ Picker in footer | ❌ static label (`Shortcut: Ctrl+Alt+S`) |
+| Drag & drop out | ✅ `.onDrag` from signature cards | ✅ file-drop drag from list items |
+| Global hotkey | ✅ 3 presets (⌥⌘S default) | ✅ 3 presets (Ctrl+Alt+S default) |
+| Shortcut customization | ✅ Picker in footer | ✅ `GlobalShortcutCombo` in footer |
 | Auto-paste toggle | ✅ respects setting | ✅ respects `Settings.AutoPaste` via `HandleHotKeyAsync` |
-| Launch at login | ✅ `SMAppService` | ✅ Registry Run key (`PontenSignatures`) |
+| Launch at login | ✅ `SMAppService` | ✅ Registry Run key (`PontenSignatures`); cleaned on uninstall |
 | Auto-updater | ✅ GitHub API + DMG install | ✅ `CheckUpdates_Click` + `Updater.cs` |
-| Legacy `signature.png` migration | ✅ | ❌ |
-| Settings location | UserDefaults + index.json | index.json only |
+| Legacy `signature.png` migration | ✅ UUID rename on rebuild | ✅ UUID rename on load/rebuild |
+| Settings location | `index.json` (UserDefaults mirror) | `index.json` |
+| Lazy thumbnail load | ✅ on card appear | N/A (loads on list bind) |
+| Storage error surfacing | ✅ toast via `StorageError` | ✅ `ShowStatus` via `IndexSaveFailed` + `StorageError` |
 | DI for tests | ✅ `init(store:)` | ✅ custom storage directory ctor |
 | Logging | `print` / toasts | `%LocalAppData%\Ponten\logs\app.log` |
 
@@ -517,7 +535,7 @@ E2E tests exercise real window interactions (copy marker, settings persistence, 
 | macOS | 13.0 Ventura | Swift 5.9, SwiftUI, AppKit, Vision, Core Image |
 | Windows | 10 | .NET 8, WPF, `System.Drawing` |
 
-Current release: **v1.2.13**
+Current release: **v1.2.14**
 
 ---
 

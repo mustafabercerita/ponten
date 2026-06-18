@@ -160,10 +160,14 @@ struct SignatureActiveView: View {
 
 struct SignatureCardView: View {
     @ObservedObject var manager: SignatureManager
-    let sig: (item: SignatureItem, image: NSImage)
+    let sig: (item: SignatureItem, image: NSImage?)
     @Binding var signatureToRename: UUID?
     @Binding var newSignatureName: String
     @Binding var showRenameAlert: Bool
+
+    private var displayImage: NSImage? {
+        sig.image ?? manager.image(for: sig.item.id)
+    }
 
     var body: some View {
         Button(action: {
@@ -175,10 +179,12 @@ struct SignatureCardView: View {
                     if manager.showWhiteCanvas {
                         RoundedRectangle(cornerRadius: 6).fill(Color.white)
                     }
-                    Image(nsImage: sig.image)
-                        .resizable()
-                        .scaledToFit()
-                        .padding(4)
+                    if let displayImage {
+                        Image(nsImage: displayImage)
+                            .resizable()
+                            .scaledToFit()
+                            .padding(4)
+                    }
                 }
                 .frame(maxWidth: 240)
                 .frame(height: 70)
@@ -198,10 +204,13 @@ struct SignatureCardView: View {
         .buttonStyle(.plain)
         .accessibilityIdentifier(sig.item.id.uuidString)
         .accessibilityLabel(sig.item.name ?? "Signature")
+        .onAppear {
+            manager.ensureImageLoaded(for: sig.item.id)
+        }
         .contextMenu {
             Button("Edit") {
                 manager.pendingEditSignatureID = sig.item.id
-                manager.pendingImageToEdit = sig.image
+                manager.pendingImageToEdit = manager.image(for: sig.item.id)
             }
             Button("Rename") {
                 signatureToRename = sig.item.id

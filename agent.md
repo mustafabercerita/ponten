@@ -121,7 +121,7 @@ xcodebuild test -project Ponten.xcodeproj -scheme Ponten \
 
 ```bash
 cd windows
-dotnet test Ponten.sln -c Release   # unit (12) + E2E (5)
+dotnet test Ponten.sln -c Release   # unit (35) + E2E (5)
 ```
 
 **Windows E2E tests** (`PontenWPF.E2E.Tests`): 5 FlaUI + xUnit tests that launch `PontenWPF.exe` and drive the tray popover UI. Windows-only; requires a prior build of `PontenWPF` (the test fixture locates `PontenWPF.exe` under `bin/`).
@@ -166,7 +166,7 @@ Both platforms store signatures in a platform-specific app-data folder with an `
 |-------|--------------------------|------------------------------|
 | Items key | `items` (camelCase) | `Items` (PascalCase on write; deserializer is case-insensitive) |
 | Active ID | `activeID` | `ActiveID` |
-| Settings | ❌ not in index | ✅ `Settings` (`LaunchAtLogin`, `AutoPaste`, `RemoveBackground`) |
+| Settings | ✅ `settings` (`autoPaste`, `launchAtLogin`, `removeBackground`, `globalShortcut`, `showWhiteCanvas`) | ✅ `Settings` (`LaunchAtLogin`, `AutoPaste`, `RemoveBackground`, `GlobalShortcut`) |
 | Storage path | `~/Library/Application Support/Ponten/` | `%LOCALAPPDATA%\Ponten\` |
 
 Windows writes `index.json` with PascalCase property names (default `System.Text.Json` serialization).

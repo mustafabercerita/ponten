@@ -10,8 +10,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Interop;
 using System.Windows.Threading;
 using Microsoft.Win32;
+using System.Runtime.InteropServices;
 
 namespace PontenWPF
 {
@@ -42,6 +44,14 @@ namespace PontenWPF
         private bool _suppressSettingsSave;
         private bool _isClosing;
         private DispatcherTimer? _statusTimer;
+        private System.Windows.Point _signatureDragStartPoint;
+        private bool _signatureMouseDown;
+        private bool _signatureDragStarted;
+        private bool _isSignatureDragInProgress;
+        private IntPtr _autoPasteTargetWindow;
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
 
         public ObservableCollection<SignatureDisplayItem> DisplayItems { get; set; } = new();
 
@@ -273,6 +283,11 @@ namespace PontenWPF
                 return;
             }
 
+            if (_isSignatureDragInProgress)
+            {
+                return;
+            }
+
             if (!ShouldHideOnDeactivate())
             {
                 return;
@@ -283,6 +298,11 @@ namespace PontenWPF
 
         private bool ShouldHideOnDeactivate()
         {
+            if (_isSignatureDragInProgress)
+            {
+                return false;
+            }
+
             if (SignaturesListBox.ContextMenu?.IsOpen == true)
             {
                 return false;
@@ -301,6 +321,8 @@ namespace PontenWPF
 
         public void ShowAtBottomRight()
         {
+            _autoPasteTargetWindow = GetForegroundWindow();
+
             this.UpdateLayout();
 
             var workArea = SystemParameters.WorkArea;
@@ -355,12 +377,30 @@ namespace PontenWPF
             return null;
         }
 
+        private IntPtr CaptureAutoPasteTargetWindow()
+        {
+            IntPtr foreground = GetForegroundWindow();
+            var ourWindow = new WindowInteropHelper(this).Handle;
+            if (ourWindow != IntPtr.Zero && foreground == ourWindow && _autoPasteTargetWindow != IntPtr.Zero)
+            {
+                return _autoPasteTargetWindow;
+            }
+
+            return foreground;
+        }
+
         private async Task CopyActiveSignatureToClipboard(bool autoPaste, bool hideWindow = true)
         {
             var active = GetActiveDisplayItem();
             if (active?.ImageSource == null)
             {
                 return;
+            }
+
+            IntPtr? pasteTarget = null;
+            if (autoPaste && !E2EMode.IsEnabled)
+            {
+                pasteTarget = CaptureAutoPasteTargetWindow();
             }
 
             try
@@ -384,7 +424,7 @@ namespace PontenWPF
                 if (autoPaste && !E2EMode.IsEnabled)
                 {
                     await Task.Delay(150);
-                    await _manager.AutoPasteAsync();
+                    await _manager.AutoPasteAsync(pasteTarget);
                 }
             }
             catch (Exception ex)
@@ -392,6 +432,75 @@ namespace PontenWPF
                 App.Log($"Clipboard error: {ex.Message}");
                 ShowStatus("Failed to copy — try again.");
             }
+        }
+
+        private void SignatureItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _signatureDragStartPoint = e.GetPosition(null);
+            _signatureMouseDown = true;
+            _signatureDragStarted = false;
+            _suppressSelectionCopy = true;
+        }
+
+        private void SignatureItem_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_signatureMouseDown && !_signatureDragStarted &&
+                SignaturesListBox.SelectedItem is SignatureDisplayItem selected &&
+                selected.ImageSource != null)
+            {
+                _ = CopyActiveSignatureToClipboard(_storage.Settings.AutoPaste);
+            }
+
+            _signatureMouseDown = false;
+        }
+
+        private void SignatureItem_PreviewMouseMove(object sender, MouseEventArgs e)
+        {
+            if (!_signatureMouseDown || e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+
+            System.Windows.Point position = e.GetPosition(null);
+            if (Math.Abs(position.X - _signatureDragStartPoint.X) < SystemParameters.MinimumHorizontalDragDistance &&
+                Math.Abs(position.Y - _signatureDragStartPoint.Y) < SystemParameters.MinimumVerticalDragDistance)
+            {
+                return;
+            }
+
+            if (sender is not ListBoxItem item ||
+                item.DataContext is not SignatureDisplayItem displayItem)
+            {
+                return;
+            }
+
+            string path = _storage.GetSignatureFilePath(displayItem.Item.Filename);
+            if (!File.Exists(path))
+            {
+                return;
+            }
+
+            _signatureDragStarted = true;
+            _isSignatureDragInProgress = true;
+
+            var data = new DataObject(DataFormats.FileDrop, new[] { path });
+            try
+            {
+                item.GiveFeedback += SignatureItem_GiveFeedback;
+                DragDrop.DoDragDrop(item, data, DragDropEffects.Copy);
+            }
+            finally
+            {
+                item.GiveFeedback -= SignatureItem_GiveFeedback;
+                _isSignatureDragInProgress = false;
+                _signatureMouseDown = false;
+            }
+        }
+
+        private static void SignatureItem_GiveFeedback(object sender, GiveFeedbackEventArgs e)
+        {
+            e.UseDefaultCursors = true;
+            e.Handled = true;
         }
 
         private void SignaturesListBox_ContextMenuOpening(object sender, ContextMenuEventArgs e)
@@ -560,11 +669,21 @@ namespace PontenWPF
                 OpenImageEditor(normalized, removeBg, processedBmp =>
                 {
                     string savePath = _storage.GetSignatureFilePath(displayItem.Item.Filename);
-                    using (var ms = new MemoryStream())
+                    try
                     {
-                        processedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                        ImageProcessor.WritePngAtomic(savePath, ms.ToArray());
+                        using (var ms = new MemoryStream())
+                        {
+                            processedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                            ImageProcessor.WritePngAtomic(savePath, ms.ToArray());
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        ShowStatus(StorageError.UserFacingMessage(ex, "Failed to save signature"));
+                        processedBmp.Dispose();
+                        return;
+                    }
+
                     processedBmp.Dispose();
                     LoadSignatures();
                 });
@@ -663,11 +782,21 @@ namespace PontenWPF
                     string filename = $"{id}.png";
                     string path = _storage.GetSignatureFilePath(filename);
 
-                    using (var ms = new MemoryStream())
+                    try
                     {
-                        processedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                        ImageProcessor.WritePngAtomic(path, ms.ToArray());
+                        using (var ms = new MemoryStream())
+                        {
+                            processedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                            ImageProcessor.WritePngAtomic(path, ms.ToArray());
+                        }
                     }
+                    catch (Exception ex)
+                    {
+                        ShowStatus(StorageError.UserFacingMessage(ex, "Failed to save signature"));
+                        processedBmp.Dispose();
+                        return;
+                    }
+
                     processedBmp.Dispose();
 
                     _storage.AddSignature(new SignatureItem { Id = id, Filename = filename });
@@ -815,11 +944,21 @@ namespace PontenWPF
                             string filename = $"{id}.png";
                             string path = _storage.GetSignatureFilePath(filename);
 
-                            using (var ms = new MemoryStream())
+                            try
                             {
-                                processedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                                ImageProcessor.WritePngAtomic(path, ms.ToArray());
+                                using (var ms = new MemoryStream())
+                                {
+                                    processedBmp.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                                    ImageProcessor.WritePngAtomic(path, ms.ToArray());
+                                }
                             }
+                            catch (Exception ex)
+                            {
+                                ShowStatus(StorageError.UserFacingMessage(ex, "Failed to save signature"));
+                                processedBmp.Dispose();
+                                return;
+                            }
+
                             processedBmp.Dispose();
 
                             _storage.AddSignature(new SignatureItem { Id = id, Filename = filename });

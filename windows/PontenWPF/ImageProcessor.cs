@@ -18,16 +18,23 @@ namespace PontenWPF
 
         public static void WritePngAtomic(string path, byte[] pngBytes)
         {
-            string directory = Path.GetDirectoryName(path) ?? ".";
-            Directory.CreateDirectory(directory);
+            try
+            {
+                string directory = Path.GetDirectoryName(path) ?? ".";
+                Directory.CreateDirectory(directory);
 
-            string tempPath = path + ".tmp";
-            File.WriteAllBytes(tempPath, pngBytes);
+                string tempPath = path + ".tmp";
+                File.WriteAllBytes(tempPath, pngBytes);
 
-            if (File.Exists(path))
-                File.Replace(tempPath, path, null);
-            else
-                File.Move(tempPath, path);
+                if (File.Exists(path))
+                    File.Replace(tempPath, path, null);
+                else
+                    File.Move(tempPath, path);
+            }
+            catch (Exception ex)
+            {
+                throw new IOException(StorageError.UserFacingMessage(ex, "Failed to save signature"), ex);
+            }
         }
 
         private static Bitmap Ensure32bppArgb(Bitmap source)
@@ -292,6 +299,9 @@ namespace PontenWPF
         [DllImport("user32.dll", SetLastError = true)]
         private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         [StructLayout(LayoutKind.Sequential)]
         private struct INPUT
         {
@@ -349,7 +359,12 @@ namespace PontenWPF
             }
         }
 
-        public async Task AutoPasteAsync()
+        /// <summary>
+        /// Sends Ctrl+V to paste the clipboard contents. When <paramref name="targetWindow"/> is set,
+        /// restores focus to that HWND first so paste reaches the app the user was working in
+        /// (avoids racing with Hide() on the Ponten menu window).
+        /// </summary>
+        public async Task AutoPasteAsync(IntPtr? targetWindow = null)
         {
             // First ensure Alt, Shift, and Win keys are released to avoid triggering unintended shortcuts
             SendKey(VK_MENU, true);
@@ -358,6 +373,12 @@ namespace PontenWPF
             SendKey(VK_RWIN, true);
 
             await Task.Delay(50).ConfigureAwait(false);
+
+            if (targetWindow.HasValue && targetWindow.Value != IntPtr.Zero)
+            {
+                SetForegroundWindow(targetWindow.Value);
+                await Task.Delay(200).ConfigureAwait(false);
+            }
 
             SendKey(VK_CONTROL, false);
             SendKey(VK_V, false);
