@@ -92,9 +92,9 @@ This is the easiest way to install.
 <br>
 
 1. Go to the [Releases](https://github.com/mustafabercerita/ponten/releases) page.
-2. Download `Ponten-1.2.12.dmg` (for Mac) or `Ponten-Setup-1.2.12.exe` (for Windows installer).
+2. Download `Ponten-1.2.13.dmg` (for Mac) or `Ponten-Setup-1.2.13.exe` (for Windows installer).
 3. **Mac**: Open the downloaded file and drag the **Ponten** icon into the **Applications** folder.
-4. **Windows**: Run `Ponten-Setup-1.2.12.exe` to install the app. It will create a Start Menu shortcut, register the uninstaller, and quietly launch in your System Tray.
+4. **Windows**: Run `Ponten-Setup-1.2.13.exe` to install the app. It will create a Start Menu shortcut, register the uninstaller, and quietly launch in your System Tray.
 
 > **Note for Mac users**: Because this is an open-source app signed ad-hoc, you may need to right-click the app and choose **Open** the first time you run it to bypass macOS Gatekeeper.
 

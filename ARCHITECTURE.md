@@ -1,4 +1,4 @@
-# Architecture — Ponten (v1.2.12)
+# Architecture — Ponten (v1.2.13)
 
 ## Overview
 
@@ -517,7 +517,7 @@ E2E tests exercise real window interactions (copy marker, settings persistence, 
 | macOS | 13.0 Ventura | Swift 5.9, SwiftUI, AppKit, Vision, Core Image |
 | Windows | 10 | .NET 8, WPF, `System.Drawing` |
 
-Current release: **v1.2.12**
+Current release: **v1.2.13**
 
 ---
 

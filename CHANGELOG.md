@@ -8,20 +8,36 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+---
+
+## [1.2.13] — 2026-06-18
+
 ### Added
-- **macOS E2E test suite** — 5 UI tests (XCUITest) in `PontenUITests` (`MenuBarUITests.swift`)
-- **Windows E2E test suite** — 5 UI tests (FlaUI + xUnit) in `PontenWPF.E2E.Tests`
-- **E2E mode** — `--e2e` flag, `PONTEN_E2E=1`, and `PONTEN_DATA_DIR` for isolated test data (macOS + Windows)
-- **CI E2E** — macOS `xcodebuild test` and Windows `dotnet test Ponten.sln -c Release` run unit + E2E
+- **macOS E2E (XCUITest)** — `PontenUITests` with 5 UI tests; CI runs via `Ponten` scheme
+- **Windows E2E (FlaUI)** — 5 UI tests in `PontenWPF.E2E.Tests`
+- **Cross-platform `index.json`** — unified camelCase schema; settings (`autoPaste`, `launchAtLogin`, `removeBackground`) persisted in index
+- **macOS toast overlay** — notifications when menu popover is closed (hotkey copy, updates)
+- **Windows About dialog** — version, description, GitHub link
+- **Windows global shortcut picker** — 3 presets (mirrors macOS)
+- **macOS tray menu** — Add Signature and Draw Signature entries
+
+### Fixed
+- **macOS data loss** — corrupt `index.json` recovery from on-disk PNGs; atomic PNG/index saves; active signature persisted on selection
+- **macOS updater** — sandbox-aware fallback (save DMG to Downloads when in-app install cannot run)
+- **macOS popover** — no longer dismisses on inside clicks or while sheets/dialogs are open
+- **macOS auto-paste** — Accessibility permission check with user feedback
+- **Windows Launch at Login** — correct executable path for single-file publish (`Environment.ProcessPath`)
+- **Windows auto-paste** — no longer blocks UI thread
+- **Windows tray failure** — fallback window/MessageBox instead of headless app
+- **Windows context menu** — crash fix; stale selection guard
+- **Windows AutoPaste on quit** — settings no longer reset when closing
+- **Partial `index.json` settings** — decode when only `autoPaste` is present (E2E/legacy seeds)
 
 ### Changed
-- **macOS E2E migration** — CI and the `Ponten` scheme now run `PontenUITests` (XCUITest); legacy `PontenE2ETests` (AX-based) remain for local dev but are skipped in the scheme
-- **Windows E2E stability** — `WaitForInputIdle` made resilient in FlaUI fixture (db09540)
-- **SignatureStore extraction** — macOS persistence moved out of `SignatureManager` into dedicated `SignatureStore`
-- **ImageProcessor extensions** — image-processing helpers consolidated in `ImageProcessor.swift`
-- **Windows rename** — `SignatureManager.cs` renamed to `ImageProcessor.cs` for clarity
-- **Test infrastructure** — dependency injection for storage layer; flaky tests stabilized (11 macOS unit + 5 macOS E2E + 12 Windows unit + 5 Windows E2E)
-- **Documentation refresh** — README, ARCHITECTURE, CHANGELOG, DEVELOPMENT, and agent guides updated (now includes E2E testing)
+- **E2E CI** — macOS `PontenUITests` replaces legacy AX-based `PontenE2ETests` in scheme
+- **Windows image pipeline** — desaturation parity with macOS; draw signature routed through editor
+- **Copy toast** — unified message: "Signature copied to clipboard ✓"
+- **Documentation** — README, ARCHITECTURE, DEVELOPMENT updated for E2E and storage parity
 
 ---
 
@@ -120,7 +136,8 @@ versioning follows [Semantic Versioning](https://semver.org/).
 
 ---
 
-[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.2.12...HEAD
+[Unreleased]: https://github.com/mustafabercerita/ponten/compare/v1.2.13...HEAD
+[1.2.13]: https://github.com/mustafabercerita/ponten/compare/v1.2.12...v1.2.13
 [1.2.12]: https://github.com/mustafabercerita/ponten/compare/v1.2.0...v1.2.12
 [1.2.0]: https://github.com/mustafabercerita/ponten/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/mustafabercerita/ponten/compare/v1.0.0...v1.1.0

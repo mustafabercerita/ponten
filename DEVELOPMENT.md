@@ -2,7 +2,7 @@
 
 ## Version Source of Truth
 
-Bump **all** together, then `git tag vX.Y.Z`. Current: **1.2.12**.
+Bump **all** together, then `git tag vX.Y.Z`. Current: **1.2.13**.
 
 | Location | Key / variable |
 |----------|----------------|

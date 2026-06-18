@@ -11,7 +11,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 APP_NAME     := Ponten
-VERSION      := 1.2.12
+VERSION      := 1.2.13
 BUNDLE_ID    := com.ponten.app
 MIN_MACOS    := 13.0
 ARCH         := $(shell uname -m)
