@@ -43,8 +43,6 @@ public class MenuBarE2ETests
         var window = fixture.WaitForMainWindow();
         fixture.RequireElement(window, cf => cf.ByName("Test Signature"));
 
-        fixture.RequireElement(window, cf => cf.ByName("Test Signature")).Click();
-
         var signButton = fixture.RequireElement(
             window,
             cf => cf.ByControlType(ControlType.Button).And(cf.ByName("Sign"))).AsButton();

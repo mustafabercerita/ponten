@@ -374,7 +374,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         GlobalShortcutManager.shared.action = { [weak self] in
             let copied = self?.signatureManager.copySignatureToClipboard() ?? false
-            if !copied && self?.signatureManager.signatureImage == nil {
+            if !copied && (self?.signatureManager.signatures.isEmpty ?? true) {
                 self?.openPopover()
             }
         }

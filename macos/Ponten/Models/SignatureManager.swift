@@ -45,7 +45,10 @@ final class SignatureManager: ObservableObject {
 
     var signatureImage: NSImage? {
         guard let id = activeSignatureID else { return nil }
-        return image(for: id)
+        if let cached = imageCache[id] {
+            return cached
+        }
+        return signatures.first(where: { $0.item.id == id })?.image
     }
 
     var signaturePath: URL? {

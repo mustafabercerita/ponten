@@ -13,7 +13,7 @@ final class E2EInProcessHost {
         let store = SignatureStore(storageDirectory: URL(fileURLWithPath: dataDirectory, isDirectory: true))
         self.manager = SignatureManager(store: store)
 
-        let hasSignature = manager.signatureImage != nil
+        let hasSignature = !manager.signatures.isEmpty
         let height = max(hasSignature ? 360 : 260, 400)
         let frame = NSRect(x: 0, y: 0, width: 300, height: CGFloat(height))
 
