@@ -31,7 +31,7 @@ namespace PontenWPF
                 using var response = await client.GetAsync(LatestReleaseUrl);
                 if (!response.IsSuccessStatusCode)
                 {
-                    result.ErrorMessage = "Update check failed. Check your network connection.";
+                    result.ErrorMessage = DescribeHttpError(response.StatusCode);
                     return result;
                 }
 
@@ -109,6 +109,16 @@ namespace PontenWPF
                 FileName = installerPath,
                 UseShellExecute = true
             });
+        }
+
+        public static string DescribeHttpError(System.Net.HttpStatusCode statusCode)
+        {
+            return (int)statusCode switch
+            {
+                403 => "Update check blocked (rate limit). Try again later.",
+                429 => "Too many update checks. Try again later.",
+                _ => $"Update check failed (HTTP {(int)statusCode})."
+            };
         }
 
         private static bool IsRemoteVersionNewer(string remoteVersion, Version currentVersion)

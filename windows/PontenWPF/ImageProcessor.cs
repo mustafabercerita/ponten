@@ -446,11 +446,19 @@ namespace PontenWPF
                 float b = (float)brightness;
                 float t = b + (1.0f - c) / 2.0f;
 
+                // Desaturate for parity with macOS (saturation = 0) while preserving contrast/brightness.
+                const float rw = 0.299f;
+                const float gw = 0.587f;
+                const float bw = 0.114f;
+                float sr = (1.0f - 0.0f) * c * rw + 0.0f;
+                float sg = (1.0f - 0.0f) * c * gw + 0.0f;
+                float sb = (1.0f - 0.0f) * c * bw + 0.0f;
+
                 System.Drawing.Imaging.ColorMatrix colorMatrix = new System.Drawing.Imaging.ColorMatrix(new float[][]
                 {
-                    new float[] {c, 0, 0, 0, 0},
-                    new float[] {0, c, 0, 0, 0},
-                    new float[] {0, 0, c, 0, 0},
+                    new float[] {sr, sr, sr, 0, 0},
+                    new float[] {sg, sg, sg, 0, 0},
+                    new float[] {sb, sb, sb, 0, 0},
                     new float[] {0, 0, 0, 1, 0},
                     new float[] {t, t, t, 0, 1}
                 });

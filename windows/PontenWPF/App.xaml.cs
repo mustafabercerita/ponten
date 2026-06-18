@@ -3,6 +3,7 @@ using System.Threading;
 using System.IO;
 using System;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using H.NotifyIcon;
 
 namespace PontenWPF;
@@ -14,6 +15,7 @@ public partial class App : Application
     private static Mutex? _mutex;
     private bool _hasMutex;
     private bool _shownDispatcherError;
+    private DispatcherTimer? _updateCheckTimer;
     private const string MutexName = "PontenWPF.SingleInstance";
 
     protected override void OnStartup(StartupEventArgs e)
@@ -185,6 +187,29 @@ public partial class App : Application
                 MessageBoxImage.Warning);
             ShowMainWindow();
         }
+
+        ScheduleSilentUpdateChecks();
+    }
+
+    private void ScheduleSilentUpdateChecks()
+    {
+        if (E2EMode.IsEnabled)
+        {
+            return;
+        }
+
+        _updateCheckTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromHours(12)
+        };
+        _updateCheckTimer.Tick += async (_, _) =>
+        {
+            if (MainWindow is MenuBarView menuBar)
+            {
+                await menuBar.CheckForUpdatesSilentlyAsync();
+            }
+        };
+        _updateCheckTimer.Start();
     }
 
     private void NotifyIcon_TrayLeftMouseUp(object sender, RoutedEventArgs e)
@@ -280,6 +305,7 @@ public partial class App : Application
         if (_hasMutex)
         {
             Log($"App shutting down with exit code: {e.ApplicationExitCode}");
+            _updateCheckTimer?.Stop();
             notifyIcon?.Dispose();
             _traySysIcon?.Dispose();
             _mutex?.ReleaseMutex();

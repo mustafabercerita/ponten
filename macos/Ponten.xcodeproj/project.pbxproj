@@ -15,6 +15,7 @@
 		1AE52752D98500F6A6B32593 /* MenuBarUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A77A281BC3A931ECE543803 /* MenuBarUITests.swift */; };
 		269A0BC2654FAB21D9956828 /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F006 /* EventMonitor.swift */; };
 		4A8C2E1F9B3D5A7C8E0F1D2A /* MenuBarToastPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B9D3F2A8C4E6B0D9F1E2C3B /* MenuBarToastPresenter.swift */; };
+		A1B2C3D4E5F60718293A4B5C /* StorageError.swift in Sources */ = {isa = PBXBuildFile; fileRef = F015 /* StorageError.swift */; };
 		2D67FA73A28F07F1C18E11FA /* SignatureManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F003 /* SignatureManager.swift */; };
 		3F0F2EB29D34BBF310950D33 /* GlobalShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */; };
 		472D05B59AD328CEBC0EC3E0 /* FooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AA7F404CE26C6EFA1DED02 /* FooterView.swift */; };
@@ -33,6 +34,7 @@
 		A007 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F008 /* Assets.xcassets */; };
 		A008 /* E2EMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F012 /* E2EMode.swift */; };
 		B001 /* SignatureManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F010 /* SignatureManagerTests.swift */; };
+		B004 /* StorageErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F016 /* StorageErrorTests.swift */; };
 		B002 /* E2ETestFixture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F013 /* E2ETestFixture.swift */; };
 		B003 /* MenuBarE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F014 /* MenuBarE2ETests.swift */; };
 		C1D6B0461FDDF1E5F9E1EDB1 /* ImageProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D71898F773ACC800CD5B077 /* ImageProcessor.swift */; };
@@ -98,6 +100,8 @@
 		F012 /* E2EMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = E2EMode.swift; sourceTree = "<group>"; };
 		F013 /* E2ETestFixture.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = E2ETestFixture.swift; sourceTree = "<group>"; };
 		F014 /* MenuBarE2ETests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MenuBarE2ETests.swift; sourceTree = "<group>"; };
+		F015 /* StorageError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StorageError.swift; sourceTree = "<group>"; };
+		F016 /* StorageErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StorageErrorTests.swift; sourceTree = "<group>"; };
 		F015 /* PontenE2ETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenE2ETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignatureActiveView.swift; sourceTree = "<group>"; };
@@ -227,6 +231,7 @@
 				F006 /* EventMonitor.swift */,
 				5B9D3F2A8C4E6B0D9F1E2C3B /* MenuBarToastPresenter.swift */,
 				C4636EB3E58AA004A68B3DE2 /* GlobalShortcutManager.swift */,
+				F015 /* StorageError.swift */,
 				F012 /* E2EMode.swift */,
 			);
 			path = Utilities;
@@ -246,6 +251,7 @@
 			children = (
 				F010 /* SignatureManagerTests.swift */,
 				D95262DBEF0D230B8D9EEEE7 /* ImageProcessorTests.swift */,
+				F016 /* StorageErrorTests.swift */,
 			);
 			path = PontenTests;
 			sourceTree = "<group>";
@@ -444,6 +450,7 @@
 				C1D6B0461FDDF1E5F9E1EDB1 /* ImageProcessor.swift in Sources */,
 				1120A2BBD5F5CDEF342B0263 /* GlobalShortcutManager.swift in Sources */,
 				4A8C2E1F9B3D5A7C8E0F1D2A /* MenuBarToastPresenter.swift in Sources */,
+				A1B2C3D4E5F60718293A4B5C /* StorageError.swift in Sources */,
 				C5E489EB5810162538BA0D6C /* SignatureStore.swift in Sources */,
 				A008 /* E2EMode.swift in Sources */,
 			);
@@ -455,6 +462,7 @@
 			files = (
 				B001 /* SignatureManagerTests.swift in Sources */,
 				6BAE60826E8D53E01F415ADE /* ImageProcessorTests.swift in Sources */,
+				B004 /* StorageErrorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -38,7 +38,7 @@ final class GlobalShortcutManager {
 
         InstallEventHandler(GetApplicationEventTarget(), handler, 1, &eventType, nil, nil)
 
-        let saved = UserDefaults.standard.integer(forKey: "GlobalShortcut")
+        let saved = SignatureManager.settingsDefaults.integer(forKey: "GlobalShortcut")
         _ = updateShortcut(ShortcutChoice(rawValue: saved) ?? .optCmdS)
     }
 

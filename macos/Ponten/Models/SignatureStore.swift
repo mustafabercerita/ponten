@@ -136,7 +136,18 @@ final class SignatureStore {
     func saveIndex(items: [SignatureItem], activeID: UUID?, settings: UserSettings? = nil) throws {
         let wrapper = IndexWrapper(items: items, activeID: activeID, settings: settings)
         let data = try PontenJSON.makeEncoder().encode(wrapper)
-        try data.write(to: indexPath, options: .atomic)
+        do {
+            try data.write(to: indexPath, options: .atomic)
+        } catch {
+            if StorageError.isDiskFull(error) {
+                throw NSError(
+                    domain: NSCocoaErrorDomain,
+                    code: NSFileWriteOutOfSpaceError,
+                    userInfo: [NSLocalizedDescriptionKey: "Not enough disk space to save signatures."]
+                )
+            }
+            throw error
+        }
     }
 
     func deleteFile(filename: String) {
@@ -149,7 +160,18 @@ final class SignatureStore {
     }
 
     func writePNG(data: Data, filename: String) throws {
-        try data.write(to: filePath(for: filename), options: .atomic)
+        do {
+            try data.write(to: filePath(for: filename), options: .atomic)
+        } catch {
+            if StorageError.isDiskFull(error) {
+                throw NSError(
+                    domain: NSCocoaErrorDomain,
+                    code: NSFileWriteOutOfSpaceError,
+                    userInfo: [NSLocalizedDescriptionKey: "Not enough disk space to save signatures."]
+                )
+            }
+            throw error
+        }
     }
 
     func commitPNG(tempFilename: String, finalFilename: String) throws {

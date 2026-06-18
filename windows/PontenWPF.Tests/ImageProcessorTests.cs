@@ -50,6 +50,19 @@ public class ImageProcessorTests
     }
 
     [Fact]
+    public void AdjustColor_DesaturatesColoredPixels()
+    {
+        using var bitmap = new Bitmap(3, 3, PixelFormat.Format32bppArgb);
+        bitmap.SetPixel(1, 1, Color.FromArgb(255, 200, 40, 40));
+
+        using var result = _processor.AdjustColor(bitmap, 1.0, 0.0);
+        Color center = result.GetPixel(1, 1);
+
+        Assert.InRange(center.R, center.G - 2, center.G + 2);
+        Assert.InRange(center.R, center.B - 2, center.B + 2);
+    }
+
+    [Fact]
     public void AutoTrimWhitespace_TrimsToContent()
     {
         using var bitmap = CreateWhiteWithBlackSquare(100, 100, 40, 40, 20, 20);
