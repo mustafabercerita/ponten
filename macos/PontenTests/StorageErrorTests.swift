@@ -4,7 +4,7 @@ import XCTest
 final class StorageErrorTests: XCTestCase {
 
     func testIsDiskFullDetectsPOSIXENOSPC() {
-        let error = NSError(domain: NSPOSIXErrorDomain, code: POSIXErrorCode.ENOSPC.rawValue)
+        let error = NSError(domain: NSPOSIXErrorDomain, code: Int(POSIXErrorCode.ENOSPC.rawValue))
         XCTAssertTrue(StorageError.isDiskFull(error))
     }
 
@@ -14,7 +14,7 @@ final class StorageErrorTests: XCTestCase {
     }
 
     func testUserFacingMessageReturnsDiskFullCopy() {
-        let error = NSError(domain: NSPOSIXErrorDomain, code: POSIXErrorCode.ENOSPC.rawValue)
+        let error = NSError(domain: NSPOSIXErrorDomain, code: Int(POSIXErrorCode.ENOSPC.rawValue))
         XCTAssertEqual(
             StorageError.userFacingMessage(for: error, fallbackPrefix: "Failed to save signatures"),
             "Not enough disk space to save signatures."
