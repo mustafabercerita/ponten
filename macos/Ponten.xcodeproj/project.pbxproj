@@ -102,7 +102,7 @@
 		F014 /* MenuBarE2ETests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MenuBarE2ETests.swift; sourceTree = "<group>"; };
 		F015 /* StorageError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StorageError.swift; sourceTree = "<group>"; };
 		F016 /* StorageErrorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StorageErrorTests.swift; sourceTree = "<group>"; };
-		F015 /* PontenE2ETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenE2ETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F017 /* PontenE2ETests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PontenE2ETests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F87D7B490E82F4CBEFB0C5D3 /* AboutView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		FD90A77DDFA4B3C1D9AD3B0C /* SignatureActiveView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SignatureActiveView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -272,7 +272,7 @@
 			children = (
 				F000 /* Ponten.app */,
 				F011 /* PontenTests.xctest */,
-				F015 /* PontenE2ETests.xctest */,
+				F017 /* PontenE2ETests.xctest */,
 				521C5C2D6D47577B4FC04FDC /* PontenUITests.xctest */,
 			);
 			name = Products;
@@ -348,7 +348,7 @@
 			);
 			name = PontenE2ETests;
 			productName = PontenE2ETests;
-			productReference = F015 /* PontenE2ETests.xctest */;
+			productReference = F017 /* PontenE2ETests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
