@@ -219,6 +219,37 @@ final class SignatureManagerTests: XCTestCase {
     }
 
     @MainActor
+    func testCorruptIndexPreservesSettingsFromPartialJSON() throws {
+        let id = UUID()
+        let filename = "\(id.uuidString).png"
+        _ = try makePNGFile(named: filename)
+        let corruptJSON = """
+        {
+          "items": "not-an-array",
+          "settings": {
+            "launchAtLogin": true,
+            "autoPaste": false,
+            "removeBackground": false
+          }
+        }
+        """
+        try corruptJSON.write(
+            to: testDirectory.appendingPathComponent("index.json"),
+            atomically: true,
+            encoding: .utf8
+        )
+
+        let reloadedStore = SignatureStore(storageDirectory: testDirectory)
+        let result = reloadedStore.load()
+
+        XCTAssertEqual(result.signatures.count, 1)
+        let settings = try XCTUnwrap(reloadedStore.loadSettings())
+        XCTAssertTrue(settings.launchAtLogin)
+        XCTAssertFalse(settings.autoPaste)
+        XCTAssertFalse(settings.removeBackground)
+    }
+
+    @MainActor
     func testMissingIndexUsesLegacyMigration() throws {
         _ = try makePNGFile(named: "signature.png")
 

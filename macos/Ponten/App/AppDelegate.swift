@@ -352,10 +352,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Event Monitor (close on outside click)
 
     private func setupEventMonitor() {
-        eventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+        eventMonitor = EventMonitor(mask: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
             guard let self, self.popover.isShown, !self.signatureManager.isModalPresented else { return }
+            if let event, self.isEventInsidePopover(event) { return }
             self.closePopover()
         }
+    }
+
+    private func isEventInsidePopover(_ event: NSEvent) -> Bool {
+        guard let popoverWindow = popover.contentViewController?.view.window else { return false }
+        if event.window === popoverWindow { return true }
+        return popoverWindow.frame.contains(NSEvent.mouseLocation)
     }
 
     // MARK: - Global Hotkey (⌥⌘S)

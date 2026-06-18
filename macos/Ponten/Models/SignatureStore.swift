@@ -92,7 +92,7 @@ final class SignatureStore {
 
         guard let data = try? Data(contentsOf: indexPath),
               let wrapper = try? PontenJSON.makeDecoder().decode(IndexWrapper.self, from: data) else {
-            let rebuilt = rebuildFromPNGFiles()
+            let rebuilt = rebuildFromPNGFiles(preservingSettingsFromCorruptIndex: true)
             return SignatureLoadResult(signatures: rebuilt, prunedCount: 0)
         }
 
@@ -187,7 +187,7 @@ final class SignatureStore {
 
     // MARK: - Recovery & Migration
 
-    private func rebuildFromPNGFiles() -> [(SignatureItem, NSImage)] {
+    private func rebuildFromPNGFiles(preservingSettingsFromCorruptIndex: Bool = false) -> [(SignatureItem, NSImage)] {
         let fm = FileManager.default
         guard let files = try? fm.contentsOfDirectory(at: storageDirectory, includingPropertiesForKeys: nil) else {
             return []
@@ -199,7 +199,7 @@ final class SignatureStore {
             if filename.hasSuffix(".tmp.png") { continue }
 
             let stem = String(filename.dropLast(4))
-            let id = UUID(uuidString: stem) ?? UUID()
+            guard let id = UUID(uuidString: stem) else { continue }
             guard let img = NSImage(contentsOf: url) else { continue }
 
             let item = SignatureItem(id: id, filename: filename, name: nil)
@@ -210,10 +210,31 @@ final class SignatureStore {
 
         if !loaded.isEmpty {
             let activeID = loaded.first?.0.id
-            try? saveIndex(items: loaded.map(\.0), activeID: activeID)
+            let settings = preservingSettingsFromCorruptIndex ? parseSettingsFromCorruptIndex() : nil
+            try? saveIndex(items: loaded.map(\.0), activeID: activeID, settings: settings)
         }
 
         return loaded
+    }
+
+    private func parseSettingsFromCorruptIndex() -> UserSettings? {
+        guard let data = try? Data(contentsOf: indexPath),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let settingsDict = (json["settings"] ?? json["Settings"]) as? [String: Any] else {
+            return nil
+        }
+
+        var settings = UserSettings()
+        if let autoPaste = settingsDict["autoPaste"] as? Bool ?? settingsDict["AutoPaste"] as? Bool {
+            settings.autoPaste = autoPaste
+        }
+        if let launchAtLogin = settingsDict["launchAtLogin"] as? Bool ?? settingsDict["LaunchAtLogin"] as? Bool {
+            settings.launchAtLogin = launchAtLogin
+        }
+        if let removeBackground = settingsDict["removeBackground"] as? Bool ?? settingsDict["RemoveBackground"] as? Bool {
+            settings.removeBackground = removeBackground
+        }
+        return settings
     }
 
     private func migrateLegacySignature() -> [(SignatureItem, NSImage)] {

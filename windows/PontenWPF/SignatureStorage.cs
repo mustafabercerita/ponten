@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Text.Json.Nodes;
 
 namespace PontenWPF
 {
@@ -125,6 +126,8 @@ namespace PontenWPF
 
         public void Load()
         {
+            bool loadedFromIndex = false;
+
             if (File.Exists(_indexPath))
             {
                 try
@@ -136,6 +139,7 @@ namespace PontenWPF
                         Signatures = wrapper.Items ?? new List<SignatureItem>();
                         ActiveSignatureID = wrapper.ActiveID;
                         if (wrapper.Settings != null) Settings = wrapper.Settings;
+                        loadedFromIndex = true;
                     }
                 }
                 catch (Exception ex)
@@ -143,9 +147,22 @@ namespace PontenWPF
                     App.Log($"Failed to load index.json: {ex.Message}");
                 }
             }
-            
-            // Clean up invalid filenames and missing files from the index
+
             bool changed = false;
+
+            if (!loadedFromIndex && File.Exists(_indexPath))
+            {
+                var recoveredSettings = TryParseSettingsFromCorruptIndex();
+                Signatures = RebuildFromPNGFiles();
+                ActiveSignatureID = Signatures.FirstOrDefault()?.Id;
+                if (recoveredSettings != null)
+                {
+                    Settings = recoveredSettings;
+                }
+                changed = true;
+            }
+
+            // Clean up invalid filenames and missing files from the index
             for (int i = Signatures.Count - 1; i >= 0; i--)
             {
                 string filename = Signatures[i].Filename;
@@ -173,6 +190,70 @@ namespace PontenWPF
             SyncLaunchAtLoginFromRegistry(ref changed);
 
             if (changed) SaveIndex();
+        }
+
+        private List<SignatureItem> RebuildFromPNGFiles()
+        {
+            var loaded = new List<SignatureItem>();
+
+            try
+            {
+                foreach (string path in Directory.GetFiles(_storageDirectory, "*.png"))
+                {
+                    string filename = Path.GetFileName(path);
+                    if (filename.EndsWith(".tmp.png", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    if (!IsValidSignatureFilename(filename))
+                    {
+                        continue;
+                    }
+
+                    string stem = filename[..^4];
+                    if (!Guid.TryParse(stem, out Guid id))
+                    {
+                        continue;
+                    }
+
+                    loaded.Add(new SignatureItem { Id = id, Filename = filename });
+                }
+
+                loaded.Sort((a, b) => string.Compare(a.Filename, b.Filename, StringComparison.Ordinal));
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Failed to rebuild signatures from PNG files: {ex.Message}");
+            }
+
+            return loaded;
+        }
+
+        private UserSettings? TryParseSettingsFromCorruptIndex()
+        {
+            try
+            {
+                string json = File.ReadAllText(_indexPath);
+                var root = JsonNode.Parse(json) as JsonObject;
+                if (root == null)
+                {
+                    return null;
+                }
+
+                JsonNode? settingsNode = root["settings"] ?? root["Settings"];
+                if (settingsNode == null)
+                {
+                    return null;
+                }
+
+                return settingsNode.Deserialize<UserSettings>(IndexJsonOptions);
+            }
+            catch (Exception ex)
+            {
+                App.Log($"Failed to parse settings from corrupt index.json: {ex.Message}");
+                return null;
+            }
         }
 
         private void SyncLaunchAtLoginFromRegistry(ref bool changed)

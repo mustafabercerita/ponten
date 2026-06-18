@@ -145,6 +145,47 @@ namespace PontenWPF.Tests
         }
 
         [Fact]
+        public void Load_CorruptedIndexRebuildsFromPNGFiles()
+        {
+            var id = Guid.NewGuid();
+            string filename = $"{id}.png";
+            File.WriteAllText(_indexPath, "{ invalid json }");
+            File.WriteAllText(Path.Combine(_testDirectory, filename), "dummy content");
+
+            var storage = new SignatureStorage(_testDirectory);
+
+            Assert.Single(storage.Signatures);
+            Assert.Equal(id, storage.ActiveSignatureID);
+            Assert.Equal(filename, storage.Signatures[0].Filename);
+        }
+
+        [Fact]
+        public void Load_CorruptedIndexPreservesSettings()
+        {
+            var id = Guid.NewGuid();
+            string filename = $"{id}.png";
+            var corruptJson = """
+            {
+              "items": "not-an-array",
+              "settings": {
+                "launchAtLogin": true,
+                "autoPaste": false,
+                "removeBackground": false
+              }
+            }
+            """;
+            File.WriteAllText(_indexPath, corruptJson);
+            File.WriteAllText(Path.Combine(_testDirectory, filename), "dummy content");
+
+            var storage = new SignatureStorage(_testDirectory);
+
+            Assert.Single(storage.Signatures);
+            Assert.True(storage.Settings.LaunchAtLogin);
+            Assert.False(storage.Settings.AutoPaste);
+            Assert.False(storage.Settings.RemoveBackground);
+        }
+
+        [Fact]
         public void SaveIndex_WritesCamelCaseJson()
         {
             var storage = new SignatureStorage(_testDirectory);
@@ -170,10 +211,11 @@ namespace PontenWPF.Tests
         public void Load_ReadsLegacyPascalCaseJson()
         {
             var id = Guid.NewGuid();
+            string filename = $"{id}.png";
             var legacyJson = $$"""
             {
               "Items": [
-                { "Id": "{{id}}", "Filename": "legacy.png", "Name": "Legacy" }
+                { "Id": "{{id}}", "Filename": "{{filename}}", "Name": "Legacy" }
               ],
               "ActiveID": "{{id}}",
               "Settings": {
@@ -184,7 +226,7 @@ namespace PontenWPF.Tests
             }
             """;
             File.WriteAllText(_indexPath, legacyJson);
-            File.WriteAllText(Path.Combine(_testDirectory, "legacy.png"), "dummy content");
+            File.WriteAllText(Path.Combine(_testDirectory, filename), "dummy content");
 
             var storage = new SignatureStorage(_testDirectory);
 
