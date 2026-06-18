@@ -1,6 +1,7 @@
 import XCTest
 @testable import Ponten
 
+@MainActor
 final class SignatureManagerTests: XCTestCase {
 
     var manager: SignatureManager!
@@ -9,7 +10,6 @@ final class SignatureManagerTests: XCTestCase {
 
     // MARK: - Setup / Teardown
 
-    @MainActor
     override func setUpWithError() throws {
         try super.setUpWithError()
         testDirectory = FileManager.default.temporaryDirectory
@@ -20,7 +20,6 @@ final class SignatureManagerTests: XCTestCase {
         manager = SignatureManager(store: testStore)
     }
 
-    @MainActor
     override func tearDownWithError() throws {
         try? FileManager.default.removeItem(at: testDirectory)
         try super.tearDownWithError()
@@ -29,7 +28,6 @@ final class SignatureManagerTests: XCTestCase {
     // MARK: - Helpers
 
     /// Creates a minimal valid PNG with white edges in the test directory.
-    @MainActor
     private func makePNGFile(named name: String = "test_signature.png") throws -> URL {
         let url = testDirectory.appendingPathComponent(name)
         let image = NSImage(size: NSSize(width: 200, height: 80))
@@ -334,7 +332,6 @@ final class SignatureManagerTests: XCTestCase {
         XCTAssertFalse(settings.removeBackground)
     }
 
-    @MainActor
     func testLoadsIndexWithPartialSettingsLikeUITestSeed() throws {
         let id = UUID()
         let filename = "\(id.uuidString).png"
